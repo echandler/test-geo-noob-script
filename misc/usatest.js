@@ -138,6 +138,8 @@ function usaPlates(obj){
                 background-color: white;
                 font-size: 10px;
                 translate: -50% -50%;
+                border-radius: 5px;
+                overflow: hidden;
           `;
 
            if (this.frontPlate_ === false){
