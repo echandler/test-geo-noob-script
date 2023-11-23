@@ -140,7 +140,7 @@ function usaPlates(obj){
                 translate: -50% -50%;
           `;
 
-           if (this.frontPlate_){
+           if (this.frontPlate_ === false){
               div.style.border = "2ps solid red";
            }
 
