@@ -141,7 +141,7 @@ function usaPlates(obj){
           `;
 
            if (this.frontPlate_ === false){
-              div.style.border = "2ps solid red";
+              div.style.border = "2px solid red";
            }
 
            div.style.backgroundColor = this.backgroundColor_;
