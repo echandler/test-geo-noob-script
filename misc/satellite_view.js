@@ -84,7 +84,6 @@ async function satelliteView(obj) {
                 disableDefaultUI: true,
                 mapTypeId: "satellite",
                 gestureHandling: "greedy",
-                zoom: 7,
             });
         }
 
@@ -94,6 +93,8 @@ async function satelliteView(obj) {
         });
 
         map.setCenter(pinLocation);
+        
+        map.setZoom(7);
 
         google.maps.event.clearListeners(map, "idle");
 
