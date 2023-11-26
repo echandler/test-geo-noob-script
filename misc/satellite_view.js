@@ -35,14 +35,10 @@ async function satelliteView(obj) {
         let curMapInfo = await fetch(`https://www.geoguessr.com/api/v3/games/${mapId}`).then((x) => x.json());
 
         let isSatelliteMap = curMapInfo.mapName.match(/\[(\d+)\]/i);
-        if (!isSatelliteMap || (isSatelliteMap[1] && typeof +isSatelliteMap[1] != "number")) {
-            sv_canvas.style.display = "";
-            return;
-        }
 
         toggleTerrain = function () {};
 
-        let bounds = +isSatelliteMap[1];
+        let bounds = isSatelliteMap? +isSatelliteMap[1]: null;
 
         if (curMapInfo.forbidPanning) {
             bounds = 1;
@@ -58,6 +54,14 @@ async function satelliteView(obj) {
             mapContainer.id = 'satMapContainer';
             sv_canvas.parentElement.appendChild(mapContainer);
             map = null;
+            let activeClass = null;
+            mapContainer.addEventListener("mousedown", function(){
+                const guessmap = document.querySelector("div[data-qa='guess-map']");
+                if (!activeClass){
+                    activeClass = Array.from(guessmap.classList).reduce((x,a)=> x + (/active/i.test(a)? a: ""), "");
+                }
+                guessmap.classList.remove(activeClass);
+            });
         }
 
         // Make sure it's not hidden.
@@ -67,13 +71,7 @@ async function satelliteView(obj) {
             lat: MWGTM_SV.position.lat(),
             lng: MWGTM_SV.position.lng(),
         };
-
-        let _bounds = getBBox2(pinLocation, bounds * 1000);
-
-        const northEast = new google.maps.LatLng(_bounds[0], _bounds[3]);
-        const southWest = new google.maps.LatLng(_bounds[2], _bounds[1]);
-        const BOUNDS = new google.maps.LatLngBounds(southWest, northEast);
-
+        
         if (!map) {
             map = new google.maps.Map(mapContainer, {
                 //  center: AUCKLAND,
@@ -86,12 +84,20 @@ async function satelliteView(obj) {
                 gestureHandling: "greedy",
             });
         }
+        
+        if (bounds){
 
-        map.setRestriction({
-            latLngBounds: BOUNDS, //BOUNDS,
-            strictBounds: false,
-        });
+            const _bounds = getBBox2(pinLocation, bounds * 1000);
+            const northEast = new google.maps.LatLng(_bounds[0], _bounds[3]);
+            const southWest = new google.maps.LatLng(_bounds[2], _bounds[1]);
+            const BOUNDS = new google.maps.LatLngBounds(southWest, northEast);
 
+            map.setRestriction({
+                latLngBounds: BOUNDS, //BOUNDS,
+                strictBounds: false,
+            });
+        }
+        
         map.setCenter(pinLocation);
         
         map.setZoom(7);
@@ -123,6 +129,7 @@ async function satelliteView(obj) {
 
         container.appendChild(div);
     }, 1000);
+
 }
 
 function getBBox2(coordinates, meters) {
@@ -162,37 +169,32 @@ function moveFrom(coords, angle, distance) {
 }
 
 setInterval(function () {
-    // Make the guessmap close quicker.
-    const guessmap = document.querySelector("div[data-qa='guess-map']");
-    const canvas = document.querySelector("#satMapContainer");
+        const guessmap = document.querySelector("div[data-qa='guess-map']");
+            const canvas = document.querySelector("#satMapContainer");
 
-    if (guessmap && !guessmap.__n) {
-        // Sometimes the guess map doesn't open back up.
+            if (guessmap && !guessmap.__n) {
+                    // Sometimes the guess map doesn't open back up.
 
-        guessmap.addEventListener("mouseover", function (e) {
-            if (!guessmap.activeClass) {
-                setTimeout(() => {
-                    guessmap.activeClass = Array.from(
-                        guessmap.classList,
-                    ).reduce((x, a) => x + (/active/i.test(a) ? a : ""), "");
-                }, 100);
-                return;
+                guessmap.addEventListener("mouseover", function (e) {
+                if (!guessmap.activeClass) {
+                    setTimeout(()=>{
+                        guessmap.activeClass = Array.from(guessmap.classList).reduce( (x, a) => x + (/active/i.test(a) ? a : ""), "",);
+                    }, 100);
+                    return;
+                }
+                guessmap.classList.add(guessmap.activeClass);
+                });
+                guessmap.__n = true;
             }
-            guessmap.classList.add(guessmap.activeClass);
-        });
-        guessmap.__n = true;
-    }
-    if (canvas && !canvas.__n) {
-        canvas.addEventListener("mousedown", function () {
-            const guessmap = document.querySelector("div[data-qa='guess-map']");
-            if (!guessmap.activeClass) {
-                guessmap.activeClass = Array.from(guessmap.classList).reduce(
-                    (x, a) => x + (/active/i.test(a) ? a : ""),
-                    "",
-                );
+            if (canvas && !canvas.__n) {
+                canvas.addEventListener("mousedown", function () {
+                    const guessmap = document.querySelector("div[data-qa='guess-map']");
+                    if (!guessmap.activeClass) {
+                        guessmap.activeClass = Array.from(guessmap.classList).reduce( (x, a) => x + (/active/i.test(a) ? a : ""), "",);
+                    }
+                    guessmap.classList.remove(guessmap.activeClass);
+                });
+                canvas.__n = true;
             }
-            guessmap.classList.remove(guessmap.activeClass);
-        });
-        canvas.__n = true;
-    }
-}, 2000);
+ }, 2000);
+
