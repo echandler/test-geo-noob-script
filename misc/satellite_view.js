@@ -80,11 +80,12 @@ async function satelliteView(obj) {
                 //  strictBounds: false,
                 //  },
                 disableDefaultUI: true,
-                mapTypeId: "satellite",
+                // mapTypeId: "satellite",
                 gestureHandling: "greedy",
             });
         }
-        
+        map.setMapTypeId("satellite");
+
         if (bounds){
 
             const _bounds = getBBox2(pinLocation, bounds * 1000);
