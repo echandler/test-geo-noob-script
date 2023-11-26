@@ -160,3 +160,39 @@ function moveFrom(coords, angle, distance) {
     let newLng = coords.lng + (x * M) / Math.cos(coords.lat * (Math.PI / 180));
     return { lat: newLat, lng: newLng };
 }
+
+setInterval(function () {
+    // Make the guessmap close quicker.
+    const guessmap = document.querySelector("div[data-qa='guess-map']");
+    const canvas = document.querySelector("#satMapContainer");
+
+    if (guessmap && !guessmap.__n) {
+        // Sometimes the guess map doesn't open back up.
+
+        guessmap.addEventListener("mouseover", function (e) {
+            if (!guessmap.activeClass) {
+                setTimeout(() => {
+                    guessmap.activeClass = Array.from(
+                        guessmap.classList,
+                    ).reduce((x, a) => x + (/active/i.test(a) ? a : ""), "");
+                }, 100);
+                return;
+            }
+            guessmap.classList.add(guessmap.activeClass);
+        });
+        guessmap.__n = true;
+    }
+    if (canvas && !canvas.__n) {
+        canvas.addEventListener("mousedown", function () {
+            const guessmap = document.querySelector("div[data-qa='guess-map']");
+            if (!guessmap.activeClass) {
+                guessmap.activeClass = Array.from(guessmap.classList).reduce(
+                    (x, a) => x + (/active/i.test(a) ? a : ""),
+                    "",
+                );
+            }
+            guessmap.classList.remove(guessmap.activeClass);
+        });
+        canvas.__n = true;
+    }
+}, 2000);
