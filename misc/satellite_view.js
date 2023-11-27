@@ -32,11 +32,15 @@ async function satelliteView(obj) {
 
         sv_canvas.style.display = "none";
         let mapId = location.href.replace(/.*\/(.*$)/, "$1");
-        let curMapInfo = await fetch(`https://www.geoguessr.com/api/v3/games/${mapId}`).then((x) => x.json());
+        let isChallenge = /challenge/i.test(location.href);
+        let curMapInfo = await fetch(`https://www.geoguessr.com/api/v3/${isChallenge? 'challenges': 'games'}/${mapId}`).then((x) => x.json());
+
+        curMapInfo.mapName = isChallenge ? curMapInfo.map.name : curMapInfo.mapName;
+        curMapInfo.forbidPanning = isChallenge ? curMapInfo.challenge.forbidRotating : curMapInfo.forbidPanning;
+        curMapInfo.forbidMoving = isChallenge ? curMapInfo.challenge.forbidMoving : curMapInfo.forbidMoving;
+        curMapInfo.forbidZooming = isChallenge ? curMapInfo.challenge.forbidZooming : curMapInfo.forbidZooming;
 
         let isSatelliteMap = curMapInfo.mapName.match(/\[(\d+)\]/i);
-
-        toggleTerrain = function () {};
 
         let bounds = isSatelliteMap? +isSatelliteMap[1]: null;
 
@@ -80,10 +84,11 @@ async function satelliteView(obj) {
                 //  strictBounds: false,
                 //  },
                 disableDefaultUI: true,
-                // mapTypeId: "satellite",
+        //        mapTypeId: "satellite",
                 gestureHandling: "greedy",
             });
         }
+        
         map.setMapTypeId("satellite");
 
         if (bounds){
@@ -109,6 +114,8 @@ async function satelliteView(obj) {
             position: pinLocation,
             map: map,
         });
+
+        toggleTerrain = function () {};
     }
 
     setInterval(() => {
@@ -198,4 +205,5 @@ setInterval(function () {
                 canvas.__n = true;
             }
  }, 2000);
+
 
