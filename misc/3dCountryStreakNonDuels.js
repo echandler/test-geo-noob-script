@@ -39,8 +39,10 @@ function d3StreakCounter(obj) {
         let debounce = Date.now() + 1000;
 
         function roundStartFn(state) {
-            gameInfo?.curRound?.isCorrectCountry = false;
-            gameInfo?.curRound?.pinLocation = null;
+            if (gamInfo?.curRound?.isCorrectCountry){
+                gameInfo.curRound.isCorrectCountry = false;
+                gameInfo.curRound.pinLocation = null;
+            }
 
             setTimeout(()=>{  
                 //alert('hi');
@@ -63,8 +65,10 @@ function d3StreakCounter(obj) {
         }
         
         function gameStartFn(state){
-            gameInfo?.curRound?.isCorrectCountry = false;
-            gameInfo?.curRound?.pinLocation = null;
+            if (gamInfo?.curRound?.isCorrectCountry){
+                gameInfo.curRound.isCorrectCountry = false;
+                gameInfo.curRound.pinLocation = null;
+            }
 
             GEF.events.removeEventListener('game_start', gameStartFn);
             
@@ -95,8 +99,10 @@ function d3StreakCounter(obj) {
     const gameInfo = localStorage['duelsStreakCounter']? JSON.parse(localStorage['duelsStreakCounter']): {score: 2, curRound: null, x: 10, y: 10};
     
     // Reset isCorrectCountry to false incase no guess is made.
-    gameInfo?.curRound?.isCorrectCountry = false;
-    gameInfo?.curRound?.pinLocation = null;
+    if (gamInfo?.curRound?.isCorrectCountry){
+        gameInfo.curRound.isCorrectCountry = false;
+        gameInfo.curRound.pinLocation = null;
+    }
 
     let _3dCounter = null;
 
