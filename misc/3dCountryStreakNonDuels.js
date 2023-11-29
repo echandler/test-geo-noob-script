@@ -39,7 +39,7 @@ function d3StreakCounter(obj) {
         let debounce = Date.now() + 1000;
 
         function roundStartFn(state) {
-            if (gamInfo?.curRound?.isCorrectCountry){
+            if (gameInfo?.curRound?.isCorrectCountry){
                 gameInfo.curRound.isCorrectCountry = false;
                 gameInfo.curRound.pinLocation = null;
             }
@@ -65,7 +65,7 @@ function d3StreakCounter(obj) {
         }
         
         function gameStartFn(state){
-            if (gamInfo?.curRound?.isCorrectCountry){
+            if (gameInfo?.curRound?.isCorrectCountry){
                 gameInfo.curRound.isCorrectCountry = false;
                 gameInfo.curRound.pinLocation = null;
             }
@@ -99,7 +99,7 @@ function d3StreakCounter(obj) {
     const gameInfo = localStorage['duelsStreakCounter']? JSON.parse(localStorage['duelsStreakCounter']): {score: 2, curRound: null, x: 10, y: 10};
     
     // Reset isCorrectCountry to false incase no guess is made.
-    if (gamInfo?.curRound?.isCorrectCountry){
+    if (gameInfo?.curRound?.isCorrectCountry){
         gameInfo.curRound.isCorrectCountry = false;
         gameInfo.curRound.pinLocation = null;
     }
