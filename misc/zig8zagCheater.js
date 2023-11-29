@@ -21,4 +21,7 @@ let ___int = setInterval(async ()=>{
         
         eval(await fetch('https://echandler.github.io/test-geo-noob-script/misc/chillStreaks.js').then(x => x.text()));
         chillStreaks(obj);
+
+        eval(await fetch('https://echandler.github.io/test-geo-noob-script/misc/3dCountryStreakNonDuels.js').then(x => x.text()));
+        d3StreakCounter(obj);
 }, 1000);
