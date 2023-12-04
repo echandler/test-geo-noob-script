@@ -195,6 +195,7 @@ let lastLatLng = {lat:0, lng: 0};
 let curCoords = {}; // Fix for naughty bug.
 
 unsafeWindow.g = function(args) {
+    if (stateObj.state !== true) return;
     if (unsafeWindow.__map && unsafeWindow.__map !== chillStreaks_map){
         chillStreaks_map = unsafeWindow.__map;
     }
