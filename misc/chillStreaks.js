@@ -3,7 +3,7 @@ function chillStreaks(obj){
 console.log("chillStreaks mod test", MWGTM_SV);
 
 obj.GM_addStyle(`
-    img {
+    img[src*='tk'] {
         border-radius: 3px;
         box-shadow: 0px 0px 2px 0px grey;
     }
