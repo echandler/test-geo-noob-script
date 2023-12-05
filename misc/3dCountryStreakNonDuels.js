@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name         3d Duels country streak counter v0.75
-// @description  Webgl country streak counter for Geoguessr duels. 
-// @namespace    3d duels country streak counter 
+// @name         3d country streak counter v0.75
+// @description  Webgl country streak counter for Geoguessr. 
+// @namespace    3d country streak counter 
 // @version      0.75
 // @author       echandler
 // @match        https://www.geoguessr.com/*
@@ -14,7 +14,11 @@
 
 function d3StreakCounter(obj) {
     "use strict";
-    
+unsafeWindow.__map = obj.map;
+    obj.GM_addStyle(`
+        .d3StreakBtn:hover { background-color: grey;}
+    `);
+
     obj.map.addListener('click', function(evt){
          // Listen for player 
          event.trigger('player placed pin on map', { req: evt });
@@ -37,12 +41,15 @@ function d3StreakCounter(obj) {
         });
         
         let debounce = Date.now() + 1000;
+        let roundStartTime = Date.now();
 
         function roundStartFn(state) {
             if (gameInfo?.curRound?.isCorrectCountry){
                 gameInfo.curRound.isCorrectCountry = false;
                 gameInfo.curRound.pinLocation = null;
             }
+
+            roundStartTime = Date.now();
 
             setTimeout(()=>{  
                 //alert('hi');
@@ -55,12 +62,17 @@ function d3StreakCounter(obj) {
                     lng: MWGTM_SV.position.lng(),
                 });
                 
-                setTimeout(_createRoundEndListener, 500);
             }, 500);
+
+            _createRoundEndListener();
+            
         }
 
         function roundEndFn(state) {
-            console.log("end round event called", state, state.detail.round_in_progress);
+            if (Date.now() < roundStartTime + 1000) return;
+
+            console.log(document.elementFromPoint(0,0).nodeName);
+           // console.log("end round event called", state, state.detail.round_in_progress);
             event.trigger('between rounds');
         }
         
@@ -76,11 +88,9 @@ function d3StreakCounter(obj) {
             GEF.events.removeEventListener('round_end', roundEndFn);
             GEF.events.removeEventListener('round_start', roundEndFn);
 
-            setTimeout(()=>{
-                _createRoundEndListener = createRoundEndFn;
-                GEF.events.addEventListener("round_start", roundStartFn);
-                //GEF.events.addEventListener("round_end", roundEndFn);
-            }, 500);
+            _createRoundEndListener = createRoundEndFn;
+            GEF.events.addEventListener("round_start", roundStartFn);
+            //GEF.events.addEventListener("round_end", roundEndFn);
         }
 
         function createRoundEndFn(){
@@ -96,13 +106,31 @@ function d3StreakCounter(obj) {
         }, 1000);
     });
 
-    const gameInfo = localStorage['duelsStreakCounter']? JSON.parse(localStorage['duelsStreakCounter']): {score: 2, curRound: null, x: 10, y: 10};
-    
-    // Reset isCorrectCountry to false incase no guess is made.
-    if (gameInfo?.curRound?.isCorrectCountry){
-        gameInfo.curRound.isCorrectCountry = false;
-        gameInfo.curRound.pinLocation = null;
-    }
+    const gameInfo = localStorage['d3StreakCounter']
+                     ? JSON.parse(localStorage['d3StreakCounter'])
+                     : {
+                            scriptDisabled: true,
+                            particlesDisabled: false,
+                            particlesAmount: "50",
+                            x: 10, 
+                            y: 1,
+                            score: 0, 
+                            curRound: {
+                                isCorrectCountry : false,
+                                pinLocation : null,
+                            },
+                            doExplodeScore: false,
+                            guessCorrectText : "YAY! $2!",
+                            guessIncorrectText: "Spawn: $2. You clicked on: $1. Old score: $3",
+                            state1Size: 100,
+                            state1SpotLightAngle: 0.5,
+                            state2XY : {x: 0, y: 0},
+                            state2Size : "20",
+                            state2SpotLightAngle : "0.1",
+                            state2XY : {x: 0, y: 40},
+                            guessFontSize: "30",
+                            guessSpotLightAngle: "0.1",
+                        }; 
 
     let _3dCounter = null;
 
@@ -275,7 +303,7 @@ function d3StreakCounter(obj) {
 
             gameInfo.curRound = {...gameInfo.curRound, ..._info, isCorrectCountry };
 
-            localStorage['duelsStreakCounter'] = JSON.stringify(gameInfo);
+            localStorage['d3StreakCounter'] = JSON.stringify(gameInfo);
         });
 
         event.addListener('is this event needed?', waitForEndOfRound);
@@ -303,7 +331,7 @@ function d3StreakCounter(obj) {
 
             if (gameInfo?.curRound?.isCorrectCountry != undefined){
                 gameInfo.curRound = null;
-                localStorage['duelsStreakCounter'] = JSON.stringify(gameInfo);
+                localStorage['d3StreakCounter'] = JSON.stringify(gameInfo);
             }
 
             waitForNextRound();
@@ -345,7 +373,7 @@ function d3StreakCounter(obj) {
 
         return function(){
             if (!unsafeWindow.google && !streetViewObj){
-                console.log('3d duels country streak counter cant find google or street view obj');
+                console.log('3d country streak counter cant find google or street view obj');
                 setTimeout(modifySetPos, 100);
                 return;
             }
@@ -408,24 +436,6 @@ function d3StreakCounter(obj) {
   //          return Reflect.apply(_fetch, window, args);
   //      };
   //  })();
-
-    const _pushState = history.pushState;
-
-    function checkForDuelsHREF(){
-
-        history.pushState = function () {
-            Reflect.apply(_pushState, history, arguments);
-
-            if (!/geoguessr.com.duels/i.test(location.href)) return;
-
-          //  event.trigger('wait for next round');
-
-            //modifySetPos();
-
-            history.pushState = _pushState;
-        };
-
-    }
 
     let waiting = false;
     function waitForEndOfRound() {
@@ -543,7 +553,6 @@ function d3StreakCounter(obj) {
 
             this.menuBody = body;
             
-            let _angle = (Math.PI / 2.5).toFixed(2);
             let innerBody = document.createElement('div');
 
             innerBody.style.cssText = `background: white; min-width:12em; overflow-y:auto;`;
@@ -553,7 +562,7 @@ function d3StreakCounter(obj) {
             header.innerHTML = "Duels 3D Counter";
 
             let table = document.createElement('table');
-            table.id = 'duels3dCounterTable';
+            table.id = '3dCounterTable';
 
             let trScriptDisabled = document.createElement('tr');
             trScriptDisabled.innerHTML = `
@@ -562,47 +571,48 @@ function d3StreakCounter(obj) {
                 `;
 
 
+            let _score = gameInfo.score? gameInfo.score :0;
             let changeGameScore = document.createElement('tr');
             changeGameScore.innerHTML = `
                 <td></td>
-                <td style="border-bottom: 1px solid #ebebeb;"><span>Game Score</span><input id='changeGameScore' type='number' style="width: 4rem; margin-left: 1rem;" value="${gameInfo.score? gameInfo.score :0 }"></td>
+                <td style="border-bottom: 1px solid #ebebeb;"><span>Game Score</span><input id='changeGameScore' type='number' style="width: 4rem; margin-left: 1rem;" value="${_score}"></td>
                 `;
 
             let s1Size = document.createElement('tr');
             s1Size.innerHTML = `
                 <td></td>
-                <td><span>State 1 number font size</span><input id='s1Size' type='number' style="width: 4rem; margin-left: 1rem;" value="${gameInfo.state1Size? gameInfo.state1Size :100 }"></td>
+                <td><span>State 1 number font size</span><input id='s1Size' type='number' style="width: 4rem; margin-left: 1rem;" value="${gameInfo.state1Size}"></td>
                 `;
 
             let s1SpotLightAngle = document.createElement('tr');
             s1SpotLightAngle.style.cssText = `border-bottom: 1px solid grey;`;
             s1SpotLightAngle.innerHTML = `
                 <td></td>
-                <td style="border-bottom: 1px solid #ebebeb;"><span>State 1 spotlight angle (radians)</span><input id='s1SpotLightAngle' type='number' step='0.01' style="width: 4.5rem; margin-left: 1rem;" value="${gameInfo.state1SpotLightAngle? gameInfo.state1SpotLightAngle : _angle }"></td>
+                <td style="border-bottom: 1px solid #ebebeb;"><span>State 1 spotlight angle (radians)</span><input id='s1SpotLightAngle' type='number' step='0.01' style="width: 4.5rem; margin-left: 1rem;" value="${gameInfo.state1SpotLightAngle}"></td>
                 `;
 
             let s2Size = document.createElement('tr');
             s2Size.innerHTML = `
                 <td></td>
-                <td><span>State 2 number font size</span><input id='s2Size' type='number' style="width: 4rem; margin-left: 1rem;" value="${gameInfo.state2Size? gameInfo.state2Size :20 }"></td>
+                <td><span>State 2 number font size</span><input id='s2Size' type='number' style="width: 4rem; margin-left: 1rem;" value="${gameInfo.state2Size}"></td>
                 `;
 
             let s2SpotLightAngle = document.createElement('tr');
             s2SpotLightAngle.innerHTML = `
                 <td></td>
-                <td style="border-bottom: 1px solid #ebebeb;"><span>State 2 spotlight angle (radians)</span><input id='s2SpotLightAngle' type='number' step='0.01' style="width: 4.5rem; margin-left: 1rem;" value="${gameInfo.state2SpotLightAngle? gameInfo.state2SpotLightAngle : _angle }"></td>
+                <td style="border-bottom: 1px solid #ebebeb;"><span>State 2 spotlight angle (radians)</span><input id='s2SpotLightAngle' type='number' step='0.01' style="width: 4.5rem; margin-left: 1rem;" value="${gameInfo.state2SpotLightAngle}"></td>
                 `;
 
             let guessFontSize = document.createElement('tr');
             guessFontSize.innerHTML = `
                 <td></td>
-                <td><span>Guess text font size</span><input id='guessFontSize' type='number' style="width: 4rem; margin-left: 1rem;" value="${gameInfo.guessFontSize? gameInfo.guessFontSize :30 }"></td>
+                <td><span>Guess text font size</span><input id='guessFontSize' type='number' style="width: 4rem; margin-left: 1rem;" value="${gameInfo.guessFontSize}"></td>
                 `;
 
             let guessSpotLightAngle = document.createElement('tr');
             guessSpotLightAngle.innerHTML = `
                 <td></td>
-                <td style="border-bottom: 1px solid #ebebeb;"><span>Guess spotlight angle (radians)</span><input id='guessSpotLightAngle' type='number' step='0.01' style="width: 4.5rem; margin-left: 1rem;" value="${gameInfo.guessSpotLightAngle? gameInfo.guessSpotLightAngle : _angle }"></td>
+                <td style="border-bottom: 1px solid #ebebeb;"><span>Guess spotlight angle (radians)</span><input id='guessSpotLightAngle' type='number' step='0.01' style="width: 4.5rem; margin-left: 1rem;" value="${gameInfo.guessSpotLightAngle}"></td>
                 `;
 
             let guessCorrectText = document.createElement('tr');
@@ -631,6 +641,7 @@ function d3StreakCounter(obj) {
                 `;
 
             let reloadBtn = document.createElement('button');
+            reloadBtn.classList.add('d3StreakBtn');
             reloadBtn.innerHTML = 'Reload';
             reloadBtn.style.cssText = "border: 1px solid grey; margin-left: 1rem; padding: 0.5rem;";
             reloadBtn.addEventListener('click', async ()=>{
@@ -638,6 +649,7 @@ function d3StreakCounter(obj) {
             });
 
             let saveBtn = document.createElement('button');
+            saveBtn.classList.add('d3StreakBtn');
             saveBtn.innerHTML = 'Save';
             saveBtn.style.cssText = "border: 1px solid grey; margin-left: 1rem; padding: 0.5rem;";
             saveBtn.addEventListener('click', async ()=>{
@@ -654,10 +666,43 @@ function d3StreakCounter(obj) {
                 gameInfo.particlesDisabled = !document.getElementById('particlesCheck').checked;
                 gameInfo.particlesAmount = document.getElementById('particlesAmount').value;
                 gameInfo.doExplodeScore = document.getElementById('explodedCheck').checked;
+                
+                if (_3dCounter?.mainScore?.stateObj?.state === 1){
+                    _3dCounter.mainScore.spotLight.angle = +gameInfo.state1SpotLightAngle;
+                    if (_3dCounter.mainScore.stateObj.size !== gameInfo.state1Size){
+                        _3dCounter.mainScore.stateObj.size = gameInfo.state1Size;
+                        _3dCounter.refreshMainScore(_3dCounter.mainScore.stateObj);
+                    }
+                } else if (_3dCounter?.mainScore?.stateObj?.state === 2){
+                    _3dCounter.mainScore.spotLight.angle = +gameInfo.state2SpotLightAngle;
+                    if (_3dCounter.mainScore.stateObj.size !== gameInfo.state2Size){
+                        _3dCounter.mainScore.stateObj.size = gameInfo.state2Size;
+                        _3dCounter.clearRotateScoreContinuous();
+                        _3dCounter.makeState2(gameInfo, gameInfo._score);
+                        //_3dCounter.refreshMainScore(_3dCounter.mainScore.stateObj);
+                    }
+                }
+                
+                if (_score !== gameInfo.score){
+                    _score = gameInfo.score;
+                    event.trigger('reload counter', gameInfo);     
+                }
 
-                localStorage['duelsStreakCounter'] = JSON.stringify(gameInfo);
+                if (_3dCounter?.guessText){
+                    let text = _3dCounter.guessText;
+                    text.spotLight.angle = +gameInfo.guessSpotLightAngle;
+                    
+                    if (text.textStyle.size !== +gameInfo.guessFontSize
+                        || text.stateObj.guessCorrectText !== gameInfo.guessCorrectText
+                        || text.stateObj.guessIncorrectText !== gameInfo.guessIncorrectText){
+                        text.remove();
+                        _3dCounter.makeGuessText(gameInfo);
+                    } 
+                }
 
-                msg.innerText = "Saved....";
+                localStorage['d3StreakCounter'] = JSON.stringify(gameInfo);
+
+                msg.innerText = "Saved. May need to reload counter.";
                 if (gameInfo.scriptDisabled){
                     event.trigger('script disabled');
                 } else if (!gameInfo.scriptDisabled && !_3dCounter){
@@ -743,7 +788,7 @@ function d3StreakCounter(obj) {
                     gameInfo.x = evt.x - xx;
                     gameInfo.y = evt.y + yy;
 
-                    localStorage['duelsStreakCounter'] = JSON.stringify(gameInfo);
+                    localStorage['d3StreakCounter'] = JSON.stringify(gameInfo);
                 }
             });
         },
@@ -866,7 +911,7 @@ function d3StreakCounter(obj) {
                height: unsafeWindow.innerHeight 
             };
 
-            this.targetRotation = 0;
+            this.targetRotationY = 0;
             this.targetRotationX = 0;
 
             this.container = document.createElement( 'div' );
@@ -905,7 +950,7 @@ function d3StreakCounter(obj) {
 
             this.loadFont();
 
-            this.makeState1();
+            this.makeNormalState1();
 
             // LINE FOR DRAWING ON SCREEN
             this.makeLine();
@@ -962,8 +1007,9 @@ function d3StreakCounter(obj) {
                         this._updateAnimation();
                     }
 
-                   this?.guessText?.remove();
-                    this.makeState1();
+                    this?.guessText?.remove();
+
+                    this.makeNormalState1();
                 }
             }));
 
@@ -974,8 +1020,10 @@ function d3StreakCounter(obj) {
                         this._updateAnimation();
                     }
 
-                   setTimeout(this?.guessText?.remove(), 1_000);;
-                    this.makeState1();
+                    setTimeout(this?.guessText?.remove(), 1_000);;
+                    
+                    this.makeNormalState1();
+
                 }
             }));
             
@@ -1149,7 +1197,7 @@ function d3StreakCounter(obj) {
 
                 this.mainScore.spotLight.color.setHSL(hue % 1 , this.HSLColor.l, this.HSLColor.s);
 
-                this.targetRotation += 0.055;
+                this.targetRotationY += 0.055;
             }, 50);
         }
 
@@ -1226,7 +1274,7 @@ function d3StreakCounter(obj) {
            this.scene.add( this.line );
         }
 
-        createText(text, textStyle) {
+        createText(text, textStyle, dontAddGroupToScene) {
             const _this = this;
             let tarray = Array.from(text);
 
@@ -1239,7 +1287,7 @@ function d3StreakCounter(obj) {
                 this.group._height = 0;
                 this.group._spaces = 0;
 
-                _this.scene.add( this.group );
+                if (!dontAddGroupToScene) _this.scene.add( this.group );
 
                 tarray.forEach(function(letter, idx) {
                     if (letter == ' '){
@@ -1331,7 +1379,7 @@ function d3StreakCounter(obj) {
             }
         }
 
-        makeMainScore(stateObj){
+        makeMainScore(stateObj, dontAddGroupToScene){
 
             let textStyle = {
                 size : stateObj.size, //100, //+localStorage['3dTextSize'] || 200,
@@ -1347,7 +1395,7 @@ function d3StreakCounter(obj) {
 
             let score = stateObj.score !== undefined? stateObj.score: this.mainScoreNum;
 
-            this.mainScore = this.createText(this.mainScoreNum, textStyle);//"You guessed 'United States', unfortunately it was Russian Federation", textStyle);
+            this.mainScore = this.createText(this.mainScoreNum, textStyle, dontAddGroupToScene);//"You guessed 'United States', unfortunately it was Russian Federation", textStyle);
 
             this.mainScore.textStyle = textStyle;
 
@@ -1372,9 +1420,10 @@ function d3StreakCounter(obj) {
                 if (this.mainScore._particlePoints){
                     this.scene.remove( this.mainScore._particlePoints);
                 }
-                this.mainScore = null;
 
+                this.mainScore = null;
             };
+
 console.log('main score angle', stateObj.spotLightAngle);
 
             this.mainScore.spotLight =new this.THREE.SpotLight(
@@ -1419,8 +1468,17 @@ console.log('main score angle', stateObj.spotLightAngle);
                 this.makeParticles(this.mainScore);
             }
         }
+        
+        makeNormalState1(){
+            this.targetRotationY = 0;
+            this.targetRotationX = 0;
 
-        makeState1(){
+            this.makeState1("don't add to scene");
+
+            this.smoothLandingAnimation(this.mainScore.group, this.mainScore.spotLight, 5, "add to scene");
+        }
+
+        makeState1(dontAddGroupToScene){
             this.mainScore?.remove();
 
             let state1_Obj = {};
@@ -1428,10 +1486,10 @@ console.log('main score angle', stateObj.spotLightAngle);
             state1_Obj.state = 1;
 
             let _size = this?.gameInfo?.state1Size === undefined? 100: this?.gameInfo?.state1Size;
-            let spotLightAngle = this?.gameInfo?.state1SpotLightAngle;
+            let spotLightAngle = this?.gameInfo?.state1SpotLightAngle || (Math.PI/2.5);
 
             state1_Obj.size = _size <= 0? 0: _size;
-            state1_Obj.spotLightAngle = spotLightAngle == undefined ? (Math.PI/2.5) : +spotLightAngle;
+            state1_Obj.spotLightAngle = +spotLightAngle;
             state1_Obj.x = this?.gameInfo?.state1XY?.x || 10;
             state1_Obj.y = this?.gameInfo?.state1XY?.y || 10;
             
@@ -1445,10 +1503,10 @@ console.log('main score angle', stateObj.spotLightAngle);
 
             state1_Obj.setXY = (x, y) =>{
                 this.gameInfo.state1XY = {x, y};
-                localStorage.setItem("duelsStreakCounter",JSON.stringify(this.gameInfo));
+                localStorage.setItem("d3StreakCounter",JSON.stringify(this.gameInfo));
             }
 
-            this.makeMainScore(state1_Obj);
+            this.makeMainScore(state1_Obj, dontAddGroupToScene);
         }
 
         makeState2(obj, prevScore){
@@ -1476,20 +1534,56 @@ console.log('main score angle', stateObj.spotLightAngle);
 
             state2_Obj.setXY = (x, y) =>{
                 this.gameInfo.state2XY = {x, y};
-                localStorage.setItem("duelsStreakCounter",JSON.stringify(this.gameInfo));
+                localStorage.setItem("d3StreakCounter",JSON.stringify(this.gameInfo));
             }
 
             if (obj.curRound.isCorrectCountry == false){
                 state2_Obj.score = prevScore;
                 this.makeMainScore(state2_Obj);
                 this.rotateScoreContinuous();
-                return;
+                //this.smoothLandingAnimation(this.mainScore.group, this.mainScore.spotLight, 100);
             } else{
 
                 state2_Obj.score = obj.score;
 
-                setTimeout(()=> this._updateAnimation(state2_Obj), 100);
+                setTimeout(()=>{
+                    this._updateAnimation(state2_Obj);
+                    this.smoothLandingAnimation(this.mainScore.group, this.mainScore.spotLight, 100);
+                }, 100);
+                
             }
+        }
+       
+        smoothLandingAnimation(group, spotLight, offSetY, addToScene){
+            const zy = group.position.y + offSetY;
+            let zi = 0;
+
+            group.position.y = zy
+
+            if (addToScene) this.scene.add(group); 
+            //spotLight.intensity = 0.7;
+
+            let p = setInterval(()=>{
+                         // Ease down animation because it looks good.
+                         let ease = this.easeOutCubic(zi) ;
+                      
+                         group.position.y = zy - (ease * offSetY);
+
+                         spotLight.target.position.y = group.position.y;
+                         spotLight.position.y = group.position.y;
+             //            spotLight.intensity = 0.8 + (ease * 0.2);
+
+                         if (zi >= 1) {
+                             clearInterval(p);
+                             return;
+                         }
+
+                         zi += 0.01; 
+                     }, 10);
+        }
+        
+        easeOutCubic(x) {
+            return 1 - Math.pow(1 - x, 3);
         }
 
         makeGuessText(obj){
@@ -1514,11 +1608,11 @@ console.log('main score angle', stateObj.spotLightAngle);
 
             if (obj.curRound.isCorrectCountry){
 
-                text = this.gameInfo.guessCorrectText || "Message not set by player.";
+                text = this.gameInfo.guessCorrectText || "YAY! $2!"; //"Message not set by player.";
 
             } else {
 
-                text = this.gameInfo.guessIncorrectText || "Message not set by player.";
+                text = this.gameInfo.guessIncorrectText || "Spawn: $2. You clicked on: $1. Old score: $3"; //"Message not set by player.";
 
             }
 
@@ -1540,7 +1634,7 @@ console.log('main score angle', stateObj.spotLightAngle);
 
                  _this.gameInfo.answerTextXY = {x, y};
 
-                localStorage.setItem("duelsStreakCounter",JSON.stringify(_this.gameInfo));
+                localStorage.setItem("d3StreakCounter",JSON.stringify(_this.gameInfo));
             }
 
             this.guessText.isCorrectCountry = obj.curRound.isCorrectCountry;
@@ -1643,19 +1737,22 @@ console.log('main score angle', stateObj.spotLightAngle);
             : fn;
             this.targetRotationX = fn( this.targetRotationX / (Math.PI * 2)) * 2 * Math.PI;
 
-            fn = Math.abs(this.targetRotation) % (Math.PI * 2) >= 3.14? Math.ceil: Math.floor;
-            fn = this.targetRotation < 0?
+            fn = Math.abs(this.targetRotationY) % (Math.PI * 2) >= 3.14? Math.ceil: Math.floor;
+            fn = this.targetRotationY < 0?
                 fn === Math.ceil ? Math.floor : Math.ceil
             : fn;
-            this.targetRotation = fn( this.targetRotation/ (Math.PI * 2)) * 2 * Math.PI;
+            this.targetRotationY = fn( this.targetRotationY/ (Math.PI * 2)) * 2 * Math.PI;
         }
 
         async _updateAnimation(stateObj){
-            this.targetRotation  = 0;
+            this.targetRotationY  = 0;
             this.targetRotationX = 0;
             this._flickAnimation();
-            if (stateObj)
+
+            if (stateObj){
                 this.refreshMainScore(stateObj);
+            }
+            
             if (this.mainScoreNum == '0') return;
 
             if (this.gameInfo?.doExplodeScore){
@@ -1672,11 +1769,11 @@ console.log('main score angle', stateObj.spotLightAngle);
 
             this.targetRotationX = fn( this.targetRotationX/ (Math.PI * 2)) * 2 * Math.PI + (Math.PI * 2) * 2;
 
-            fn = Math.abs(this.targetRotation) % (Math.PI * 2) >= 3.14? Math.ceil: Math.floor;
-            fn = this.targetRotation < 0?
+            fn = Math.abs(this.targetRotationY) % (Math.PI * 2) >= 3.14? Math.ceil: Math.floor;
+            fn = this.targetRotationY < 0?
                 fn === Math.ceil? Math.floor : Math.ceil
             : fn;
-            this.targetRotation = fn( this.targetRotation/ (Math.PI * 2)) * 2 * Math.PI + (Math.PI * 2) *1;
+            this.targetRotationY = fn( this.targetRotationY/ (Math.PI * 2)) * 2 * Math.PI + (Math.PI * 2) *1;
             return true;
         }
 
@@ -1700,7 +1797,7 @@ console.log('main score angle', stateObj.spotLightAngle);
                 pointerXOnPointerDown = mainEvent.clientX - unsafeWindow.innerWidth/2;
                 pointerYOnPointerDown = mainEvent.clientY - unsafeWindow.innerHeight/2;
 
-                targetRotationOnPointerDown = _this.targetRotation;
+                targetRotationOnPointerDown = _this.targetRotationY;
                 targetRotationOnPointerDownX = _this.targetRotationX;
 
                 document.addEventListener( 'pointermove', onPointerMove );
@@ -1718,7 +1815,7 @@ console.log('main score angle', stateObj.spotLightAngle);
                     _this.mouseIsMoving = true;
                 }
 
-                _this.targetRotation = targetRotationOnPointerDown + ( pointerX - pointerXOnPointerDown ) * 0.02;
+                _this.targetRotationY = targetRotationOnPointerDown + ( pointerX - pointerXOnPointerDown ) * 0.02;
                 _this.targetRotationX = targetRotationOnPointerDownX + ( pointerY - pointerYOnPointerDown) * 0.02;
             };
 
@@ -2059,7 +2156,7 @@ console.log('main score angle', stateObj.spotLightAngle);
         }
 
         render() {
-            this.mainScore.group.rotation.y += ( this.targetRotation -  this.mainScore.group.rotation.y ) * 0.05;
+            this.mainScore.group.rotation.y += ( this.targetRotationY -  this.mainScore.group.rotation.y ) * 0.05;
             this.mainScore.group.rotation.x += ( this.targetRotationX - this.mainScore.group.rotation.x ) * 0.05;
 
             this.raycaster.setFromCamera(this.pointer, this.camera );
@@ -2106,7 +2203,7 @@ console.log('main score angle', stateObj.spotLightAngle);
 
             this.gameInfo.state1XY.y = (percenty * unsafeWindow.innerHeight) - (unsafeWindow.innerHeight / 2);
 
-            localStorage.setItem("duelsStreakCounter", JSON.stringify(this.gameInfo));
+            localStorage.setItem("d3StreakCounter", JSON.stringify(this.gameInfo));
 
             this.unload();
 
@@ -2126,7 +2223,7 @@ console.log('main score angle', stateObj.spotLightAngle);
 
                     if (confirm('Do you want to delete your setting for 3D Duels Streak Counter?')){
 
-                        delete localStorage['duelsStreakCounter'];
+                        delete localStorage['d3StreakCounter'];
                     
                     }
                 }
