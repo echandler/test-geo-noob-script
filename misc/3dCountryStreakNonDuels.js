@@ -71,8 +71,6 @@ unsafeWindow.__map = obj.map;
         function roundEndFn(state) {
             if (Date.now() < roundStartTime + 1000) return;
 
-            console.log(document.elementFromPoint(0,0).nodeName);
-           // console.log("end round event called", state, state.detail.round_in_progress);
             event.trigger('between rounds');
         }
         
@@ -94,7 +92,6 @@ unsafeWindow.__map = obj.map;
         }
 
         function createRoundEndFn(){
-            console.log('create round end function');
             GEF.events.addEventListener("round_end", roundEndFn);
             _createRoundEndListener = function(){};
         }
@@ -319,11 +316,17 @@ unsafeWindow.__map = obj.map;
 
         event.addListener('update correct score', ()=>{
             gameInfo.score += 1;
+
+            localStorage.setItem("d3StreakCounter",JSON.stringify(gameInfo));
+
             unsafeWindow._evt.fire('update streak', gameInfo);
         });
 
         event.addListener('update incorrect score', ()=>{
             gameInfo.score = 0;
+            
+            localStorage.setItem("d3StreakCounter",JSON.stringify(gameInfo));
+
             unsafeWindow._evt.fire('update streak', gameInfo);
         });
 
@@ -653,6 +656,7 @@ unsafeWindow.__map = obj.map;
             saveBtn.innerHTML = 'Save';
             saveBtn.style.cssText = "border: 1px solid grey; margin-left: 1rem; padding: 0.5rem;";
             saveBtn.addEventListener('click', async ()=>{
+                let _gameInfo = {...gameInfo};
                 gameInfo.score = +document.getElementById('changeGameScore').value;
                 gameInfo.scriptDisabled = document.getElementById('disableScriptCheck1').checked;
                 gameInfo.state1SpotLightAngle = document.getElementById('s1SpotLightAngle').value;
@@ -683,8 +687,18 @@ unsafeWindow.__map = obj.map;
                     }
                 }
                 
-                if (_score !== gameInfo.score){
-                    _score = gameInfo.score;
+                if (_gameInfo.particlesAmount !== gameInfo.particlesAmount
+                    || _gameInfo.particlesDisabled !== gameInfo.particlesDisabled){
+
+                    if (_gameInfo.particlesDisabled !== gameInfo.particlesDisabled){
+                        event.trigger('reload counter', gameInfo);     
+                    } else if (gameInfo.particlesDisabled === false){
+                        // No need to reload if particles are disabled.
+                        event.trigger('reload counter', gameInfo);     
+                    }
+                }
+
+                if (_gameInfo.score !== gameInfo.score){
                     event.trigger('reload counter', gameInfo);     
                 }
 
@@ -703,6 +717,7 @@ unsafeWindow.__map = obj.map;
                 localStorage['d3StreakCounter'] = JSON.stringify(gameInfo);
 
                 msg.innerText = "Saved. May need to reload counter.";
+
                 if (gameInfo.scriptDisabled){
                     event.trigger('script disabled');
                 } else if (!gameInfo.scriptDisabled && !_3dCounter){
@@ -983,7 +998,7 @@ unsafeWindow.__map = obj.map;
             addEventListener('resize', resizefn);
 
             this.events.push(unsafeWindow._evt.on('update streak', (obj)=>{
-
+                
                 obj._score = this.mainScoreNum;
 
                 this.makeState2(obj, this.mainScoreNum);
@@ -997,7 +1012,7 @@ unsafeWindow.__map = obj.map;
                 this.makeGuessText(obj);
 
                 this.mainScoreNum = num + '';
-                console.log('sdfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'); 
+
             }));
 
             this.events.push(unsafeWindow._evt.on('wait for end of round', (obj)=>{
@@ -1423,8 +1438,6 @@ unsafeWindow.__map = obj.map;
 
                 this.mainScore = null;
             };
-
-console.log('main score angle', stateObj.spotLightAngle);
 
             this.mainScore.spotLight =new this.THREE.SpotLight(
                 /*color*/ 0xffffff,
@@ -2188,7 +2201,9 @@ console.log('main score angle', stateObj.spotLightAngle);
                 this.renderer.render( this.correctGuessAnimation.scene, this.correctGuessAnimation.camera );
             }
 
-            this?.mainScore?.backGroundPulsing();
+            if (this?.mainScore?.backGroundPulsing){
+                this.mainScore.backGroundPulsing();
+            }
         }
 
         resetScene(){
@@ -2288,7 +2303,6 @@ async function downloadSGS(){
         
     async function run() {
     	for await (const line of makeTextFileLineIterator(url)) {
-    		//console.log(line);
     		code += line +"\n";
     	}
         localStorage['SGSCode'] = code;
