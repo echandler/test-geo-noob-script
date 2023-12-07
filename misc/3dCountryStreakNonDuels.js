@@ -119,6 +119,7 @@ unsafeWindow.__map = obj.map;
                             doExplodeScore: false,
                             guessCorrectText : "YAY! $2!",
                             guessIncorrectText: "Spawn: $2. You clicked on: $1. Old score: $3",
+                            guessAnimation: true,
                             state1Size: 100,
                             state1SpotLightAngle: 0.5,
                             state2XY : {x: 0, y: 0},
@@ -535,6 +536,7 @@ unsafeWindow.__map = obj.map;
     let menu ={
         menuBody: null,
         opened: false,
+        updateStreakListener: null,
         open: function(){
             if (this.opened) {
                 this.close();
@@ -580,6 +582,12 @@ unsafeWindow.__map = obj.map;
                 <td></td>
                 <td style="border-bottom: 1px solid #ebebeb;"><span>Game Score</span><input id='changeGameScore' type='number' style="width: 4rem; margin-left: 1rem;" value="${_score}"></td>
                 `;
+
+            this.updateStreakListener = unsafeWindow._evt.on('update streak', (obj)=>{
+               setTimeout(()=>{
+                   document.getElementById("changeGameScore").value = gameInfo.score;
+               }, 100);
+            })
 
             let s1Size = document.createElement('tr');
             s1Size.innerHTML = `
@@ -627,7 +635,13 @@ unsafeWindow.__map = obj.map;
             let guessIncorrectText = document.createElement('tr');
             guessIncorrectText.innerHTML = `
                 <td></td>
-                <td style="border-bottom: 1px solid #ebebeb;"><span>Incorrect guess text </span><input id='guessIncorrectText' type='text' style="margin-left: 1rem;" value="${gameInfo.guessIncorrectText || "Spawn: $2. You clicked on: $1. Old score: $3" }"></td>
+                <td ><span>Incorrect guess text </span><input id='guessIncorrectText' type='text' style="margin-left: 1rem;" value="${gameInfo.guessIncorrectText || "Spawn: $2. You clicked on: $1. Old score: $3" }"></td>
+                `;
+
+            let guessAnimation = document.createElement('tr');
+            guessAnimation.innerHTML = `
+                <td></td>
+                <td style="border-bottom: 1px solid #ebebeb;"><label><input id='guessAnimation' type='checkbox' ${(gameInfo.guessAnimation ? "checked" : "")}><span style='margin-left: 1rem;'>Guess text animation at end of round.</span></label>
                 `;
 
             let particles = document.createElement('tr');
@@ -667,10 +681,12 @@ unsafeWindow.__map = obj.map;
                 gameInfo.guessSpotLightAngle = document.getElementById('guessSpotLightAngle').value;
                 gameInfo.guessCorrectText = document.getElementById('guessCorrectText').value;
                 gameInfo.guessIncorrectText = document.getElementById('guessIncorrectText').value;
+                gameInfo.guessAnimation = document.getElementById('guessAnimation').value;
                 gameInfo.particlesDisabled = !document.getElementById('particlesCheck').checked;
                 gameInfo.particlesAmount = document.getElementById('particlesAmount').value;
                 gameInfo.doExplodeScore = document.getElementById('explodedCheck').checked;
                 
+                    debugger;
                 if (_3dCounter?.mainScore?.stateObj?.state === 1){
                     _3dCounter.mainScore.spotLight.angle = +gameInfo.state1SpotLightAngle;
                     if (_3dCounter.mainScore.stateObj.size !== gameInfo.state1Size){
@@ -751,6 +767,7 @@ unsafeWindow.__map = obj.map;
             table.appendChild(guessSpotLightAngle);
             table.appendChild(guessCorrectText);
             table.appendChild(guessIncorrectText);
+            table.appendChild(guessAnimation);
             table.appendChild(particles);
             table.appendChild(exploded);
 
@@ -811,6 +828,7 @@ unsafeWindow.__map = obj.map;
             this.opened = false;
             document.body.removeChild(this.menuBody);
             this.menuBody = null;
+            unsafeWindow._evt.off(this.updateStreakListener);
         },
     };
 
@@ -1289,7 +1307,7 @@ unsafeWindow.__map = obj.map;
            this.scene.add( this.line );
         }
 
-        createText(text, textStyle, dontAddGroupToScene) {
+        createText(text, textStyle, dontAddGroupToScene, doRotateAni) {
             const _this = this;
             let tarray = Array.from(text);
 
@@ -1304,10 +1322,13 @@ unsafeWindow.__map = obj.map;
 
                 if (!dontAddGroupToScene) _this.scene.add( this.group );
 
+                __this.textArray = [];
+
                 tarray.forEach(function(letter, idx) {
                     if (letter == ' '){
                         __this.group._spaces += 1;
                     }
+                    
                     const textGeo = new _this.TextGeometry( letter, {
                         font: textStyle.font,
                         size: textStyle.size ,
@@ -1315,10 +1336,12 @@ unsafeWindow.__map = obj.map;
                         curveSegments: textStyle.curveSegments * 4,
                         bevelThickness: textStyle.bevelThickness,
                         bevelSize: 15 * (textStyle.size / unsafeWindow.innerHeight), //_this.bevelSize * (unsafeWindow.innerHeighth),
-                        bevelEnabled: textStyle.bevelEnabled
+                        bevelEnabled: textStyle.bevelEnabled,
                     } );
-                    
-                    __this.textGeo = textGeo;
+
+                    textGeo.letter = letter;
+
+                    __this.textArray.push(textGeo);
 
                     textGeo.attributes.position._array = new Float32Array(textGeo.attributes.position.array);
 
@@ -1327,7 +1350,8 @@ unsafeWindow.__map = obj.map;
                     let centerOffsetX = -0.5 * ( textGeo.boundingBox.max.x + textGeo.boundingBox.min.x );
                     let centerOffsetY = -0.5 * ( textGeo.boundingBox.max.y + textGeo.boundingBox.min.y );
 
-                    let xy = _this.renderer.getSize();
+                    let xy = new _this.THREE.Vector2();
+                    _this.renderer.getSize(xy);
 
                     const materials = [
                         new _this.THREE.MeshPhongMaterial( { color: 0xffffff, flatShading: true } ), // front
@@ -1336,10 +1360,12 @@ unsafeWindow.__map = obj.map;
 
                     const textMesh = new _this.THREE.Mesh( textGeo, materials );
 
+                    textGeo._textMesh = textMesh;
+
                     textMesh._offSetX = centerOffsetX;
                     textMesh._offSetY = centerOffsetY;
 
-                    textMesh.position.x = 0; //-50 + 1 * 40 * idx - 2 * idx * idx; //centerOffsetX;
+                    textMesh.position.x = textStyle.size/2; //-50 + 1 * 40 * idx - 2 * idx * idx; //centerOffsetX;
 
                     const code = letter.charCodeAt(0);
                     textMesh.position.y = (code > 64 && code < 91) || (code > 96 && code < 123) || (code > 32 && code < 65) ||(letter >= '0' && letter <= '9') ? centerOffsetY : -10;
@@ -1350,8 +1376,9 @@ unsafeWindow.__map = obj.map;
 
                     textMesh.rotation.x = 0;
                     textMesh.rotation.y = 0;//Math.PI * 2;
-
+                     
                     textMesh._width = textGeo.boundingBox.max.x - textGeo.boundingBox.min.x;
+
                     if (textMesh._width == -Infinity){
                         textMesh._width = 0;
                     }
@@ -1409,7 +1436,7 @@ unsafeWindow.__map = obj.map;
             };
 
             let score = stateObj.score !== undefined? stateObj.score: this.mainScoreNum;
-
+            
             this.mainScore = this.createText(this.mainScoreNum, textStyle, dontAddGroupToScene);//"You guessed 'United States', unfortunately it was Russian Federation", textStyle);
 
             this.mainScore.textStyle = textStyle;
@@ -1492,6 +1519,7 @@ unsafeWindow.__map = obj.map;
         }
 
         makeState1(dontAddGroupToScene){
+            let _this = this;
             this.mainScore?.remove();
 
             let state1_Obj = {};
@@ -1513,9 +1541,14 @@ unsafeWindow.__map = obj.map;
             if (state1_Obj.y > unsafeWindow.innerHeight/2 || state1_Obj.y < -(unsafeWindow.innerHeight/2)){
                 state1_Obj.y = 0;
             }
+            
+            state1_Obj._obj = state1_Obj;
 
-            state1_Obj.setXY = (x, y) =>{
-                this.gameInfo.state1XY = {x, y};
+            state1_Obj.setXY = function(x, y) {
+                _this.gameInfo.state1XY = {x, y};
+                this.stateObj.x = x;
+                this.stateObj.y = y;
+
                 localStorage.setItem("d3StreakCounter",JSON.stringify(this.gameInfo));
             }
 
@@ -1566,7 +1599,65 @@ unsafeWindow.__map = obj.map;
                 
             }
         }
-       
+        
+        rotateJam(textArray){
+            let t = 0;
+            let l = 1500 /*milliseconds*/ / textArray.length;
+            let PI2 = Math.PI * 2;
+
+            textArray.forEach((letter)=>{
+                let textMesh = letter._textMesh;
+                
+                if (true){
+                    let pos = textMesh.position;
+                    let rot = textMesh.rotation;
+                    let rotNum = 0;
+
+                    setTimeout(()=>{
+                        let inter = setInterval(()=>{
+                             rotNum += 0.01;
+                             rot.y = this.easeOutCubic(rotNum) * PI2; 
+
+                            if (rot.y > PI2){
+                                rot.y = 0;
+                                clearInterval(inter);
+                            }
+                        }, 10);
+                    }, t);
+
+                    t += l;
+
+                }
+            });
+        }
+
+      //  letterJam(textArray){
+      //      let t = 0;
+
+      //      textArray.forEach((letter)=>{
+      //          let textMesh = letter._textMesh;
+      //          if (true){
+      //              let pos = textMesh.position;
+      //              let rot = textMesh.rotation;
+      //              let rotNum = 1;
+
+      //              setTimeout(()=>{
+      //                  let inter = setInterval(()=>{
+      //                     if (pos.y - pos._y > 2){
+      //                         pos.y = pos._y;
+      //                         return;
+      //                     }
+
+      //                     pos.y += 0.3;
+      //                  }, 10);
+      //              }, t + Math.random() * 2000);
+
+      //              t += 30;
+      //          }
+      //      });
+      //  }
+
+
         smoothLandingAnimation(group, spotLight, offSetY, addToScene){
             const zy = group.position.y + offSetY;
             let zi = 0;
@@ -1637,7 +1728,16 @@ unsafeWindow.__map = obj.map;
             pinIdx = text.indexOf(pin);
             spawnIdx = text.indexOf(spawn);
 
-            this.guessText = this.createText(text, textStyle);//"You guessed 'United States', unfortunately it was Russian Federation", textStyle);
+            this.guessText = this.createText(text, textStyle, false);//"You guessed 'United States', unfortunately it was Russian Federation", textStyle);
+          
+            if (obj.guessAnimation){
+               if (obj.curRound.isCorrectCountry){
+                   this.rotateJam(this.guessText.textArray);
+               } else {
+                   this.rotateJam(this.guessText.textArray);
+                   //this.letterJam(this.guessText.textArray);
+               }
+            }
 
             this.guessText.textStyle = textStyle;
             this.guessText.stateObj = {...obj};
