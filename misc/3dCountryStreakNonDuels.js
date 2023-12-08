@@ -681,11 +681,11 @@ unsafeWindow.__map = obj.map;
                 gameInfo.guessSpotLightAngle = document.getElementById('guessSpotLightAngle').value;
                 gameInfo.guessCorrectText = document.getElementById('guessCorrectText').value;
                 gameInfo.guessIncorrectText = document.getElementById('guessIncorrectText').value;
-                gameInfo.guessAnimation = document.getElementById('guessAnimation').value;
+                gameInfo.guessAnimation = document.getElementById('guessAnimation').checked;
                 gameInfo.particlesDisabled = !document.getElementById('particlesCheck').checked;
                 gameInfo.particlesAmount = document.getElementById('particlesAmount').value;
                 gameInfo.doExplodeScore = document.getElementById('explodedCheck').checked;
-                
+
                 if (_3dCounter?.mainScore?.stateObj?.state === 1){
                     _3dCounter.mainScore.spotLight.angle = +gameInfo.state1SpotLightAngle;
                     if (_3dCounter.mainScore.stateObj.size !== gameInfo.state1Size){
@@ -1064,7 +1064,7 @@ unsafeWindow.__map = obj.map;
                 _3dCounter = new make3DCounter(); 
             }));
 
-            this.resetLocalStorage();
+           // this.resetLocalStorage();
         }
 
         makeCamera(){
@@ -1125,7 +1125,7 @@ unsafeWindow.__map = obj.map;
                 
                         _this.linePoints.push(new _this.THREE.Vector3(p.x, p.y, 0));
                 
-                       _this.line.geometry.setFromPoints(_this.linePoints);
+                        _this.line.geometry.setFromPoints(_this.linePoints);
                 
                     }
 
@@ -1728,7 +1728,7 @@ unsafeWindow.__map = obj.map;
             spawnIdx = text.indexOf(spawn);
 
             this.guessText = this.createText(text, textStyle, false);//"You guessed 'United States', unfortunately it was Russian Federation", textStyle);
-          
+
             if (obj.guessAnimation){
                if (obj.curRound.isCorrectCountry){
                    this.rotateJam(this.guessText.textArray);
