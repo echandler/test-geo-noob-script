@@ -748,6 +748,12 @@ unsafeWindow.__map = obj.map;
                 msg.innerText='';
             });
 
+            let videoInstructions = document.createElement('a');
+            videoInstructions.innerText = "Video instructions!";
+            videoInstructions.style.cssText = `color: blue; display: block; margin-left: 1rem; padding: 0.5rem;`;
+            videoInstructions.target = "_blank";
+            videoInstructions.href = "https://www.youtube.com/watch?v=gDn6oQ7pMmQ";
+
             let closeBtn = document.createElement('div');
             closeBtn.style = 'position:absolute; right: 10px; top:10px; cursor: pointer;';
             closeBtn.innerText = 'X';
@@ -778,6 +784,7 @@ unsafeWindow.__map = obj.map;
             body.appendChild(reloadBtn);
             body.appendChild(saveBtn);
             body.appendChild(msg);
+            body.appendChild(videoInstructions);
             body.appendChild(closeBtn);
 
             document.body.appendChild(body);
