@@ -686,7 +686,6 @@ unsafeWindow.__map = obj.map;
                 gameInfo.particlesAmount = document.getElementById('particlesAmount').value;
                 gameInfo.doExplodeScore = document.getElementById('explodedCheck').checked;
                 
-                    debugger;
                 if (_3dCounter?.mainScore?.stateObj?.state === 1){
                     _3dCounter.mainScore.spotLight.angle = +gameInfo.state1SpotLightAngle;
                     if (_3dCounter.mainScore.stateObj.size !== gameInfo.state1Size){
