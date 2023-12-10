@@ -1,3 +1,4 @@
+
 async function satelliteView(obj) {
     let map = null;
     let mapContainer = null;
@@ -94,13 +95,14 @@ async function satelliteView(obj) {
         if (bounds){
 
             const _bounds = getBBox2(pinLocation, bounds * 1000);
+
             const northEast = new google.maps.LatLng(_bounds[0], _bounds[3]);
             const southWest = new google.maps.LatLng(_bounds[2], _bounds[1]);
             const BOUNDS = new google.maps.LatLngBounds(southWest, northEast);
 
             map.setRestriction({
                 latLngBounds: BOUNDS, //BOUNDS,
-                strictBounds: false,
+                strictBounds: true,
             });
         }
         
@@ -205,5 +207,4 @@ setInterval(function () {
                 canvas.__n = true;
             }
  }, 2000);
-
 
