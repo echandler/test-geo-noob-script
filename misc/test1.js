@@ -300,9 +300,10 @@ function listenForApiFetch(json){
         setTimeout(()=>{
             const guessBtn = document.querySelector(`[data-qa="perform-guess"]`);
             guessBtn.addEventListener("click", async ()=>{
-                const info = await fetchGameInfo(json.map).then(res => res.json());
+                setTimeout(()=>{
+                const info = await fetchGameInfo(json.token).then(res => res.json());
                 console.log("rsfsdfsd", info);
-
+                }, 500);
             });
         }, 2000)
     }
