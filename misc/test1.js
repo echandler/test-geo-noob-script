@@ -296,6 +296,16 @@ function listenForApiFetch(json){
     if (ls && json.state === 'finished'){
         handleEndOfGame(json);
     }
+    if (ls && json.round === 5){
+        setTimeout(()=>{
+            const guessBtn = document.querySelector(`[data-qa="perform-guess"]`);
+            guessBtn.addEventListener("click", async ()=>{
+                const info = await fetchGameInfo(json.map).then(res => res.json());
+                console.log("rsfsdfsd", info);
+
+            });
+        }, 2000)
+    }
 }
 
 function handleEndOfGame(json){
@@ -467,8 +477,8 @@ setInterval(()=>{
 
         })
     }, 1000);
-debugger;
-        window.fetch = (function () {
+
+        window._fetch = (function () {
             let _fetch = window.fetch;
             return async function (...args) {
                 if (!/geoguessr.com.(challenge|game)/i.test(location.href)) {
