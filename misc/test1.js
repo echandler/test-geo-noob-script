@@ -12,6 +12,7 @@
 // ==/UserScript==
 
 const menuButton = document.createElement('button');
+menuButton.id = "RMC_menu_button";
 menuButton.innerHTML = "Start new Random Map Challenge!";
 menuButton.style.cssText = "position: absolute; bottom: 5px; padding: 0.625em 1.1em; left: 1em; cursor: pointer; z-index: 999999999; background: #DAD667; border-radius: 5px;"
 menuButton.addEventListener('click', menuBtnClickHandler);
@@ -58,7 +59,7 @@ if (ls) {
                 }
             },
             html: `
-            <div class="_rmc_header" >Radom Map Challenge Progress</div>
+            <div class="_rmc_header" >Random Map Challenge Progress</div>
             <div id="_alert" style="color: red; display: none;">
                 Challenge doesn't start until you start playing your first game!
             </div>
@@ -114,7 +115,7 @@ function menuBtnClickHandler(){
             handlerPopup(p);
         },
         html: `
-            <div class="_rmc_header">Radom Map Challenge</div>
+            <div class="_rmc_header">Random Map Challenge</div>
             
             <div class="_challengeSpecs">
                 <div>
@@ -418,7 +419,7 @@ function handleEndOfGame(json){
 
         },
         html: `
-            <div class="_rmc_header">Radom Map Challenge</div>
+            <div class="_rmc_header">Random Map Challenge</div>
             <div id="_alert" style="color: red; display: none;">
                 Need to replay map to continue!
                 <div id="_alertExplanation">
@@ -471,7 +472,7 @@ setInterval(()=>{
 
         },
         html: `
-            <div class="_rmc_header"  >Radom Map Challenge Final Score!</div>
+            <div class="_rmc_header"  >Random Map Challenge Final Score!</div>
             <div id="_alert" style="background-color: #00800030; padding:1em; color: green; font-size: 1.2em; margin: 1em 0em;">
                 Challenge has ended! Your score is ${ls.maps.length}!
             </div>
