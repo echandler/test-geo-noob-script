@@ -471,8 +471,8 @@ setInterval(()=>{
 
         },
         html: `
-            <div class="_rmc_header" >Radom Map Challenge Final Score!</div>
-            <div id="_alert" style="color: green; font-size: 1.2em; margin: 1em 0em;">
+            <div class="_rmc_header"  >Radom Map Challenge Final Score!</div>
+            <div id="_alert" style="style="backgroud-color: #00800030; padding:1em; "color: green; font-size: 1.2em; margin: 1em 0em;">
                 Challenge has ended! Your score is ${ls.maps.length}!
             </div>
             <div>
