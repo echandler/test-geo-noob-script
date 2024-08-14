@@ -467,8 +467,8 @@ setInterval(()=>{
 
         })
     }, 1000);
-
-        window._fetch = (function () {
+debugger;
+        window.fetch = (function () {
             let _fetch = window.fetch;
             return async function (...args) {
                 if (!/geoguessr.com.(challenge|game)/i.test(location.href)) {
