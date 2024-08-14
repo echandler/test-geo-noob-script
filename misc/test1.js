@@ -29,41 +29,45 @@ if (ls) {
     
     function progBtnClickHandler(){
 
-            if (ls === null) {
-                alert("Error with random map challenge, no saved info found.");
-                return;
-            }
-
-    let p = new window.Sweetalert2({
-        didOpen: function(e){ 
-
-          if (!ls.challengeStartedTime){
-            document.getElementById('_alert').style.display = "";
+        if (ls === null) {
+            alert("Error with random map challenge, no saved info found.");
             return;
-          }
+        }
 
-            let startedTime = new Date(ls.challengeStartedTime);
-            startedTime = `${startedTime.getHours()}: ${startedTime.getMinutes()}: ${startedTime.getSeconds()}`;
-            document.getElementById('_timeStart').innerText = startedTime;
-            let endTime = new Date(ls.challengeEndTime);
-            endTime = `${endTime.getHours()}: ${endTime.getMinutes()}: ${endTime.getSeconds()}`;
-            document.getElementById('_timeEnd').innerText = endTime;
+        if (window.Sweetalert2.isVisible()) {
+            return;
+        }
 
-          if (Date.now() > ls.challengeEndTime){
-             document.getElementById('_greenAlert').style.display = "";
-          }
-        },
-        html: `
+        let p = new window.Sweetalert2({
+            didOpen: function (e) {
+
+                if (!ls.challengeStartedTime) {
+                    document.getElementById('_alert').style.display = "";
+                    return;
+                }
+
+                let startedTime = new Date(ls.challengeStartedTime);
+                startedTime = `${startedTime.getHours()}: ${startedTime.getMinutes()}: ${startedTime.getSeconds()}`;
+                document.getElementById('_timeStart').innerText = startedTime;
+                let endTime = new Date(ls.challengeEndTime);
+                endTime = `${endTime.getHours()}: ${endTime.getMinutes()}: ${endTime.getSeconds()}`;
+                document.getElementById('_timeEnd').innerText = endTime;
+
+                if (Date.now() > ls.challengeEndTime) {
+                    document.getElementById('_greenAlert').style.display = "";
+                }
+            },
+            html: `
             <div class="_rmc_header" >Radom Map Challenge Progress</div>
             <div id="_alert" style="color: red; display: none;">
                 Challenge doesn't start until you start playing your first game!
             </div>
             <div id="_greenAlert" style="color: green; display: none; font-size: 1.2em; margin: 1em 0em;">
-                Challenge has ended! Your score is ${ls.maps.length-1 + ls.scoreAdder}!
+                Challenge has ended! Your score is ${ls.maps.length}!
             </div>
             <div id="_container">
                 <div>
-                    Finished maps: <span id="_finishedMaps">${ls.maps.length -1}</span>
+                    Finished maps: <span id="_finishedMaps">${ls.maps.length}</span>
                 </div>
                 
                 <div>
@@ -88,18 +92,22 @@ if (ls) {
                     Min map score: <span id="_mapScore">${ls.minMapScore}</span>
                 </div>
                 <div style="margin-top: 1em;">
-                    <input type="checkbox" id="_fMoving" ${ls.fMoving? "checked": ""}><label for="_fMoving">No Moving?</label>
-                    <input type="checkbox" id="_fRotating"${ls.fRotating? "checked": ""}><label for="_fMoving">No Rotating?</label>
-                    <input type="checkbox" id="_fZooming"${ls.fZooming? "checked": ""}><label for="_fMoving">No Zooming?</label>
+                    <input type="checkbox" id="_fMoving" ${ls.fMoving ? "checked" : ""}><label for="_fMoving">No Moving?</label>
+                    <input type="checkbox" id="_fRotating"${ls.fRotating ? "checked" : ""}><label for="_fMoving">No Rotating?</label>
+                    <input type="checkbox" id="_fZooming"${ls.fZooming ? "checked" : ""}><label for="_fMoving">No Zooming?</label>
                 </div>
             </div>
         `,
-        allowOutsideClick: false, 
-    });
+            allowOutsideClick: false,
+        });
     }
 }
 
 function menuBtnClickHandler(){
+
+    if (window.Sweetalert2.isVisible()){
+        return;
+    }
 
     let p = new window.Sweetalert2({
         didOpen: function(e){ 
@@ -182,12 +190,12 @@ function handlerPopup(p){
                 continue;
             }
 
-            obj.maps.push(nextMap.id);
+            obj.currentMap = nextMap.id;
             break;
         }
         
 
-        if (obj.maps.length == 0){
+        if (!obj.currentMap){
             alert(`Searched 20 maps and couldn't find one, press the button to try again.`);
             window.Sweetalert2.hideLoading();
             startChallengBtn.disabled = false;
@@ -202,7 +210,7 @@ function handlerPopup(p){
         menuButton.addEventListener('click', menuBtnClickHandler);
         document.body.appendChild(menuButton);
 
-        window.open(`https://www.geoguessr.com/maps/${obj.maps[0]}`,"_self");
+        window.open(`https://www.geoguessr.com/maps/${obj.currentMap}`,"_self");
     });
 }
 
@@ -258,7 +266,7 @@ function listenForApiFetch(json){
     console.log(json);
     if (!localStorage["RandomMapChallenge"]) return;
 
-    if (ls && json.map && ls.maps[ls.maps.length-1] != json.map){
+    if (ls && ls.currentMap && json.map && ls.currentMap != json.map){
         debugger;
         delete localStorage["RandomMapChallenge"];
         alert("Random Map Challenge has ended.");
@@ -278,17 +286,17 @@ function listenForApiFetch(json){
         if (ls.fMoving && json.forbidMoving === false){
             alert('Random Map Challenge requires no moving games! Game will be restarted!');
             
-            window.open(`https://www.geoguessr.com/maps/${ls.maps[ls.maps.length - 1]}`,"_self");
+            window.open(`https://www.geoguessr.com/maps/${ls.currentMap}`,"_self");
         }
         if (ls.fRotating && json.forbidRotating === false){
             alert('Random Map Challenge requires no rotating games! Game will be restarted!');
             
-            window.open(`https://www.geoguessr.com/maps/${ls.maps[ls.maps.length - 1]}`,"_self");
+            window.open(`https://www.geoguessr.com/maps/${ls.currentMap}`,"_self");
         }
         if (ls.fZooming && json.forbidZooming === false){
             alert('Random Map Challenge requires no moving games! Game will be restarted!');
             
-            window.open(`https://www.geoguessr.com/maps/${ls.maps[ls.maps.length - 1]}`,"_self");
+            window.open(`https://www.geoguessr.com/maps/${ls.currentMap}`,"_self");
         }
         
     }         
@@ -296,29 +304,49 @@ function listenForApiFetch(json){
     if (ls && json.state === 'finished'){
         handleEndOfGame(json);
     }
+
     if (ls && json.round === 5){
-        setTimeout(()=>{
+        const i = setInterval(()=>{
             const guessBtn = document.querySelector(`[data-qa="perform-guess"]`);
-            guessBtn.addEventListener("click", async ()=>{
-                setTimeout(()=>{
-                const info = await fetchGameInfo(json.token).then(res => res.json());
-                console.log("rsfsdfsd", info);
+
+            if (!guessBtn) return;
+
+            clearInterval(i);
+
+            if(guessBtn._isClicky) return;
+
+            guessBtn._isClicky = true;
+
+            guessBtn.addEventListener("click", ()=>{
+                setTimeout(async ()=>{
+                    const info = await fetchGameInfo(json.token);
+                    console.log("rsfsdfsd", info);
+                    handleEndOfGame(info);
                 }, 500);
             });
-        }, 2000)
+        }, 10)
     }
 }
 
+let handleEndOfGameIsHandling = false;
 function handleEndOfGame(json){
-    
+    if (!localStorage["RandomMapChallenge"]){
+        progressBtn.click();
+        return;
+    }
+          
+    if (handleEndOfGameIsHandling) return;
+
     let p = new window.Sweetalert2({
         willClose: function(){
+            handleEndOfGameIsHandling = false;
             const btn = document.getElementById('_nextGameBtn');
             if (!btn) return;
             // Show next game button if player clicked out of alert.
             btn.style.display = "";
         },
         didOpen: function(e){ 
+            handleEndOfGameIsHandling = true;
             const _alert = document.getElementById('_alert');
             const _greenAlert = document.getElementById('_greenAlert');
 
@@ -334,6 +362,9 @@ function handleEndOfGame(json){
                 return;
             }  
             
+            if(ls.currentMap) ls.maps.push(ls.currentMap);
+            ls.currentMap = null;
+
             localStorage["RandomMapChallenge"] = JSON.stringify(ls);
 
             _greenAlert.style.display = "";
@@ -359,7 +390,8 @@ function handleEndOfGame(json){
 
                 window.Sweetalert2.showLoading();
                 
-                let len = ls.maps.length;
+
+                ls.currentMap = null; 
 
                 for (let n = 0; n < 20; n++) {
                     const nextMap = await nextRandomMap(ls.minMapSize * 1000, ls.maxMapSize * 1000);
@@ -367,11 +399,11 @@ function handleEndOfGame(json){
                         continue;
                     }
 
-                    ls.maps.push(nextMap.id);
+                    ls.currentMap = nextMap.id;
                     break;
                 }
                  
-                if (len === ls.maps.length){
+                if (ls.currentMap === null){
                     alert(`Searched 20 maps and couldn't find one, press the button to try again.`);
                     window.Sweetalert2.hideLoading();
                     btn.disabled = false;
@@ -381,7 +413,7 @@ function handleEndOfGame(json){
                  
                 localStorage["RandomMapChallenge"] = JSON.stringify(ls);
         
-                window.open(`https://www.geoguessr.com/maps/${ls.maps[ls.maps.length - 1]}` ,"_self");
+                window.open(`https://www.geoguessr.com/maps/${ls.currentMap}` ,"_self");
            };
 
         },
@@ -425,13 +457,14 @@ setInterval(()=>{
     ls1.push(ls);
 
     localStorage[`RandomMapChallenge_saveInfo`] = JSON.stringify(ls1);
-
+    
     let p = new window.Sweetalert2({
         didOpen: function(e){
 
             let startedTime = new Date(ls.challengeStartedTime);
             startedTime = `${startedTime.getHours()}: ${startedTime.getMinutes()}: ${startedTime.getSeconds()}`;
             document.getElementById('_timeStart').innerText = startedTime;
+
             let endTime = new Date(ls.challengeEndTime);
             endTime = `${endTime.getHours()}: ${endTime.getMinutes()}: ${endTime.getSeconds()}`;
             document.getElementById('_timeEnd').innerText = endTime;
@@ -440,10 +473,10 @@ setInterval(()=>{
         html: `
             <div class="_rmc_header" >Radom Map Challenge Final Score!</div>
             <div id="_alert" style="color: green; font-size: 1.2em; margin: 1em 0em;">
-                Challenge has ended! Your score is ${ls.maps.length-1 + ls.scoreAdder}!
+                Challenge has ended! Your score is ${ls.maps.length}!
             </div>
             <div>
-                Finished maps: <span id="_finishedMaps">${ls.maps.length-1 + ls.scoreAdder}</span>
+                Finished maps: <span id="_finishedMaps">${ls.maps.length}</span>
             </div>
             
             <div>
