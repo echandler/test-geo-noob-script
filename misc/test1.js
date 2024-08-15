@@ -44,7 +44,7 @@ if (ls) {
                 // Make sure the player can end the game.
                 const endGameBtn = document.getElementById('_endGameBtn');
                 endGameBtn.addEventListener('click', ()=>{
-                    if(!confirm("Do you want to end this game??")){
+                    if(!confirm("Do you want to end this Random Map Challenge??")){
                         return;
                     }
                     delete localStorage["RandomMapChallenge"];
@@ -682,30 +682,6 @@ function viewPreviousGames(){
         allowOutsideClick: false, 
     });
 }
-
-//playFinishedGame({
-//   "challengeStartedTime": 1723671037239,
-//   "challengeEndTime": 1723671097239,
-//   "maps": [
-//       {
-//           "n": "great lakes",
-//           "id": "56f042948be465821877ce0a"
-//       }
-//   ],
-//   "challengeTime": 60000,
-//   "mapPlayTime": 60,
-//   "minMapScore": 1,
-//   "minMapSize": 1,
-//   "maxMapSize": 40075,
-//   "fMoving": false,
-//   "fRotating": false,
-//   "fZooming": false,
-//   "currentMap": {
-//       "n": "Flags",
-//       "id": "5ea35789d502e14468139fc8"
-//   },
-//   "scoreAdder": 1
-//});
 
 window.playFinishedGame = function (finishedGame){
     if (finishedGame.maps.length === 0){
