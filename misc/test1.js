@@ -310,6 +310,15 @@ async function checkGameInfo(id, minTime, minScore, forbidMoving = false, forbid
     return gameInfo;
 }
 
+document.body.addEventListener('keyup', (e)=>{
+    // Fix for round 5 not being detected unless the guess button is clicked with mouse.
+    if (e.code != "Space") return;
+    const guessBtn = document.querySelector(`button[data-qa="perform-guess"]`);
+    if (!guessBtn.disabled){
+        guessBtn.click();
+    }
+});
+
 function listenForApiFetch(json){
     console.log(json);
     if (!localStorage["RandomMapChallenge"]) return;
