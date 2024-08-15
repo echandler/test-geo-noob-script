@@ -128,10 +128,10 @@ if (ls) {
                     <input type="checkbox" id="_fZooming"${ls.fZooming ? "checked" : ""}><label for="_fMoving">No Zooming?</label>
                 </div>
                 <div style="margin-top: 1em;" >
-                    <button id="_skipMapBtn" class="swal2-confirm swal2-styled _disabled" ${(!ls.challengeEndTime || (ls.skipsUsed < ls.numOfSkips)) ? "": "disabled"}>Skip map</button>
+                    <button id="_skipMapBtn" class="swal2-confirm swal2-styled _disabled _styledBtn" ${(!ls.challengeEndTime || (ls.skipsUsed < ls.numOfSkips)) ? "": "disabled"}>Skip map</button>
                 </div>
                 <div style="margin-top: 1em;" >
-                    <button id="_endGameBtn" class="swal2-confirm swal2-styled" }>End game.</button>
+                    <button id="_endGameBtn" class="swal2-confirm swal2-styled _styledBtn" }>End game.</button>
                 </div>
             </div>
         `,
@@ -164,7 +164,7 @@ function menuBtnClickHandler(){
                     Min map size (km) <input id="_minMapSize" type="number" value="1">
                 </div>
                 <div>
-                    Max map size (km) <input id="_maxMapSize" type="number" value="40075" title="The equatorial circumference of Earth is 40,075 km.">
+                    Max map size (km) <input id="_maxMapSize" type="number" value="19000" title="Community World is 18534.781 km">
                 </div>
                 <div>
                     Min map score <input id="_minMapScore" type="number" max="25000" value="15000">
@@ -180,8 +180,11 @@ function menuBtnClickHandler(){
                 <div id="_viewGames" class="_hover" style="margin-top: 1em;">
                     View previous finished games. 
                 </div>
+                <div id="_playAgainstSomeoneElse" class="_hover" style="margin-top: 1em;">
+                    Play against someone else. 
+                </div>
                 <div style="margin-top: 1em;" >
-                    <button id="_startChallengeBtn" class="swal2-confirm swal2-styled">Start Challenge</button>
+                    <button id="_startChallengeBtn" class="swal2-confirm swal2-styled _styledBtn">Start Challenge</button>
                 </div>
             <div>
         `,
@@ -191,6 +194,7 @@ function menuBtnClickHandler(){
 
 function handlerPopup(p){
     const startChallengBtn = document.getElementById('_startChallengeBtn');
+    const playAgainstSomeone = document.getElementById('_playAgainstSomeoneElse');
     const minMapSize = document.getElementById('_minMapSize');
     const maxMapSize = document.getElementById('_maxMapSize');
     const minMapTime = document.getElementById('_mapPlayTime');
@@ -199,6 +203,37 @@ function handlerPopup(p){
     const skips = document.getElementById('_skips');
     
     document.getElementById('_viewGames').addEventListener('click', viewPreviousGames);
+    
+    playAgainstSomeone.addEventListener('click', ()=>{
+        let p = new window.Sweetalert2({
+            didOpen: function(e){ 
+               document.getElementById('_startChallengeBtn').addEventListener('click', ()=>{
+                    const ta = document.getElementById('_gameInfo');
+                    if (!ta.value || ta.value === '') return;
+                    
+                    try {
+                        window.playFinishedGame( JSON.parse(ta.value));
+                    } catch(e){
+                        alert("The script doesn't like the info. that you pasted in.");
+                    }
+               }) 
+            },
+            html: `
+                <div class="_rmc_header">Play Against Someone</div>
+                
+                <div class="_challengeSpecs">
+                    <div>
+                    <textarea id="_gameInfo" style="border: 1px solid #d3d3d3;" rows="4" cols="35" placeholder="Enter game info. here!"></textarea>
+                    </div> 
+                    <div style="margin-top: 1em;" >
+                        <button id="_startChallengeBtn" class="swal2-confirm swal2-styled _styledBtn">Start Challenge</button>
+                    </div>
+                <div>
+            `,
+            allowOutsideClick: false, 
+        });
+
+    });
 
     startChallengBtn.addEventListener('click',async ()=>{
         if (parseInt(minMapScore.value) >= 25001){
@@ -338,8 +373,6 @@ function listenForApiFetch(json){
             localStorage["RandomMapChallenge"] = JSON.stringify(ls);
         }
         
-        ls.scoreAdder = 0;
-
         if (ls.fMoving && json.forbidMoving === false){
             alert('Random Map Challenge requires no moving games! Game will be restarted!');
             
@@ -438,8 +471,6 @@ function handleEndOfGame(json){
             _btn.innerText = "Start next RMC game!";
             _btn.addEventListener('click', btnClickHandler );
             document.body.appendChild(_btn);
-
-            ls.scoreAdder = 1;
 
             async function btnClickHandler (){
                 if (ls._finishedGame){
@@ -737,6 +768,9 @@ document.head.insertAdjacentHTML('beforeend', `
         ._hover:hover {
             cursor: pointer;
             color: blue !important;
+        }
+        ._styledBtn:hover{
+         background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1));  
         }
         ._prevChalMaps {
             max-height: 7em;
