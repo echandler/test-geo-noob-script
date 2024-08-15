@@ -714,6 +714,8 @@ window.playFinishedGame = function (finishedGame){
 
         localStorage["RandomMapChallenge"] = JSON.stringify(obj);
         
+        alert("Starting a new Random Map Challenge!\n\nThis page will reload and the first map in the challenge will be available.\n\nChallenge will start when you start playing a game, Good Luck!");
+
         window.open(`https://www.geoguessr.com/maps/${obj.currentMap.id}`,"_self");
 }
 
