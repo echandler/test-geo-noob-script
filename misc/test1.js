@@ -41,6 +41,16 @@ if (ls) {
 
         let p = new window.Sweetalert2({
             didOpen: function (e) {
+                // Make sure the player can end the game.
+                const endGameBtn = document.getElementById('_endGameBtn');
+                endGameBtn.addEventListener('click', ()=>{
+                    if(!confirm("Do you want to delete this game from memory?")){
+                        return;
+                    }
+                    delete localStorage["RandomMapChallenge"];
+                    location.reload();
+                    return;
+                });
 
                 if (!ls.challengeStartedTime) {
                     document.getElementById('_alert').style.display = "";
@@ -119,6 +129,9 @@ if (ls) {
                 </div>
                 <div style="margin-top: 1em;" >
                     <button id="_skipMapBtn" class="swal2-confirm swal2-styled _disabled" ${(!ls.challengeEndTime || (ls.skipsUsed < ls.numOfSkips)) ? "": "disabled"}>Skip map</button>
+                </div>
+                <div style="margin-top: 1em;" >
+                    <button id="_endGameBtn" class="swal2-confirm swal2-styled" }>End game.</button>
                 </div>
             </div>
         `,
