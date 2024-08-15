@@ -50,6 +50,7 @@ if (ls) {
                 let startedTime = new Date(ls.challengeStartedTime);
                 startedTime = `${startedTime.getHours()}: ${startedTime.getMinutes()}: ${startedTime.getSeconds()}`;
                 document.getElementById('_timeStart').innerText = startedTime;
+
                 let endTime = new Date(ls.challengeEndTime);
                 endTime = `${endTime.getHours()}: ${endTime.getMinutes()}: ${endTime.getSeconds()}`;
                 document.getElementById('_timeEnd').innerText = endTime;
@@ -57,6 +58,22 @@ if (ls) {
                 if (Date.now() > ls.challengeEndTime) {
                     document.getElementById('_greenAlert').style.display = "";
                 }
+                
+                const skipMapBtn = document.getElementById('_skipMapBtn');
+                skipMapBtn.addEventListener('click', ()=>{
+                    skipMapBtn.disabled = true;
+
+                    ls.currentMap = {
+                        id: "66a46adc321fb0b8f5eeb270",
+                        n: "Exact locations [WikiXplore]" 
+                    }
+                    
+                    ls.skipsUsed += 1;
+                    localStorage["RandomMapChallenge"] = JSON.stringify(ls);
+                    
+                    window.open(`https://www.geoguessr.com/maps/${ls.currentMap.id}`,"_self");
+                    return;
+                });
             },
             html: `
             <div class="_rmc_header" >Random Map Challenge Progress</div>
@@ -84,18 +101,24 @@ if (ls) {
                     Min map time (minutes): <span id="_mapTime">${ls.mapPlayTime / 60}</span> 
                 </div>
                 <div>
-                    Min map size (km): <span id="_minMapSize">${ls.minMapSize}</span>
+                    Min map size (km): <span id="_minMapSize">${ls.minMapSize.toLocaleString()}</span>
                 </div>
                 <div>
-                    Max map size (km): <span id="_maxMapSize">${ls.maxMapSize}</span>
+                    Max map size (km): <span id="_maxMapSize">${ls.maxMapSize.toLocaleString()}</span>
                 </div>
                 <div>
-                    Min map score: <span id="_mapScore">${ls.minMapScore}</span>
+                    Min map score: <span id="_mapScore">${ls.minMapScore.toLocaleString()}</span>
+                </div>
+                <div>
+                    Skips: <span id="_mapScore">${ls.skipsUsed} / ${ls.numOfSkips}</span>
                 </div>
                 <div style="margin-top: 1em;">
                     <input type="checkbox" id="_fMoving" ${ls.fMoving ? "checked" : ""}><label for="_fMoving">No Moving?</label>
                     <input type="checkbox" id="_fRotating"${ls.fRotating ? "checked" : ""}><label for="_fMoving">No Rotating?</label>
                     <input type="checkbox" id="_fZooming"${ls.fZooming ? "checked" : ""}><label for="_fMoving">No Zooming?</label>
+                </div>
+                <div style="margin-top: 1em;" >
+                    <button id="_skipMapBtn" class="swal2-confirm swal2-styled _disabled" ${(!ls.challengeEndTime || (ls.skipsUsed < ls.numOfSkips)) ? "": "disabled"}>Skip map</button>
                 </div>
             </div>
         `,
@@ -133,12 +156,17 @@ function menuBtnClickHandler(){
                 <div>
                     Min map score <input id="_minMapScore" type="number" max="25000" value="15000">
                 </div>
+                <div>
+                    Skips <input id="_skips" type="number" max="25000" value="1">
+                </div>
                 <div style="margin-top: 1em;">
                     <input type="checkbox" id="_fMoving"><label for="_fMoving">No Moving?</label>
                     <input type="checkbox" id="_fRotating"><label for="_fRotating">No Rotating?</label>
                     <input type="checkbox" id="_fZooming"><label for="_fZooming">No Zooming?</label>
                 </div>
-
+                <div id="_viewGames" class="_hover" style="margin-top: 1em;">
+                    View previous finished games. 
+                </div>
                 <div style="margin-top: 1em;" >
                     <button id="_startChallengeBtn" class="swal2-confirm swal2-styled">Start Challenge</button>
                 </div>
@@ -155,7 +183,10 @@ function handlerPopup(p){
     const minMapTime = document.getElementById('_mapPlayTime');
     const minMapScore = document.getElementById('_minMapScore');
     const challengeTime = document.getElementById('_challengeTime');
+    const skips = document.getElementById('_skips');
     
+    document.getElementById('_viewGames').addEventListener('click', viewPreviousGames);
+
     startChallengBtn.addEventListener('click',async ()=>{
         if (parseInt(minMapScore.value) >= 25001){
             minMapScore.value = 25000;
@@ -179,6 +210,8 @@ function handlerPopup(p){
             fMoving: document.getElementById('_fMoving').checked,
             fRotating: document.getElementById('_fRotating').checked,
             fZooming: document.getElementById('_fZooming').checked,
+            numOfSkips: parseInt(skips.value),
+            skipsUsed: 0,  
         };
 
         startChallengBtn.disabled = true;
@@ -191,7 +224,8 @@ function handlerPopup(p){
                 continue;
             }
 
-            obj.currentMap = nextMap.id;
+            obj.currentMap = {n: nextMap.name, id: nextMap.id};
+
             break;
         }
         
@@ -211,7 +245,7 @@ function handlerPopup(p){
         menuButton.addEventListener('click', menuBtnClickHandler);
         document.body.appendChild(menuButton);
 
-        window.open(`https://www.geoguessr.com/maps/${obj.currentMap}`,"_self");
+        window.open(`https://www.geoguessr.com/maps/${obj.currentMap.id}`,"_self");
     });
 }
 
@@ -267,7 +301,7 @@ function listenForApiFetch(json){
     console.log(json);
     if (!localStorage["RandomMapChallenge"]) return;
 
-    if (ls && ls.currentMap && json.map && ls.currentMap != json.map){
+    if (ls && ls.currentMap && json.map && ls.currentMap.id != json.map){
         debugger;
         delete localStorage["RandomMapChallenge"];
         alert("Random Map Challenge has ended.");
@@ -287,17 +321,17 @@ function listenForApiFetch(json){
         if (ls.fMoving && json.forbidMoving === false){
             alert('Random Map Challenge requires no moving games! Game will be restarted!');
             
-            window.open(`https://www.geoguessr.com/maps/${ls.currentMap}`,"_self");
+            window.open(`https://www.geoguessr.com/maps/${ls.currentMap.id}`,"_self");
         }
         if (ls.fRotating && json.forbidRotating === false){
             alert('Random Map Challenge requires no rotating games! Game will be restarted!');
             
-            window.open(`https://www.geoguessr.com/maps/${ls.currentMap}`,"_self");
+            window.open(`https://www.geoguessr.com/maps/${ls.currentMap.id}`,"_self");
         }
         if (ls.fZooming && json.forbidZooming === false){
             alert('Random Map Challenge requires no moving games! Game will be restarted!');
             
-            window.open(`https://www.geoguessr.com/maps/${ls.currentMap}`,"_self");
+            window.open(`https://www.geoguessr.com/maps/${ls.currentMap.id}`,"_self");
         }
         
     }         
@@ -386,12 +420,26 @@ function handleEndOfGame(json){
             ls.scoreAdder = 1;
 
             async function btnClickHandler (){
+                if (ls._finishedGame){
+                    ls._finishedGame.idx += 1;
+                    if (!(ls._finishedGame.idx >= ls._finishedGame.obj.maps.length)){
+                        btn.disabled = true;
+                        _btn.disabled = true;
+
+                        ls.currentMap = ls._finishedGame.obj.maps[ls._finishedGame.idx];
+
+                        localStorage["RandomMapChallenge"] = JSON.stringify(ls);
+
+                        window.open(`https://www.geoguessr.com/maps/${ls.currentMap.id}` ,"_self");
+                        return;
+                    }
+                }
+
                 btn.disabled = true;
                 _btn.disabled = true;
 
                 window.Sweetalert2.showLoading();
                 
-
                 ls.currentMap = null; 
 
                 for (let n = 0; n < 20; n++) {
@@ -400,7 +448,7 @@ function handleEndOfGame(json){
                         continue;
                     }
 
-                    ls.currentMap = nextMap.id;
+                    ls.currentMap = {n: nextMap.name, id: nextMap.id};
                     break;
                 }
                  
@@ -414,7 +462,7 @@ function handleEndOfGame(json){
                  
                 localStorage["RandomMapChallenge"] = JSON.stringify(ls);
         
-                window.open(`https://www.geoguessr.com/maps/${ls.currentMap}` ,"_self");
+                window.open(`https://www.geoguessr.com/maps/${ls.currentMap.id}` ,"_self");
            };
 
         },
@@ -435,7 +483,7 @@ function handleEndOfGame(json){
             </div>
 
             <div style="margin-top: 1em;" >
-                <button id="_startNextGameBtn" class="swal2-confirm swal2-styled" disabled>Start Next Game</button>
+                <button id="_startNextGameBtn" class="swal2-confirm swal2-styled _disabled" disabled>Start Next Game</button>
             </div>
         `,
         allowOutsideClick: false, 
@@ -501,6 +549,9 @@ setInterval(()=>{
             <div>
                 Min map score: <span id="_mapScore">${ls.minMapScore}</span>
             </div>
+            <div>
+                Skips: <span id="_mapScore">${ls.skipsUsed} / ${ls.numOfSkips}</span>
+            </div>
             <div style="margin-top: 1em;">
                 <input type="checkbox" id="_fMoving" ${ls.fMoving? "checked": ""}><label for="_fMoving">No Moving?</label>
                 <input type="checkbox" id="_fRotating"${ls.fRotating? "checked": ""}><label for="_fMoving">No Rotating?</label>
@@ -538,6 +589,133 @@ setInterval(()=>{
             };
         })();
 
+function viewPreviousGames(){
+    let prevGames = localStorage[`RandomMapChallenge_saveInfo`];
+
+    if (!prevGames) {
+        alert("No finished games found.");
+        return;
+    }
+    
+    prevGames = JSON.parse(prevGames);
+
+    let _html = ``;
+    prevGames.forEach((game)=>{
+        _html += `
+            <div>
+            <div class="_prevChalGame _hover" style='margin-bottom:1em;cursor: pointer;'>
+            ${(new Date(game.challengeEndTime).toString()).replace(/ \w+-.*/, '')}
+            </div>
+            <div class="_prevChalMaps" style="display: none;">
+               <div>
+                   <textarea title="This is what your game looks like to a computer." style="border: 1px solid #d3d3d3;">${JSON.stringify(game)}</textarea>
+               </div>
+               ${(()=>{
+                    let str = ``;
+                    if (game.maps.length === 0){
+                        if (game?.currentMap?.id){
+                            str += `<div><a href="https://www.geoguessr.com/maps/${game.currentMap.id}" style="color: #794141;" class="_prevChalMap _hover" title="Challenge ended in middle of this game.">${game.currentMap.n}</a></div>`;
+                        } else {
+                            str += `<div>No finished maps found</div>`
+                        }
+                        return str;
+                    }
+                    game.maps.forEach(map =>{
+                        str += `<div><a href="https://www.geoguessr.com/maps/${map.id}"class="_prevChalMap _hover">${map.n}</a></div>`;
+                    });
+
+                    if (game?.currentMap?.id){
+                        str += `<div><a href="https://www.geoguessr.com/maps/${game.currentMap.id}" style="color: #794141;" class="_prevChalMap _hover" title="Challenge ended in middle of this game.">${game.currentMap.n}</a></div>`;
+                    }
+                    return str;
+                })()} 
+            </div> 
+            </div>
+        ` 
+    });
+
+    let p = new window.Sweetalert2({
+        didOpen: function(e){ 
+            let prevChalGames = document.querySelectorAll('._prevChalGame');
+            let prevChalMaps = document.querySelectorAll('._prevChalMap');
+
+            prevChalGames.forEach((game)=>{
+                game.addEventListener('click', ()=>{
+                    const sibling = game.nextElementSibling;
+                    if (sibling.style.display === ""){
+                        sibling.style.display = "none";
+                    } else {
+                        sibling.style.display = "";
+                    }
+                })
+            })
+        },
+        html: `
+            <div class="_rmc_header">Previous Finished Games</div>
+            
+            <div class="_challengeSpecs" style="max-height: 40vh;overflow-y: scroll;">
+                ${_html}
+            <div>
+        `,
+        allowOutsideClick: false, 
+    });
+}
+
+//playFinishedGame({
+//   "challengeStartedTime": 1723671037239,
+//   "challengeEndTime": 1723671097239,
+//   "maps": [
+//       {
+//           "n": "great lakes",
+//           "id": "56f042948be465821877ce0a"
+//       }
+//   ],
+//   "challengeTime": 60000,
+//   "mapPlayTime": 60,
+//   "minMapScore": 1,
+//   "minMapSize": 1,
+//   "maxMapSize": 40075,
+//   "fMoving": false,
+//   "fRotating": false,
+//   "fZooming": false,
+//   "currentMap": {
+//       "n": "Flags",
+//       "id": "5ea35789d502e14468139fc8"
+//   },
+//   "scoreAdder": 1
+//});
+
+window.playFinishedGame = function (finishedGame){
+    if (finishedGame.maps.length === 0){
+        alert("No maps found.");
+        return;
+    }
+
+    let obj = {
+            challengeStartedTime: null,
+            challengeEndTime: null,
+            maps: [],
+            challengeTime: finishedGame.challengeTime,
+            mapPlayTime: finishedGame.mapPlayTime, 
+            minMapScore: finishedGame.minMapScore, 
+            minMapSize: finishedGame.minMapSize, 
+            maxMapSize: finishedGame.maxMapSize, 
+            fMoving: finishedGame.fMoving,
+            fRotating: finishedGame.fRotating, 
+            fZooming: finishedGame.fZooming, 
+            _finishedGame: {idx:0, obj: finishedGame},
+            currentMap: finishedGame.maps[0],
+        };
+        debugger;
+
+        if (finishedGame.currentMap){
+            finishedGame.maps.push(finishedGame.currentMap);
+        }
+
+        localStorage["RandomMapChallenge"] = JSON.stringify(obj);
+        
+        window.open(`https://www.geoguessr.com/maps/${obj.currentMap.id}`,"_self");
+}
 
 document.head.insertAdjacentHTML('beforeend', `
     <style>
@@ -553,5 +731,21 @@ document.head.insertAdjacentHTML('beforeend', `
             background: #676bda;
             padding: 5px;
             color: white;
+        }
+        ._hover:hover {
+            cursor: pointer;
+            color: blue !important;
+        }
+        ._prevChalMaps {
+            max-height: 7em;
+            margin-bottom: 1em;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            overflow-y: scroll;
+
+        }
+
+        ._disabled:disabled{
+            background-color: grey;
         }
     </style>`);
