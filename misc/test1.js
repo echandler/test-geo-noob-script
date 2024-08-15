@@ -44,7 +44,7 @@ if (ls) {
                 // Make sure the player can end the game.
                 const endGameBtn = document.getElementById('_endGameBtn');
                 endGameBtn.addEventListener('click', ()=>{
-                    if(!confirm("Do you want to delete this game from memory?")){
+                    if(!confirm("Do you want to end this game??")){
                         return;
                     }
                     delete localStorage["RandomMapChallenge"];
@@ -727,6 +727,8 @@ window.playFinishedGame = function (finishedGame){
             fZooming: finishedGame.fZooming, 
             _finishedGame: {idx:0, obj: finishedGame},
             currentMap: finishedGame.maps[0],
+            numOfSkips: finishedGame.numOfSkips,
+            skipsUsed: 0,
         };
         debugger;
 
