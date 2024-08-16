@@ -30,7 +30,7 @@ if (ls) {
     progressBtn.addEventListener('click', progBtnClickHandler);
     document.body.appendChild(progressBtn);
     
-    progressBtn.innerHTML = `<div><span id='_score' style="margin-right: 0.5em;">---</span><span id="_hours">---</span> : <span id="_minutes">---</span> : <span id="_seconds">---</span></div>`;
+    progressBtn.innerHTML = `<div><span id='_score' >---</span><span id="_hours">---</span> : <span id="_minutes">---</span> : <span id="_seconds">---</span></div>`;
 
     function progBtnClickHandler(){
 
@@ -97,39 +97,52 @@ if (ls) {
             <div id="_greenAlert" style="color: green; display: none; font-size: 1.2em; margin: 1em 0em;">
                 Challenge has ended! Your score is ${ls.maps.length}!
             </div>
-            <div id="_container">
-                <div>
-                    Finished maps: <span id="_finishedMaps">${ls.maps.length}</span>
-                </div>
-                
-                <div>
-                    Challenge started at: <span id="_timeStart">---</span>
-                </div>
-                <div>
-                    Challenge will end at: <span id="_timeEnd">${ls.challengeEndTime || "---"}</span>
-                </div>
-                <div>
-                    Challenge time (minutes): <span id="_challengeTime">${ls.challengeTime / 1000 / 60}</span> 
-                </div>
-                <div>
-                    Min map time (minutes): <span id="_mapTime">${ls.mapPlayTime / 60}</span> 
-                </div>
-                <div>
-                    Min map size (km): <span id="_minMapSize">${ls.minMapSize.toLocaleString()}</span>
-                </div>
-                <div>
-                    Max map size (km): <span id="_maxMapSize">${ls.maxMapSize.toLocaleString()}</span>
-                </div>
-                <div>
-                    Min map score: <span id="_mapScore">${ls.minMapScore.toLocaleString()}</span>
-                </div>
-                <div>
-                    Skips: <span id="_mapScore">${ls.skipsUsed} / ${ls.numOfSkips}</span>
+            <div id="_container" style="margin-top: 1em;">
+                <div id="_infoContainer">
+                    <div>
+                        Finished maps: <span id="_finishedMaps">${ls.maps.length}</span>
+                    </div>
+                    <div>
+                        Challenge started at: <span id="_timeStart">---</span>
+                    </div>
+                    <div>
+                        Challenge will end at: <span id="_timeEnd">${ls.challengeEndTime || "---"}</span>
+                    </div>
+                    <div>
+                        Challenge time (minutes): <span id="_challengeTime">${ls.challengeTime / 1000 / 60}</span> 
+                    </div>
+                    <div>
+                        Max map time (minutes): <span id="_mapTime">${ls.mapPlayTime / 60}</span> 
+                    </div>
+                    <div>
+                        Max map size (km): <span id="_minMapSize">${ls.minMapSize.toLocaleString()}</span>
+                    </div>
+                    <div>
+                        Max map size (km): <span id="_maxMapSize">${ls.maxMapSize.toLocaleString()}</span>
+                    </div>
+                    <div>
+                        Min map score: <span id="_mapScore">${ls.minMapScore.toLocaleString()}</span>
+                    </div>
+                    <div>
+                        Skips: <span id="_mapScore">${ls.skipsUsed} / ${ls.numOfSkips}</span>
+                    </div>
+                    <div>
+                        Search terms: <span id="_searchTerms">${ls.searchByTerms || `""`}</span>
+                    </div>
+                    <div>
+                        Search player #: <span id="_searchByPlayerId">${ls.searchByPlayerId || `""`}</span>
+                    </div>
+                    ${ ls.mapsList.length > 0 ? 
+                        `<div>
+                            Amount of search results: <span id="_numOfMaps">${ls.mapsList.length}</span>
+                        </div>`
+                        : ""
+                    }
                 </div>
                 <div style="margin-top: 1em;">
-                    <input type="checkbox" id="_fMoving" ${ls.fMoving ? "checked" : ""}><label for="_fMoving">No Moving?</label>
-                    <input type="checkbox" id="_fRotating"${ls.fRotating ? "checked" : ""}><label for="_fMoving">No Rotating?</label>
-                    <input type="checkbox" id="_fZooming"${ls.fZooming ? "checked" : ""}><label for="_fMoving">No Zooming?</label>
+                    <input type="checkbox" disabled id="_fMoving" ${ls.fMoving ? "checked" : ""}><label for="_fMoving">No Moving?</label>
+                    <input type="checkbox" disabled id="_fRotating"${ls.fRotating ? "checked" : ""}><label for="_fMoving">No Rotating?</label>
+                    <input type="checkbox" disabled id="_fZooming"${ls.fZooming ? "checked" : ""}><label for="_fMoving">No Zooming?</label>
                 </div>
                 <div style="margin-top: 1em;" >
                     <button id="_skipMapBtn" class="swal2-confirm swal2-styled _disabled _styledBtn" ${(!ls.challengeEndTime || (ls.skipsUsed < ls.numOfSkips)) ? "": "disabled"}>Skip map</button>
@@ -162,7 +175,7 @@ function menuBtnClickHandler(){
                     Challenge time (minutes) <input id="_challengeTime" type="number" value="60">
                 </div>
                 <div>
-                    Min game play time (minutes) <input id="_mapPlayTime" type="number" value="15" title="">
+                    Max game play time (minutes) <input id="_mapPlayTime" type="number" value="15" title="">
                 </div>
                 <div>
                     Min map size (km) <input id="_minMapSize" type="number" value="1">
@@ -176,10 +189,16 @@ function menuBtnClickHandler(){
                 <div>
                     Skips <input id="_skips" type="number" max="25000" value="1">
                 </div>
-                <div style="margin-top: 1em;">
+                <div style="margin: 1em 0em;">
                     <input type="checkbox" id="_fMoving"><label for="_fMoving">No Moving?</label>
                     <input type="checkbox" id="_fRotating"><label for="_fRotating">No Rotating?</label>
                     <input type="checkbox" id="_fZooming"><label for="_fZooming">No Zooming?</label>
+                </div>
+                <div>
+                    Map search <input id="_searchByTerms" type="text" placeholder="Enter search terms here.">
+                </div>
+                <div>
+                    Maps made by player <input id="_searchByPlayerId" type="text" placeholder="Enter player id# here.">
                 </div>
                 <div id="_viewGames" class="_hover" style="margin-top: 1em;">
                     View previous finished games. 
@@ -205,6 +224,8 @@ function handlerPopup(p){
     const minMapScore = document.getElementById('_minMapScore');
     const challengeTime = document.getElementById('_challengeTime');
     const skips = document.getElementById('_skips');
+    const searchByTerms = document.getElementById("_searchByTerms");
+    const searchByPlayerId = document.getElementById('_searchByPlayerId');
     
     document.getElementById('_viewGames').addEventListener('click', viewPreviousGames);
     
@@ -263,25 +284,44 @@ function handlerPopup(p){
             fRotating: document.getElementById('_fRotating').checked,
             fZooming: document.getElementById('_fZooming').checked,
             numOfSkips: parseInt(skips.value),
+            searchByPlayerId: searchByPlayerId.value,
+            searchByTerms: searchByTerms.value,
             skipsUsed: 0,  
+            mapsList: [],
         };
 
         startChallengBtn.disabled = true;
 
         window.Sweetalert2.showLoading();
         
-        for (let n = 0; n < 20; n++) {
-            const nextMap = await nextRandomMap(minMapSize.value * 1000, maxMapSize.value * 1000);
-            if (nextMap === null){
-                continue;
+        if (obj.searchByPlayerId !== "" || obj.searchByTerms !== ""){
+            await searchByTermOrId(obj);
+
+            if (obj.mapsList.length == 0){
+                alert("Couldn't find any maps for that search!");
+                window.Sweetalert2.hideLoading();
+                startChallengBtn.disabled = false;
+                return;
             }
+        }
 
-            obj.currentMap = {n: nextMap.name, id: nextMap.id};
+        if (obj.mapsList.length !== 0){
+            obj.currentMap = obj.mapsList[Math.floor(Math.random() * obj.mapsList.length)];
+        }
 
-            break;
+        if (obj.mapsList.length === 0){
+           for (let n = 0; n < 20; n++) {
+                const nextMap = await nextRandomMap(minMapSize.value * 1000, maxMapSize.value * 1000);
+                if (nextMap === null){
+                    continue;
+                }
+
+                obj.currentMap = {n: nextMap.name, id: nextMap.id};
+
+                break;
+            }
         }
         
-
         if (!obj.currentMap){
             alert(`Searched 20 maps and couldn't find one, press the button to try again.`);
             window.Sweetalert2.hideLoading();
@@ -327,6 +367,24 @@ async function fetchGameInfo(id){
     return gameInfo;
 }
 
+
+async function searchByTermOrId(obj){
+    if (obj.searchByPlayerId !== ""){
+        for (let n = 0; n < 100 ; n++) {
+            let maps = await fetch(`https://www.geoguessr.com/api/maps?createdBy=${obj.searchByPlayerId}&page=${n}`).then(res => res.json());
+            if (maps.length == 0) break; 
+            obj.mapsList = obj.mapsList.concat(maps);
+        }
+    }
+    
+    if (obj.mapsList.length == 0 && obj.searchByTerms !== ""){
+        for (let n = 0; n < 100; n++){
+            let maps = await fetch(`https://www.geoguessr.com/api/v3/search/map?page=${n}&count=25&q=${obj.searchByTerms}`).then(res=> res.json());
+            if (maps.length == 0) break;
+            obj.mapsList = obj.mapsList.concat(maps);
+        }
+    } 
+} 
 
 async function checkGameInfo(id, minTime, minScore, forbidMoving = false, forbidZooming = false, forbidRotating = false){
     const gameInfo = await fetchGameInfo(id);
@@ -440,7 +498,7 @@ function handleEndOfGame(json){
 
             if (json.player.totalScore.amount < ls.minMapScore){
                 _alert.style.display = "";
-                    document.getElementById('_alertExplanation').innerText = `Score not high enough! Need to be above ${ls.minMapScore}!`;
+                    document.getElementById('_alertExplanation').innerText = `Score not high enough! Need to be above ${ls.minMapScore.toLocaleString()}!`;
                 return;
             }  
 
@@ -493,16 +551,26 @@ function handleEndOfGame(json){
                 
                 ls.currentMap = null; 
 
-                for (let n = 0; n < 20; n++) {
-                    const nextMap = await nextRandomMap(ls.minMapSize * 1000, ls.maxMapSize * 1000);
-                    if (nextMap === null){
-                        continue;
-                    }
-
-                    ls.currentMap = {n: nextMap.name, id: nextMap.id};
-                    break;
+                if (ls._finishedGame && ls.maps.length === 0 && (ls.searchByPlayerId !== "" || ls.searchByTerms !== "")){
+                    await searchByTermOrId(ls);
                 }
-                 
+
+                if (ls.mapsList.length !== 0){
+                    ls.currentMap = ls.mapsList[Math.floor(Math.random() * ls.mapsList.length)];
+                }
+
+                if (ls.mapsList.length === 0){
+                    for (let n = 0; n < 20; n++) {
+                        const nextMap = await nextRandomMap(ls.minMapSize * 1000, ls.maxMapSize * 1000);
+                        if (nextMap === null){
+                            continue;
+                        }
+
+                        ls.currentMap = {n: nextMap.name, id: nextMap.id};
+                        break;
+                    }
+                } 
+
                 if (ls.currentMap === null){
                     alert(`Searched 20 maps and couldn't find one, press the button to try again.`);
                     window.Sweetalert2.hideLoading();
@@ -534,7 +602,7 @@ function handleEndOfGame(json){
             </div>
 
             <div style="margin-top: 1em;" >
-                <button id="_startNextGameBtn" class="swal2-confirm swal2-styled _disabled" disabled>Start Next Game</button>
+                <button id="_startNextGameBtn" class="swal2-confirm swal2-styled _styledBtn _disabled" disabled>Start Next Game</button>
             </div>
         `,
         allowOutsideClick: false, 
@@ -559,6 +627,7 @@ setInterval(()=>{
         hours.innerText = __hours;
         minutes.innerText = __minutes > 9? __minutes : `0${__minutes}`;
         seconds.innerText = __seconds > 9? __seconds : `0${__seconds}`;
+
         score.innerText = ls.maps.length;
     }
 
@@ -571,6 +640,10 @@ setInterval(()=>{
     delete localStorage["RandomMapChallenge"];
 
     let ls1 = localStorage[`RandomMapChallenge_saveInfo`] ? JSON.parse(localStorage[`RandomMapChallenge_saveInfo`]) : [];
+
+    // Delete potentially large maps list from search results.
+    _ls.mapsList = [];
+
     ls1.push(_ls);
 
     localStorage[`RandomMapChallenge_saveInfo`] = JSON.stringify(ls1);
@@ -592,33 +665,34 @@ setInterval(()=>{
             <div id="_alert" style="background-color: #00800030; padding:1em; color: green; font-size: 1.2em; margin: 1em 0em;">
                 Challenge has ended! Your score is ${_ls.maps.length}!
             </div>
-            <div>
-                Finished maps: <span id="_finishedMaps">${_ls.maps.length}</span>
-            </div>
-            
-            <div>
-                Challenge started at: <span id="_timeStart">${_ls.challengeEndTime}</span>
-            </div>
-            <div>
-                Challenge will end at: <span id="_timeEnd">${_ls.challengeEndTime}</span>
-            </div>
-            <div>
-                Challenge time (minutes): <span id="_challengeTime">${_ls.challengeTime / 1000 / 60}</span> 
-            </div>
-            <div>
-                Min map time (minutes): <span id="_mapTime">${_ls.mapPlayTime / 60}</span> 
-            </div>
-            <div>
-                Min map size (km): <span id="_minMapSize">${_ls.minMapSize}</span>
-            </div>
-            <div>
-                Max map size (km): <span id="_maxMapSize">${_ls.maxMapSize}</span>
-            </div>
-            <div>
-                Min map score: <span id="_mapScore">${_ls.minMapScore}</span>
-            </div>
-            <div>
-                Skips: <span id="_mapScore">${_ls.skipsUsed} / ${_ls.numOfSkips}</span>
+            <div id="_infoContainer">
+                <div>
+                    Finished maps: <span id="_finishedMaps">${_ls.maps.length}</span>
+                </div>
+                <div>
+                    Challenge started at: <span id="_timeStart">${_ls.challengeEndTime}</span>
+                </div>
+                <div>
+                    Challenge will end at: <span id="_timeEnd">${_ls.challengeEndTime}</span>
+                </div>
+                <div>
+                    Challenge time (minutes): <span id="_challengeTime">${_ls.challengeTime / 1000 / 60}</span> 
+                </div>
+                <div>
+                    Max map time (minutes): <span id="_mapTime">${_ls.mapPlayTime / 60}</span> 
+                </div>
+                <div>
+                    Min map size (km): <span id="_minMapSize">${_ls.minMapSize.toLocaleString()}</span>
+                </div>
+                <div>
+                    Max map size (km): <span id="_maxMapSize">${_ls.maxMapSize.toLocaleString()}</span>
+                </div>
+                <div>
+                    Min map score: <span id="_mapScore">${_ls.minMapScore.toLocaleString()}</span>
+                </div>
+                <div>
+                    Skips: <span id="_mapScore">${_ls.skipsUsed} / ${_ls.numOfSkips}</span>
+                </div>
             </div>
             <div style="margin-top: 1em;">
                 <input type="checkbox" id="_fMoving" ${_ls.fMoving? "checked": ""}><label for="_fMoving">No Moving?</label>
@@ -751,8 +825,10 @@ window.playFinishedGame = function (finishedGame){
             currentMap: finishedGame.maps[0],
             numOfSkips: finishedGame.numOfSkips,
             skipsUsed: 0,
+            searchByPlayerId: finishedGame.searchByPlayerId,
+            searchByTerms: finishedGame.searchByTerms,
+            mapsList: [], 
         };
-        debugger;
 
         if (finishedGame.currentMap){
             finishedGame.maps.push(finishedGame.currentMap);
@@ -767,11 +843,16 @@ window.playFinishedGame = function (finishedGame){
 
 document.head.insertAdjacentHTML('beforeend', `
     <style>
-        ._challengeSpecs input[type=number] {
+        ._challengeSpecs input[type=number], ._challengeSpecs input[type=text]{
             width: 6em; 
             border-radius: 5px;
             background: #7066e017;
         }
+
+        ._challengeSpecs input[type=text]{
+            width: 16em; 
+        }
+
         ._rmc_header {
             font-family: var(--default-font);
             font-weight: 500;
@@ -780,13 +861,20 @@ document.head.insertAdjacentHTML('beforeend', `
             padding: 5px;
             color: white;
         }
+
         ._hover:hover {
             cursor: pointer;
             color: blue !important;
         }
+
+        ._styledBtn{
+            background-color:#6cb928;
+        }
+
         ._styledBtn:hover{
          background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1));  
         }
+
         ._prevChalMaps {
             max-height: 7em;
             margin-bottom: 1em;
@@ -812,7 +900,7 @@ document.head.insertAdjacentHTML('beforeend', `
             cursor: pointer;
             z-index: 999999999;
             background: rgba(186, 85, 211, 0.8); 
-            background-image: url("https://www.svgrepo.com/show/86397/question-mark-button.svg");
+            background-image: url("https://www.svgrepo.com/show/326034/question-circle.svg");
             background-repeat: no-repeat;
             background-origin: content-box;
             background-size: 1.8em;
@@ -829,8 +917,19 @@ document.head.insertAdjacentHTML('beforeend', `
         ._stats_button {
             font-weight: 500;
             right: calc(7.5em);
-            width: 10em;
-            background-position: 6.5em;
+            width: 11em;
+            background-position: 7.5em;
             text-align: left;
+        }
+
+        #_infoContainer span{
+            font-weight: bold; 
+        }
+        
+        #_score {
+            margin-right: 0.8em;
+            width: 1.4em;
+            display: inline-block;
+            text-align: right;
         }
     </style>`);
