@@ -13,8 +13,9 @@
 
 const menuButton = document.createElement('button');
 menuButton.id = "RMC_menu_button";
-menuButton.innerHTML = "Start new Random Map Challenge!";
-menuButton.style.cssText = "position: absolute; bottom: 5px; padding: 0.625em 1.1em; left: 1em; cursor: pointer; z-index: 999999999; background: #DAD667; border-radius: 5px;"
+menuButton.title = "Start new Random Map Challenge!";
+menuButton.className = '_menu_button';
+//menuButton.style.cssText = "position: absolute; bottom: 5px; padding: 0.625em 1.1em; left: 1em; cursor: pointer; z-index: 999999999; background: #DAD667; border-radius: 5px;"
 menuButton.addEventListener('click', menuBtnClickHandler);
 document.body.appendChild(menuButton);
 
@@ -23,11 +24,14 @@ const ls = localStorage["RandomMapChallenge"] ? JSON.parse(localStorage["RandomM
 const progressBtn = document.createElement('button');
 
 if (ls) {
-    progressBtn.innerHTML = "Random Map Challenge Progress!";
-    progressBtn.style.cssText = "position: absolute; bottom: 5px; left: 20em; cursor: pointer; z-index: 999999999; background: #ffcaa8; padding: 0.625em 1.1em; border-radius: 5px;"
+//    progressBtn.innerHTML = "Random Map Challenge Progress!";
+    progressBtn.className = `_menu_button _stats_button`;
+    //progressBtn.style.cssText = "position: absolute; bottom: 5px; left: 20em; cursor: pointer; z-index: 999999999; background: #ffcaa8; padding: 0.625em 1.1em; border-radius: 5px;"
     progressBtn.addEventListener('click', progBtnClickHandler);
     document.body.appendChild(progressBtn);
     
+    progressBtn.innerHTML = `<div><span id='_score' style="margin-right: 0.5em;">---</span><span id="_hours">---</span> : <span id="_minutes">---</span> : <span id="_seconds">---</span></div>`;
+
     function progBtnClickHandler(){
 
         if (ls === null) {
@@ -86,7 +90,7 @@ if (ls) {
                 });
             },
             html: `
-            <div class="_rmc_header" >Random Map Challenge Progress</div>
+            <div class="_rmc_header" >Random Map Challenge Stats</div>
             <div id="_alert" style="color: red; display: none;">
                 Challenge doesn't start until you start playing your first game!
             </div>
@@ -287,12 +291,6 @@ function handlerPopup(p){
         
         localStorage["RandomMapChallenge"] = JSON.stringify(obj);
         
-        const menuButton = document.createElement('button');
-        menuButton.innerHTML = "Message in steps";
-        menuButton.style.cssText = "position: absolute; bottom: 5px; left: 20px; cursor: pointer; z-index: 999999999; background: #ffcaa8; padding: 5px; border-radius: 5px;"
-        menuButton.addEventListener('click', menuBtnClickHandler);
-        document.body.appendChild(menuButton);
-
         window.open(`https://www.geoguessr.com/maps/${obj.currentMap.id}`,"_self");
     });
 }
@@ -544,30 +542,47 @@ function handleEndOfGame(json){
 }
         
 setInterval(()=>{
-    let ls = localStorage["RandomMapChallenge"];
-    if (!ls) return;
+    // Main loop
+    let _ls = localStorage["RandomMapChallenge"];
+    if (!_ls) return;
 
-    ls = JSON.parse(ls);
+    if (ls && ls.challengeEndTime){
+        const hours = document.getElementById('_hours');
+        const minutes = document.getElementById('_minutes');
+        const seconds = document.getElementById('_seconds');
+        const score = document.getElementById('_score');
 
-    if (!ls.challengeEndTime) return;
+        const timeLeft = ls.challengeEndTime - Date.now();
+        let __hours = Math.trunc(timeLeft / (1*60*60*1000));
+        let __minutes = Math.trunc((timeLeft - (__hours*60*60*1000)) / (60*1000));
+        let __seconds = Math.trunc(((timeLeft - (__hours*60*60*1000)) - (__minutes*60*1000)) / 1000);
+        hours.innerText = __hours;
+        minutes.innerText = __minutes > 9? __minutes : `0${__minutes}`;
+        seconds.innerText = __seconds > 9? __seconds : `0${__seconds}`;
+        score.innerText = ls.maps.length;
+    }
 
-    if (Date.now() < ls.challengeEndTime) return;
+    _ls = JSON.parse(_ls);
+
+    if (!_ls.challengeEndTime) return;
+
+    if (Date.now() < _ls.challengeEndTime) return;
 
     delete localStorage["RandomMapChallenge"];
 
     let ls1 = localStorage[`RandomMapChallenge_saveInfo`] ? JSON.parse(localStorage[`RandomMapChallenge_saveInfo`]) : [];
-    ls1.push(ls);
+    ls1.push(_ls);
 
     localStorage[`RandomMapChallenge_saveInfo`] = JSON.stringify(ls1);
     
     let p = new window.Sweetalert2({
         didOpen: function(e){
 
-            let startedTime = new Date(ls.challengeStartedTime);
+            let startedTime = new Date(_ls.challengeStartedTime);
             startedTime = `${startedTime.getHours()}: ${startedTime.getMinutes()}: ${startedTime.getSeconds()}`;
             document.getElementById('_timeStart').innerText = startedTime;
 
-            let endTime = new Date(ls.challengeEndTime);
+            let endTime = new Date(_ls.challengeEndTime);
             endTime = `${endTime.getHours()}: ${endTime.getMinutes()}: ${endTime.getSeconds()}`;
             document.getElementById('_timeEnd').innerText = endTime;
 
@@ -575,40 +590,40 @@ setInterval(()=>{
         html: `
             <div class="_rmc_header"  >Random Map Challenge Final Score!</div>
             <div id="_alert" style="background-color: #00800030; padding:1em; color: green; font-size: 1.2em; margin: 1em 0em;">
-                Challenge has ended! Your score is ${ls.maps.length}!
+                Challenge has ended! Your score is ${_ls.maps.length}!
             </div>
             <div>
-                Finished maps: <span id="_finishedMaps">${ls.maps.length}</span>
+                Finished maps: <span id="_finishedMaps">${_ls.maps.length}</span>
             </div>
             
             <div>
-                Challenge started at: <span id="_timeStart">${ls.challengeEndTime}</span>
+                Challenge started at: <span id="_timeStart">${_ls.challengeEndTime}</span>
             </div>
             <div>
-                Challenge will end at: <span id="_timeEnd">${ls.challengeEndTime}</span>
+                Challenge will end at: <span id="_timeEnd">${_ls.challengeEndTime}</span>
             </div>
             <div>
-                Challenge time (minutes): <span id="_challengeTime">${ls.challengeTime / 1000 / 60}</span> 
+                Challenge time (minutes): <span id="_challengeTime">${_ls.challengeTime / 1000 / 60}</span> 
             </div>
             <div>
-                Min map time (minutes): <span id="_mapTime">${ls.mapPlayTime / 60}</span> 
+                Min map time (minutes): <span id="_mapTime">${_ls.mapPlayTime / 60}</span> 
             </div>
             <div>
-                Min map size (km): <span id="_minMapSize">${ls.minMapSize}</span>
+                Min map size (km): <span id="_minMapSize">${_ls.minMapSize}</span>
             </div>
             <div>
-                Max map size (km): <span id="_maxMapSize">${ls.maxMapSize}</span>
+                Max map size (km): <span id="_maxMapSize">${_ls.maxMapSize}</span>
             </div>
             <div>
-                Min map score: <span id="_mapScore">${ls.minMapScore}</span>
+                Min map score: <span id="_mapScore">${_ls.minMapScore}</span>
             </div>
             <div>
-                Skips: <span id="_mapScore">${ls.skipsUsed} / ${ls.numOfSkips}</span>
+                Skips: <span id="_mapScore">${_ls.skipsUsed} / ${_ls.numOfSkips}</span>
             </div>
             <div style="margin-top: 1em;">
-                <input type="checkbox" id="_fMoving" ${ls.fMoving? "checked": ""}><label for="_fMoving">No Moving?</label>
-                <input type="checkbox" id="_fRotating"${ls.fRotating? "checked": ""}><label for="_fMoving">No Rotating?</label>
-                <input type="checkbox" id="_fZooming"${ls.fZooming? "checked": ""}><label for="_fMoving">No Zooming?</label>
+                <input type="checkbox" id="_fMoving" ${_ls.fMoving? "checked": ""}><label for="_fMoving">No Moving?</label>
+                <input type="checkbox" id="_fRotating"${_ls.fRotating? "checked": ""}><label for="_fMoving">No Rotating?</label>
+                <input type="checkbox" id="_fZooming"${_ls.fZooming? "checked": ""}><label for="_fMoving">No Zooming?</label>
             </div>
 
         `,
@@ -783,5 +798,39 @@ document.head.insertAdjacentHTML('beforeend', `
 
         ._disabled:disabled{
             background-color: grey;
+        }
+        
+        ._menu_button {
+            font-family: var(--default-font);
+            font-size: 16px;
+            color: white;
+            right: calc(4em);
+            top: calc(6em);
+            box-shadow: rgba(0, 0, 0, 0.1) 0px 8px 15px;
+            position: absolute;
+            padding: 0.625em 1.1em;
+            cursor: pointer;
+            z-index: 999999999;
+            background: rgba(186, 85, 211, 0.8); 
+            background-image: url("https://www.svgrepo.com/show/86397/question-mark-button.svg");
+            background-repeat: no-repeat;
+            background-origin: content-box;
+            background-size: 1.8em;
+            background-position: 50% 50%;
+            border-radius: 25px;
+            height: 2.5em;
+            width: 3em;
+        }
+
+        ._menu_button:hover {
+           scale:0.95; 
+        }
+
+        ._stats_button {
+            font-weight: 500;
+            right: calc(7.5em);
+            width: 10em;
+            background-position: 6.5em;
+            text-align: left;
         }
     </style>`);
