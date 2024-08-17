@@ -30,8 +30,13 @@ if (ls) {
     progressBtn.addEventListener('click', progBtnClickHandler);
     document.body.appendChild(progressBtn);
     
-    progressBtn.innerHTML = `<div><span id='_score' >---</span><span id="_hours">---</span> : <span id="_minutes">---</span> : <span id="_seconds">---</span></div>`;
+    progressBtn.innerHTML = `
+    <div>
+    <span id='_score' >---</span><span id="_hours">---</span> : <span id="_minutes">---</span> : <span id="_seconds">---</span>
+    </div>
+    `;
 
+            //<path d="L20 0 L20 10 L0 10 Z"></path>
     function progBtnClickHandler(){
 
         if (ls === null) {
@@ -95,7 +100,7 @@ if (ls) {
                 Challenge doesn't start until you start playing your first game!
             </div>
             <div id="_greenAlert" style="color: green; display: none; font-size: 1.2em; margin: 1em 0em;">
-                Challenge has ended! Your score is ${ls.maps.length}!
+                Challenge has ended! Your score is ${ls.maps.length}<div class="_aniMark" style="display:inline-block">!</div>
             </div>
             <div id="_container" style="margin-top: 1em;">
                 <div id="_infoContainer">
@@ -663,7 +668,7 @@ setInterval(()=>{
         html: `
             <div class="_rmc_header"  >Random Map Challenge Final Score!</div>
             <div id="_alert" style="background-color: #00800030; padding:1em; color: green; font-size: 1.2em; margin: 1em 0em;">
-                Challenge has ended! Your score is ${_ls.maps.length}!
+                Challenge has ended! Your score is ${_ls.maps.length}<div class="_aniMark" style="display:inline-block">!</div>
             </div>
             <div id="_infoContainer">
                 <div>
@@ -932,4 +937,15 @@ document.head.insertAdjacentHTML('beforeend', `
             display: inline-block;
             text-align: right;
         }
+
+        ._aniMark{
+            animation: mymove 1s;
+        }
+
+        @keyframes mymove {
+            40% {scale:1}
+            60%   {scale: 2;}
+            100% {scale: 1;}
+        }
+
     </style>`);
