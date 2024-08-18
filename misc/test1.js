@@ -652,7 +652,7 @@ setInterval(()=>{
 
     // Delete potentially large maps list from search results.
     _ls.mapsList = [];
-
+    
     // Only save the last 100 challenges.
     ls1.splice(0, p.length % 100);
 
@@ -757,54 +757,41 @@ function viewPreviousGames(){
     prevGames.findLast((game)=>{
         // Use findLast to iterate backwards. https://stackoverflow.com/a/54261027
         _html += `
-            <div>
-            <div class="_prevChalGame _hover" style='margin-bottom:1em;cursor: pointer;'>
-            ${(new Date(game.challengeEndTime).toString()).replace(/ \w+-.*/, '')}
-            </div>
-            <div class="_prevChalMaps" style="display: none;">
-               ${(()=>{
-                    let str = ``;
-                    if (game.maps.length === 0){
-                        if (game?.currentMap?.id){
-                            str += `<div><a href="https://www.geoguessr.com/maps/${game.currentMap.id}" style="color: #794141;" class="_prevChalMap _hover" title="Challenge ended in middle of this game.">${game.currentMap.n}</a></div>`;
-                        } else {
-                            str += `<div>No finished maps found</div>`
-                        }
-                        return str;
-                    }
+            <details>
+                <summary class="_prevChalGame _hover" style='margin-bottom: 0.5em; cursor: pointer;'>
+                ${(new Date(game.challengeEndTime).toString()).replace(/ \w+-.*/, '')}
+                </summary>
+                <div class="_prevChalMaps">
+                    ${(()=>{
+                            let str = ``;
+                            if (game.maps.length === 0){
+                                if (game?.currentMap?.id){
+                                    str += `<div><a href="https://www.geoguessr.com/maps/${game.currentMap.id}" style="color: #9ca1a3;" class="_prevChalMap _hover" title="Challenge ended in middle of this game.">${game.currentMap.n}</a></div>`;
+                                } else {
+                                    str += `<div>No finished maps found</div>`
+                                }
+                                return str;
+                            }
 
-                    game.maps.forEach(map =>{
-                        str += `<div><a href="https://www.geoguessr.com/maps/${map.id}"class="_prevChalMap _hover">${map.n}</a></div>`;
-                    });
+                            game.maps.forEach(map =>{
+                                str += `<div><a href="https://www.geoguessr.com/maps/${map.id}"class="_prevChalMap _hover">${map.n}</a></div>`;
+                            });
 
-                    if (game?.currentMap?.id){
-                        str += `<div><a href="https://www.geoguessr.com/maps/${game.currentMap.id}" style="color: #794141;" class="_prevChalMap _hover" title="Challenge ended in middle of this game.">${game.currentMap.n}</a></div>`;
-                    }
-                    return str;
-                })()} 
-               <div>
-                   <textarea class="_prevGameTa" title="This is what your game looks like to a computer." rows="1" >${JSON.stringify(game)}</textarea>
-               </div>
-            </div> 
-            </div>
+                            if (game?.currentMap?.id){
+                                str += `<div><a href="https://www.geoguessr.com/maps/${game.currentMap.id}" style="color: #9ca1a3;" class="_prevChalMap _hover" title="Challenge ended in middle of this game.">${game.currentMap.n}</a></div>`;
+                            }
+                            return str;
+                        })()} 
+                    <div>
+                        <textarea class="_prevGameTa" title="This is what your game looks like to a computer." rows="1" >${JSON.stringify(game)}</textarea>
+                    </div>
+                </div>
+            </details>
         ` 
     });
 
     let p = new window.Sweetalert2({
         didOpen: function(e){ 
-            let prevChalGames = document.querySelectorAll('._prevChalGame');
-            let prevChalMaps = document.querySelectorAll('._prevChalMap');
-
-            prevChalGames.forEach((game)=>{
-                game.addEventListener('click', ()=>{
-                    const sibling = game.nextElementSibling;
-                    if (sibling.style.display === ""){
-                        sibling.style.display = "none";
-                    } else {
-                        sibling.style.display = "";
-                    }
-                })
-            })
         },
         html: `
             <div class="_rmc_header">Previous Finished Games</div>
@@ -858,11 +845,19 @@ window.playFinishedGame = function (finishedGame){
 
 document.head.insertAdjacentHTML('beforeend', `
     <style>
+        .swal2-popup {
+            font-family: var(--default-font);
+        }
+
         ._challengePrevSpecs {
             max-height: 40vh;
             overflow-y: auto;
             scrollbar-color: #676bda transparent;
             scrollbar-width: thin;
+        }
+
+        ._challengePrevSpecs summary::marker {
+            color: #5b6fd4;
         }
 
         ._challengeSpecs input[type=number], ._challengeSpecs input[type=text]{
@@ -876,7 +871,6 @@ document.head.insertAdjacentHTML('beforeend', `
         }
 
         ._rmc_header {
-            font-family: var(--default-font);
             font-weight: 500;
             margin-bottom: 1em;
             background: #676bda;
@@ -901,10 +895,9 @@ document.head.insertAdjacentHTML('beforeend', `
             max-height: 7em;
             margin-bottom: 1em;
             line-height: 1.5em;
-            border-top: 1px solid rgba(0, 0, 0, 0.1);
-            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
             overflow-y: auto;
             scrollbar-width: thin;
+            background-color: aliceblue;
         }
 
         ._disabled:disabled{
@@ -912,7 +905,6 @@ document.head.insertAdjacentHTML('beforeend', `
         }
         
         ._menu_button {
-            font-family: var(--default-font);
             font-size: 16px;
             color: white;
             right: calc(4em);
