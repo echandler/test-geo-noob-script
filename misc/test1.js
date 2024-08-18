@@ -158,6 +158,7 @@ if (ls) {
             </div>
         `,
             allowOutsideClick: false,
+            confirmButtonText: "Close",
         });
     }
 }
@@ -217,6 +218,7 @@ function menuBtnClickHandler(){
             <div>
         `,
         allowOutsideClick: false, 
+        confirmButtonText: "Close",
     });
 }
 
@@ -261,6 +263,7 @@ function handlerPopup(p){
                 <div>
             `,
             allowOutsideClick: false, 
+            confirmButtonText: "Close",
         });
 
     });
@@ -611,7 +614,8 @@ function handleEndOfGame(json){
             </div>
         `,
         allowOutsideClick: false, 
-    });
+        confirmButtonText: "Close",
+    }) ;
 }
         
 setInterval(()=>{
@@ -707,7 +711,7 @@ setInterval(()=>{
 
         `,
         allowOutsideClick: false, 
-
+        confirmButtonText: "Close",
         })
     }, 1000);
 
@@ -805,7 +809,8 @@ function viewPreviousGames(){
             <div>
         `,
         allowOutsideClick: false, 
-    });
+        confirmButtonText: "Close",
+    }) ;
 }
 
 window.playFinishedGame = function (finishedGame){
