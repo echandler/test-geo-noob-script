@@ -653,6 +653,9 @@ setInterval(()=>{
     // Delete potentially large maps list from search results.
     _ls.mapsList = [];
 
+    // Only save the last 100 challenges.
+    ls1.splice(0, p.length % 100);
+
     ls1.push(_ls);
 
     localStorage[`RandomMapChallenge_saveInfo`] = JSON.stringify(ls1);
@@ -751,16 +754,14 @@ function viewPreviousGames(){
     prevGames = JSON.parse(prevGames);
 
     let _html = ``;
-    prevGames.forEach((game)=>{
+    prevGames.findLast((game)=>{
+        // Use findLast to iterate backwards. https://stackoverflow.com/a/54261027
         _html += `
             <div>
             <div class="_prevChalGame _hover" style='margin-bottom:1em;cursor: pointer;'>
             ${(new Date(game.challengeEndTime).toString()).replace(/ \w+-.*/, '')}
             </div>
             <div class="_prevChalMaps" style="display: none;">
-               <div>
-                   <textarea title="This is what your game looks like to a computer." style="border: 1px solid #d3d3d3;">${JSON.stringify(game)}</textarea>
-               </div>
                ${(()=>{
                     let str = ``;
                     if (game.maps.length === 0){
@@ -771,6 +772,7 @@ function viewPreviousGames(){
                         }
                         return str;
                     }
+
                     game.maps.forEach(map =>{
                         str += `<div><a href="https://www.geoguessr.com/maps/${map.id}"class="_prevChalMap _hover">${map.n}</a></div>`;
                     });
@@ -780,6 +782,9 @@ function viewPreviousGames(){
                     }
                     return str;
                 })()} 
+               <div>
+                   <textarea class="_prevGameTa" title="This is what your game looks like to a computer." rows="1" >${JSON.stringify(game)}</textarea>
+               </div>
             </div> 
             </div>
         ` 
@@ -804,7 +809,7 @@ function viewPreviousGames(){
         html: `
             <div class="_rmc_header">Previous Finished Games</div>
             
-            <div class="_challengeSpecs" style="max-height: 40vh;overflow-y: scroll;">
+            <div class="_challengePrevSpecs" >
                 ${_html}
             <div>
         `,
@@ -853,6 +858,13 @@ window.playFinishedGame = function (finishedGame){
 
 document.head.insertAdjacentHTML('beforeend', `
     <style>
+        ._challengePrevSpecs {
+            max-height: 40vh;
+            overflow-y: auto;
+            scrollbar-color: #676bda transparent;
+            scrollbar-width: thin;
+        }
+
         ._challengeSpecs input[type=number], ._challengeSpecs input[type=text]{
             width: 6em; 
             border-radius: 5px;
@@ -888,10 +900,11 @@ document.head.insertAdjacentHTML('beforeend', `
         ._prevChalMaps {
             max-height: 7em;
             margin-bottom: 1em;
+            line-height: 1.5em;
             border-top: 1px solid rgba(0, 0, 0, 0.1);
             border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-            overflow-y: scroll;
-
+            overflow-y: auto;
+            scrollbar-width: thin;
         }
 
         ._disabled:disabled{
@@ -953,4 +966,13 @@ document.head.insertAdjacentHTML('beforeend', `
             100% {scale: 1;}
         }
 
+        ._prevGameTa{
+            border: 1px solid #d3d3d3; 
+            opacity:0.2;
+            margin-top: 1em;
+        }
+
+        ._prevGameTa:hover{
+            opacity: 1; 
+        }
     </style>`);
