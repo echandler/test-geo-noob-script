@@ -661,9 +661,11 @@ setInterval(()=>{
 
     // Delete potentially large maps list from search results.
     _ls.mapsList = [];
-    
+
     // Only save the last 100 challenges.
-    ls1.splice(0, ls1.length % 100);
+    if (ls1.length > 100){
+        ls1.splice(0, ls1.length % 100);
+    }
 
     ls1.push(_ls);
 
