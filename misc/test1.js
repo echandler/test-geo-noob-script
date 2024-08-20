@@ -423,7 +423,6 @@ function listenForApiFetch(json){
     if (!localStorage["RandomMapChallenge"]) return;
 
     if (ls && ls.currentMap && json.map && ls.currentMap.id != json.map){
-        debugger;
         delete localStorage["RandomMapChallenge"];
         alert("Random Map Challenge has ended.");
         return;
@@ -437,6 +436,12 @@ function listenForApiFetch(json){
             localStorage["RandomMapChallenge"] = JSON.stringify(ls);
         }
         
+        if (json.type === "challenge"){
+            alert(`Sorry, this mode doesn't support challenges yet! Game will be restarted!`);
+            
+            window.open(`https://www.geoguessr.com/maps/${ls.currentMap.id}`,"_self");
+        }
+
         if (ls.fMoving && json.forbidMoving === false){
             alert('Random Map Challenge requires no moving games! Game will be restarted!');
             
@@ -488,7 +493,11 @@ function handleEndOfGame(json){
         progressBtn.click();
         return;
     }
-          
+    
+    if (json.player.totalTime === 0){
+        return;
+    }
+
     if (handleEndOfGameIsHandling) return;
 
     let p = new window.Sweetalert2({
@@ -512,10 +521,10 @@ function handleEndOfGame(json){
 
             if (json.player.totalTime > ls.mapPlayTime){
                 _alert.style.display = "";
-                    document.getElementById('_alertExplanation').innerText = `Total time was too long! Keep total time under ${ls.mapPlayTime / 60} minutes.`;
+                document.getElementById('_alertExplanation').innerText = `Total time was too long! Keep total time under ${ls.mapPlayTime / 60} minutes.`;
                 return;
             }  
-            
+
             if(ls.currentMap) ls.maps.push(ls.currentMap);
             ls.currentMap = null;
 
@@ -654,7 +663,7 @@ setInterval(()=>{
     _ls.mapsList = [];
     
     // Only save the last 100 challenges.
-    ls1.splice(0, p.length % 100);
+    ls1.splice(0, ls1.length % 100);
 
     ls1.push(_ls);
 
@@ -731,7 +740,7 @@ setInterval(()=>{
                     let v3APIRes = await _fetch.apply(window, args);
 
                     let resJSON = await v3APIRes.clone().json();
-                    
+
                     listenForApiFetch(resJSON);
 
                     return new Promise((res) => {
