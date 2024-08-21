@@ -16,7 +16,7 @@ menuButton.id = "RMC_menu_button";
 menuButton.title = "Start new Random Map Challenge!";
 menuButton.className = '_menu_button';
 //menuButton.style.cssText = "position: absolute; bottom: 5px; padding: 0.625em 1.1em; left: 1em; cursor: pointer; z-index: 999999999; background: #DAD667; border-radius: 5px;"
-menuButton.addEventListener('click', menuBtnClickHandler);
+menuButton.addEventListener('click', mainMenuBtnClickHandler);
 document.body.appendChild(menuButton);
 
 const ls = localStorage["RandomMapChallenge"] ? JSON.parse(localStorage["RandomMapChallenge"]): null;
@@ -149,11 +149,14 @@ if (ls) {
                     <input type="checkbox" disabled id="_fRotating"${ls.fRotating ? "checked" : ""}><label for="_fMoving">No Rotating?</label>
                     <input type="checkbox" disabled id="_fZooming"${ls.fZooming ? "checked" : ""}><label for="_fMoving">No Zooming?</label>
                 </div>
+                <div id="_miscStuff" style="margin: 1em 0em;">
+                    <input type="checkbox" disabled id="_autoNextMap" ${ls.autoNextMap ? "checked" : ""}><label for="_autoNextMap">Auto next map?</label>
+                </div>
                 <div style="margin-top: 1em;" >
                     <button id="_skipMapBtn" class="swal2-confirm swal2-styled _disabled _styledBtn" ${(!ls.challengeEndTime || (ls.skipsUsed < ls.numOfSkips)) ? "": "disabled"}>Skip map</button>
                 </div>
                 <div style="margin-top: 1em;" >
-                    <button id="_endGameBtn" class="swal2-confirm swal2-styled _styledBtn" }>End game.</button>
+                    <button id="_endGameBtn" class="swal2-confirm swal2-styled _styledBtn clickyBtn" >End game.</button>
                 </div>
             </div>
         `,
@@ -163,7 +166,7 @@ if (ls) {
     }
 }
 
-function menuBtnClickHandler(){
+function mainMenuBtnClickHandler(){
 
     if (window.Sweetalert2.isVisible()){
         return;
@@ -199,6 +202,9 @@ function menuBtnClickHandler(){
                     <input type="checkbox" id="_fMoving"><label for="_fMoving">No Moving?</label>
                     <input type="checkbox" id="_fRotating"><label for="_fRotating">No Rotating?</label>
                     <input type="checkbox" id="_fZooming"><label for="_fZooming">No Zooming?</label>
+                </div>
+                <div id="_miscStuff" style="margin: 1em 0em;">
+                    <input type="checkbox" id="_autoNextMap"><label for="_autoNextMap">Auto next map?</label>
                 </div>
                 <div>
                     Map search <input id="_searchByTerms" type="text" placeholder="Enter search terms here.">
@@ -291,6 +297,7 @@ function handlerPopup(p){
             fMoving: document.getElementById('_fMoving').checked,
             fRotating: document.getElementById('_fRotating').checked,
             fZooming: document.getElementById('_fZooming').checked,
+            autoNextMap: document.getElementById('_autoNextMap').checked,
             numOfSkips: parseInt(skips.value),
             searchByPlayerId: searchByPlayerId.value,
             searchByTerms: searchByTerms.value,
@@ -413,9 +420,14 @@ document.body.addEventListener('keyup', (e)=>{
     // Fix for round 5 not being detected unless the guess button is clicked with mouse.
     if (e.code != "Space") return;
     const guessBtn = document.querySelector(`button[data-qa="perform-guess"]`);
-    if (!guessBtn.disabled){
+    if (guessBtn && !guessBtn.disabled){
         guessBtn.click();
     }
+    const clickyBtn = document.querySelector('.clickyBtn');
+    if (clickyBtn && !clickyBtn.disabled){
+        clickyBtn.click();
+    }
+
 });
 
 function listenForApiFetch(json){
@@ -499,7 +511,7 @@ function handleEndOfGame(json){
     }
 
     if (handleEndOfGameIsHandling) return;
-
+    
     let p = new window.Sweetalert2({
         willClose: function(){
             handleEndOfGameIsHandling = false;
@@ -512,15 +524,15 @@ function handleEndOfGame(json){
             handleEndOfGameIsHandling = true;
             const _alert = document.getElementById('_alert');
             const _greenAlert = document.getElementById('_greenAlert');
-            const btn = document.getElementById('_startNextGameBtn');
-            btn.disabled = false;
+            const startNextGameBtn = document.getElementById('_startNextGameBtn');
+            startNextGameBtn.disabled = false;
 
             if (json.player.totalScore.amount < ls.minMapScore){
                 const score = parseInt(json.player.totalScore.amount).toLocaleString();
                 _alert.style.display = "";
                 document.getElementById('_alertExplanation').innerText = `Your score is ${score}; the number to beat is ${ls.minMapScore.toLocaleString()}!`;
-                btn.innerText = "Retry Map";
-                btn.addEventListener('click', ()=>{
+                startNextGameBtn.innerText = "Retry Map";
+                startNextGameBtn.addEventListener('click', ()=>{
                     window.open(`https://www.geoguessr.com/maps/${ls.currentMap.id}/play` ,"_self");
                 }); 
                 return;
@@ -540,12 +552,14 @@ function handleEndOfGame(json){
 
                 document.getElementById('_alertExplanation').innerText = `Your time was ${time};
                  ${minTime} is the time to beat!`;
-                btn.innerText = "Retry Map";
-                btn.addEventListener('click', ()=>{
+                startNextGameBtn.innerText = "Retry Map";
+                startNextGameBtn.addEventListener('click', ()=>{
                     window.open(`https://www.geoguessr.com/maps/${ls.currentMap.id}/play` ,"_self");
                 }); 
                 return;
             }  
+debugger;
+            ls.currentMap.token = json.token;
 
             if(ls.currentMap) ls.maps.push(ls.currentMap);
             ls.currentMap = null;
@@ -553,8 +567,14 @@ function handleEndOfGame(json){
             localStorage["RandomMapChallenge"] = JSON.stringify(ls);
 
             _greenAlert.style.display = "";
+            
+            if (ls.autoNextMap){
+                setTimeout(()=>{
+                  startNextGameBtn.click();  
+                }, 1000);
+            }
 
-            btn.addEventListener('click', btnClickHandler);
+            startNextGameBtn.addEventListener('click', btnClickHandler);
 
             const _btn = document.createElement('button');
             _btn.style.cssText = "display: none; position: absolute; top: 5px; left: 50vw; cursor: pointer; z-index: 999999999; background: #ffcaa8; padding: 0.625em 1.1em; border-radius: 5px;"
@@ -580,7 +600,7 @@ function handleEndOfGame(json){
                     }
                 }
 
-                btn.disabled = true;
+                startNextGameBtn.disabled = true;
                 _btn.disabled = true;
 
                 window.Sweetalert2.showLoading();
@@ -623,6 +643,7 @@ function handleEndOfGame(json){
         },
         html: `
             <div class="_rmc_header">Random Map Challenge</div>
+
             <div id="_alert" style="color: red; display: none; line-height: 1.5em;">
                 Need to replay map to continue!
                 <div id="_alertExplanation">
@@ -638,7 +659,7 @@ function handleEndOfGame(json){
             </div>
 
             <div style="margin-top: 1em;" >
-                <button id="_startNextGameBtn" class="swal2-confirm swal2-styled _styledBtn _disabled" >Start Next Game</button>
+                <button id="_startNextGameBtn" class="swal2-confirm swal2-styled _styledBtn _disabled clickyBtn" >Start Next Game</button>
             </div>
         `,
         allowOutsideClick: false, 
@@ -685,7 +706,8 @@ setInterval(()=>{
     if (ls1.length > 100){
         ls1.splice(0, ls1.length % 100);
     }
-
+    
+    _ls.currentMap.token = location.pathname.match(/\/.*\/(.*)/)[1]; 
     ls1.push(_ls);
 
     localStorage[`RandomMapChallenge_saveInfo`] = JSON.stringify(ls1);
@@ -741,7 +763,6 @@ setInterval(()=>{
                 <input type="checkbox" id="_fRotating"${_ls.fRotating? "checked": ""}><label for="_fMoving">No Rotating?</label>
                 <input type="checkbox" id="_fZooming"${_ls.fZooming? "checked": ""}><label for="_fMoving">No Zooming?</label>
             </div>
-
         `,
         allowOutsideClick: false, 
         confirmButtonText: "Close",
@@ -796,6 +817,7 @@ function viewPreviousGames(){
                             let str = ``;
                             if (game.maps.length === 0){
                                 if (game?.currentMap?.id){
+                                    // Send to map instead of game results because game might not have been finished.
                                     str += `<div><a href="https://www.geoguessr.com/maps/${game.currentMap.id}" style="color: #9ca1a3;" class="_prevChalMap _hover" title="Challenge ended in middle of this game.">${game.currentMap.n}</a></div>`;
                                 } else {
                                     str += `<div>No finished maps found</div>`
@@ -804,10 +826,11 @@ function viewPreviousGames(){
                             }
 
                             game.maps.forEach(map =>{
-                                str += `<div><a href="https://www.geoguessr.com/maps/${map.id}"class="_prevChalMap _hover">${map.n}</a></div>`;
+                                str += `<div><a href="https://www.geoguessr.com/results/${map.token}"class="_prevChalMap _hover">${map.n}</a></div>`;
                             });
 
                             if (game?.currentMap?.id){
+                                // Send to map instead of game results because game might not have been finished.
                                 str += `<div><a href="https://www.geoguessr.com/maps/${game.currentMap.id}" style="color: #9ca1a3;" class="_prevChalMap _hover" title="Challenge ended in middle of this game.">${game.currentMap.n}</a></div>`;
                             }
                             return str;
