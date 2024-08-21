@@ -178,22 +178,22 @@ function menuBtnClickHandler(){
             
             <div class="_challengeSpecs">
                 <div>
-                    Challenge time (minutes) <input id="_challengeTime" type="number" value="60">
+                    Challenge time (minutes) <input id="_challengeTime" type="number" value="60" onfocus="this.select()">
                 </div>
                 <div>
-                    Max game play time (minutes) <input id="_mapPlayTime" type="number" value="15" title="">
+                    Min game time (minutes) <input id="_mapPlayTime" type="number" value="15" title="" onfocus="this.select()">
                 </div>
                 <div>
-                    Min map size (km) <input id="_minMapSize" type="number" value="1">
+                    Min map size (km) <input id="_minMapSize" type="number" value="1" onfocus="this.select()">
                 </div>
                 <div>
-                    Max map size (km) <input id="_maxMapSize" type="number" value="19000" title="Community World is 18534.781 km">
+                    Max map size (km) <input id="_maxMapSize" type="number" value="19000" title="Community World is 18534.781 km" onfocus="this.select()">
                 </div>
                 <div>
-                    Min map score <input id="_minMapScore" type="number" max="25000" value="15000">
+                    Min map score <input id="_minMapScore" type="number" max="25000" value="15000" onfocus="this.select()">
                 </div>
                 <div>
-                    Skips <input id="_skips" type="number" max="25000" value="1">
+                    Skips <input id="_skips" type="number" max="25000" value="1"  onfocus="this.select()">
                 </div>
                 <div style="margin: 1em 0em;">
                     <input type="checkbox" id="_fMoving"><label for="_fMoving">No Moving?</label>
@@ -512,16 +512,37 @@ function handleEndOfGame(json){
             handleEndOfGameIsHandling = true;
             const _alert = document.getElementById('_alert');
             const _greenAlert = document.getElementById('_greenAlert');
+            const btn = document.getElementById('_startNextGameBtn');
+            btn.disabled = false;
 
             if (json.player.totalScore.amount < ls.minMapScore){
                 _alert.style.display = "";
-                    document.getElementById('_alertExplanation').innerText = `Score not high enough! Need to be above ${ls.minMapScore.toLocaleString()}!`;
+                document.getElementById('_alertExplanation').innerText = `Score not high enough! Need to be above ${ls.minMapScore.toLocaleString()}!`;
+                btn.innerText = "Retry Map";
+                btn.addEventListener('click', ()=>{
+                    window.open(`https://www.geoguessr.com/maps/${ls.currentMap.id}/play` ,"_self");
+                }); 
                 return;
             }  
 
             if (json.player.totalTime > ls.mapPlayTime){
                 _alert.style.display = "";
-                document.getElementById('_alertExplanation').innerText = `Total time was too long! Keep total time under ${ls.mapPlayTime / 60} minutes.`;
+                let time = json.player.totalTime;
+                let min = Math.floor(time / 60);
+                let sec = (time - (min * 60));
+                time = `${min? `${min} minute${min > 1?'s':''}`: ""}` + ` ${sec + ` second${sec > 1? "s":""}`}`;
+
+                let minTime = ls.mapPlayTime;
+                min = Math.floor(minTime / 60);
+                sec = (ls.mapPlayTime - (min * 60));
+                minTime = `${min? `${min} minute${min > 1?'s':''}`: ""}` + ` ${sec + ` second${sec > 1? "s":""}`}`;
+
+                document.getElementById('_alertExplanation').innerText = `Your time was ${time};
+                 ${minTime} is the time to beat!`;
+                btn.innerText = "Retry Map";
+                btn.addEventListener('click', ()=>{
+                    window.open(`https://www.geoguessr.com/maps/${ls.currentMap.id}/play` ,"_self");
+                }); 
                 return;
             }  
 
@@ -532,19 +553,16 @@ function handleEndOfGame(json){
 
             _greenAlert.style.display = "";
 
-            const btn = document.getElementById('_startNextGameBtn');
-            btn.disabled = false;
             btn.addEventListener('click', btnClickHandler);
 
             const _btn = document.createElement('button');
-
             _btn.style.cssText = "display: none; position: absolute; top: 5px; left: 50vw; cursor: pointer; z-index: 999999999; background: #ffcaa8; padding: 0.625em 1.1em; border-radius: 5px;"
             _btn.id = "_nextGameBtn";
             _btn.className = 'swal2-confirm swal2-styled';
             _btn.innerText = "Start next RMC game!";
             _btn.addEventListener('click', btnClickHandler );
             document.body.appendChild(_btn);
-
+            
             async function btnClickHandler (){
                 if (ls._finishedGame){
                     ls._finishedGame.idx += 1;
@@ -604,7 +622,7 @@ function handleEndOfGame(json){
         },
         html: `
             <div class="_rmc_header">Random Map Challenge</div>
-            <div id="_alert" style="color: red; display: none;">
+            <div id="_alert" style="color: red; display: none; line-height: 1.5em;">
                 Need to replay map to continue!
                 <div id="_alertExplanation">
                 </div>                
@@ -619,7 +637,7 @@ function handleEndOfGame(json){
             </div>
 
             <div style="margin-top: 1em;" >
-                <button id="_startNextGameBtn" class="swal2-confirm swal2-styled _styledBtn _disabled" disabled>Start Next Game</button>
+                <button id="_startNextGameBtn" class="swal2-confirm swal2-styled _styledBtn _disabled" >Start Next Game</button>
             </div>
         `,
         allowOutsideClick: false, 
