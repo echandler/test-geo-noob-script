@@ -117,7 +117,7 @@ if (ls) {
                         Challenge time (minutes): <span id="_challengeTime">${ls.challengeTime / 1000 / 60}</span> 
                     </div>
                     <div>
-                        Max map time (minutes): <span id="_mapTime">${ls.mapPlayTime / 60}</span> 
+                        Max map time (minutes): <span id="_mapTime">${ls.mapPlayTime > 0? _ls.mapPlayTime / 60 : "---"}</span> 
                     </div>
                     <div>
                         Max map size (km): <span id="_minMapSize">${ls.minMapSize.toLocaleString()}</span>
@@ -181,7 +181,7 @@ function menuBtnClickHandler(){
                     Challenge time (minutes) <input id="_challengeTime" type="number" value="60" onfocus="this.select()">
                 </div>
                 <div>
-                    Min game time (minutes) <input id="_mapPlayTime" type="number" value="15" title="" onfocus="this.select()">
+                    Max game time (minutes) <input id="_mapPlayTime" type="number" value="" title="" onfocus="this.select()">
                 </div>
                 <div>
                     Min map size (km) <input id="_minMapSize" type="number" value="1" onfocus="this.select()">
@@ -227,7 +227,7 @@ function handlerPopup(p){
     const playAgainstSomeone = document.getElementById('_playAgainstSomeoneElse');
     const minMapSize = document.getElementById('_minMapSize');
     const maxMapSize = document.getElementById('_maxMapSize');
-    const minMapTime = document.getElementById('_mapPlayTime');
+    const maxMapTime = document.getElementById('_mapPlayTime');
     const minMapScore = document.getElementById('_minMapScore');
     const challengeTime = document.getElementById('_challengeTime');
     const skips = document.getElementById('_skips');
@@ -284,7 +284,7 @@ function handlerPopup(p){
             challengeEndTime: null,
             maps: [],
             challengeTime: challengeTime.value * 60 * 1000,
-            mapPlayTime: minMapTime.value * 60,
+            mapPlayTime: maxMapTime.value * 60,
             minMapScore: parseInt(minMapScore.value),
             minMapSize: parseInt(minMapSize.value),
             maxMapSize: parseInt(maxMapSize.value),
@@ -516,8 +516,9 @@ function handleEndOfGame(json){
             btn.disabled = false;
 
             if (json.player.totalScore.amount < ls.minMapScore){
+                const score = parseInt(json.player.totalScore.amount).toLocaleString();
                 _alert.style.display = "";
-                document.getElementById('_alertExplanation').innerText = `Score not high enough! Need to be above ${ls.minMapScore.toLocaleString()}!`;
+                document.getElementById('_alertExplanation').innerText = `Your score is ${score}; the number to beat is ${ls.minMapScore.toLocaleString()}!`;
                 btn.innerText = "Retry Map";
                 btn.addEventListener('click', ()=>{
                     window.open(`https://www.geoguessr.com/maps/${ls.currentMap.id}/play` ,"_self");
@@ -525,7 +526,7 @@ function handleEndOfGame(json){
                 return;
             }  
 
-            if (json.player.totalTime > ls.mapPlayTime){
+            if (ls.mapPlayTime > 0 && json.player.totalTime > ls.mapPlayTime){
                 _alert.style.display = "";
                 let time = json.player.totalTime;
                 let min = Math.floor(time / 60);
@@ -720,7 +721,7 @@ setInterval(()=>{
                     Challenge time (minutes): <span id="_challengeTime">${_ls.challengeTime / 1000 / 60}</span> 
                 </div>
                 <div>
-                    Max map time (minutes): <span id="_mapTime">${_ls.mapPlayTime / 60}</span> 
+                    Max map time (minutes): <span id="_mapTime">${_ls.mapPlayTime > 0? _ls.mapPlayTime / 60 : "---"}</span> 
                 </div>
                 <div>
                     Min map size (km): <span id="_minMapSize">${_ls.minMapSize.toLocaleString()}</span>
