@@ -700,15 +700,10 @@ setInterval(()=>{
         let __minutes = Math.trunc((timeLeft - (__hours*60*60*1000)) / (60*1000));
         let __seconds = Math.trunc(((timeLeft - (__hours*60*60*1000)) - (__minutes*60*1000)) / 1000);
 
-        if (__hours === 0){
-            hours.style.opacity = "0.5";
-        }
-        if (__minutes === 0){
-            minutes.style.opacity = "0.5";
-        }
-        if (__seconds === 0){
-            seconds.style.opacity = "0.5";
-        }
+        hours.style.opacity = __hours === 0 ? "0.5": '';
+        minutes.style.opacity = (__minutes === 0 && __hours === 0) ? "0.5" : '';
+        seconds.style.opacity = (__seconds <= 0 && __minutes === 0) ? "0.5" : '';
+
         hours.innerText = __hours +" : ";
         minutes.innerText = __minutes > 9? __minutes +" : " : `0${__minutes} : `;
         seconds.innerText = __seconds > 9? __seconds : `0${__seconds}`;
