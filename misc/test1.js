@@ -156,7 +156,7 @@ if (ls) {
                     <button id="_skipMapBtn" class="swal2-confirm swal2-styled _disabled _styledBtn" ${(!ls.challengeEndTime || (ls.skipsUsed < ls.numOfSkips)) ? "": "disabled"}>Skip map</button>
                 </div>
                 <div style="margin-top: 1em;" >
-                    <button id="_endGameBtn" class="swal2-confirm swal2-styled _styledBtn clickyBtn" >End game.</button>
+                    <button id="_endGameBtn" class="swal2-confirm swal2-styled _styledBtn" >End game.</button>
                 </div>
             </div>
         `,
