@@ -575,10 +575,12 @@ function handleEndOfGame(json){
                 }); 
                 return;
             }  
-debugger;
-            ls.currentMap.token = json.token;
 
-            if(ls.currentMap) ls.maps.push(ls.currentMap);
+            if(ls.currentMap){
+                ls.currentMap.token = json.token;
+                ls.maps.push(ls.currentMap);
+            }
+
             ls.currentMap = null;
 
             localStorage["RandomMapChallenge"] = JSON.stringify(ls);
@@ -669,7 +671,7 @@ debugger;
             
             <div id="_greenAlert" style="color: green; display: none;">
                 <div id="_greenMainMsg">
-                    Everything looks good, on to the next game!
+                    Everything looks good! On to the next game!
                 </div>
                 <div id="_greenExplanation">
                 </div>                
@@ -921,7 +923,12 @@ window.playFinishedGame = function (finishedGame){
 document.head.insertAdjacentHTML('beforeend', `
     <style>
         .swal2-popup {
-            font-family: var(--default-font);
+            font-family: "Neo Sans", var(--default-font);
+        }
+         
+        .swal2-popup button {
+            font-family: "Neo Sans", var(--default-font);
+            font-weight: 700;
         }
 
         ._challengePrevSpecs {
@@ -946,7 +953,7 @@ document.head.insertAdjacentHTML('beforeend', `
         }
 
         ._rmc_header {
-            font-weight: 500;
+            font-weight: bold;
             margin-bottom: 1em;
             background: #676bda;
             padding: 5px;
@@ -1045,4 +1052,15 @@ document.head.insertAdjacentHTML('beforeend', `
         ._prevGameTa:hover{
             opacity: 1; 
         }
-    </style>`);
+    </style>
+    
+    <style>
+        @font-face {
+        font-family: "Neo Sans";
+        src:
+        local("Neo Sans"),
+        url('https://echandler.github.io/test-geo-noob-script/misc/Neo%20Sans%20Std%20Regular.otf') format("opentype");
+        }
+    </style>
+    
+    `);
