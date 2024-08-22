@@ -43,13 +43,13 @@ if (ls) {
     // </div>
     // `;
     progressBtn.innerHTML = `
-    <div style="    position: relative; display: grid; grid-template-columns: 1fr 2fr; grid-template-rows: auto auto; top: -0.625em;">
-        <div style="position: relative; top: 0.2em; font-size: 0.5em; opacity: 0.5;">SCORE</div>
+    <div class="_progBtn" >
         <div style="position: relative; top: 0.2em; font-size: 0.5em; opacity: 0.5;">TIME</div>
-        <div id='_score' >---</div>
-        <div>
-            <span id="_hours">---</span> : <span id="_minutes">---</span> : <span id="_seconds">---</span>
+        <div style="position: relative; top: 0.2em; font-size: 0.5em; opacity: 0.5;">SCORE</div>
+        <div style='width: 5em;'>
+            <span id="_hours">--- : </span><span id="_minutes">--- : </span><span id="_seconds">---</span>
         </div>
+        <div id='_score' >---</div>
     </div>
     `;
 
@@ -699,8 +699,18 @@ setInterval(()=>{
         let __hours = Math.trunc(timeLeft / (1*60*60*1000));
         let __minutes = Math.trunc((timeLeft - (__hours*60*60*1000)) / (60*1000));
         let __seconds = Math.trunc(((timeLeft - (__hours*60*60*1000)) - (__minutes*60*1000)) / 1000);
-        hours.innerText = __hours;
-        minutes.innerText = __minutes > 9? __minutes : `0${__minutes}`;
+
+        if (__hours === 0){
+            hours.style.opacity = "0.5";
+        }
+        if (__minutes === 0){
+            minutes.style.opacity = "0.5";
+        }
+        if (__seconds === 0){
+            seconds.style.opacity = "0.5";
+        }
+        hours.innerText = __hours +" : ";
+        minutes.innerText = __minutes > 9? __minutes +" : " : `0${__minutes} : `;
         seconds.innerText = __seconds > 9? __seconds : `0${__seconds}`;
 
         score.innerText = ls.maps.length;
@@ -946,6 +956,16 @@ document.head.insertAdjacentHTML('beforeend', `
             background: #676bda;
             padding: 5px;
             color: white;
+        }
+        
+        ._progBtn {
+            position: relative;
+            top: 50%;
+            transform: translateY(-50%);
+            display: grid;
+            grid-template-columns: 3fr 1fr;
+            grid-template-rows: auto auto;
+            column-gap: 0.5em;
         }
 
         ._hover:hover {
