@@ -984,7 +984,7 @@ document.head.insertAdjacentHTML('beforeend', `
             padding: 0.625em 1.1em;
             cursor: pointer;
             z-index: 999999999;
-            background: rgba(186, 85, 211, 0.8); 
+            background-color: rgb(255, 153, 153, 0.8);
             background-image: url("https://www.svgrepo.com/show/326034/question-circle.svg");
             background-repeat: no-repeat;
             background-origin: content-box;
@@ -1003,6 +1003,7 @@ document.head.insertAdjacentHTML('beforeend', `
             font-weight: 500;
             right: calc(7.5em);
             width: fit-content;
+            background: rgba(186, 85, 211, 0.8); 
             background-position: 17.5em;
             text-align: left;
         }
