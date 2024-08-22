@@ -30,9 +30,26 @@ if (ls) {
     progressBtn.addEventListener('click', progBtnClickHandler);
     document.body.appendChild(progressBtn);
     
+    // progressBtn.innerHTML = `
+    // <div style="display: grid; grid-auto-template: auto auto;>
+    // <div style="display:inline-block; margin-right:0.5em;">
+    //     <span style="display: inline-block; position: absolute; top: 0.2em; font-size: 0.5em; opacity: 0.5;">SCORE</span>
+    //     <span id='_score' >---</span>
+    // </div> 
+    // <div style="display:inline-block">
+    //     <span style="display: inline-block; position: absolute; top: 0.2em; font-size: 0.5em; opacity: 0.5;">TIME</span>
+    //     <span id="_hours">---</span> : <span id="_minutes">---</span> : <span id="_seconds">---</span>
+    // </div>
+    // </div>
+    // `;
     progressBtn.innerHTML = `
-    <div>
-    <span id='_score' >---</span><span id="_hours">---</span> : <span id="_minutes">---</span> : <span id="_seconds">---</span>
+    <div style="    position: relative; display: grid; grid-template-columns: 1fr 2fr; grid-template-rows: auto auto; top: -0.625em;">
+        <div style="position: relative; top: 0.2em; font-size: 0.5em; opacity: 0.5;">SCORE</div>
+        <div style="position: relative; top: 0.2em; font-size: 0.5em; opacity: 0.5;">TIME</div>
+        <div id='_score' >---</div>
+        <div>
+            <span id="_hours">---</span> : <span id="_minutes">---</span> : <span id="_seconds">---</span>
+        </div>
     </div>
     `;
 
@@ -985,8 +1002,8 @@ document.head.insertAdjacentHTML('beforeend', `
         ._stats_button {
             font-weight: 500;
             right: calc(7.5em);
-            width: 11em;
-            background-position: 7.5em;
+            width: fit-content;
+            background-position: 17.5em;
             text-align: left;
         }
 
@@ -996,9 +1013,7 @@ document.head.insertAdjacentHTML('beforeend', `
         
         #_score {
             margin-right: 0.8em;
-            width: 1.4em;
             display: inline-block;
-            text-align: right;
         }
 
         ._aniMark{
