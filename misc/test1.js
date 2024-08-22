@@ -958,9 +958,8 @@ document.head.insertAdjacentHTML('beforeend', `
             top: 50%;
             transform: translateY(-50%);
             display: grid;
-            grid-template-columns: 3fr 1fr;
+            grid-template-columns: 5.8em 1fr;
             grid-template-rows: auto auto;
-            column-gap: 0.5em;
         }
 
         ._hover:hover {
@@ -1027,11 +1026,6 @@ document.head.insertAdjacentHTML('beforeend', `
             font-weight: bold; 
         }
         
-        #_score {
-            margin-right: 0.8em;
-            display: inline-block;
-        }
-
         ._aniMark{
             animation: mymove 1s;
         }
