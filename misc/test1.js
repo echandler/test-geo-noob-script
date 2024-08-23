@@ -114,7 +114,7 @@ if (ls) {
             html: `
             <div class="_rmc_header" >Random Map Challenge Stats</div>
             <div id="_alert" style="color: red; display: none;">
-                Challenge doesn't start until you start playing your first game!
+                Challenge doesn't start until you start playing your first game! <a style="color: #676bda; text-decoration: underline;"href="https://www.geoguessr.com/maps/${ls.currentMap.id}">Link</a>
             </div>
             <div id="_greenAlert" style="color: green; display: none; font-size: 1.2em; margin: 1em 0em;">
                 Challenge has ended! Your score is ${ls.maps.length}<div class="_aniMark" style="display:inline-block">!</div>
@@ -137,7 +137,7 @@ if (ls) {
                         Max map time (minutes): <span id="_mapTime">${ls.mapPlayTime > 0? _ls.mapPlayTime / 60 : "---"}</span> 
                     </div>
                     <div>
-                        Max map size (km): <span id="_minMapSize">${ls.minMapSize.toLocaleString()}</span>
+                        Min map size (km): <span id="_minMapSize">${ls.minMapSize.toLocaleString()}</span>
                     </div>
                     <div>
                         Max map size (km): <span id="_maxMapSize">${ls.maxMapSize.toLocaleString()}</span>
@@ -953,9 +953,11 @@ document.head.insertAdjacentHTML('beforeend', `
         ._rmc_header {
             font-weight: bold;
             margin-bottom: 1em;
-            background: #676bda;
             padding: 5px;
             color: white;
+            background: #676bda;
+            background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='50px' width='50px'><text x='0' y='20' fill='%23D4C05B' fill-opacity='0.5' font-size='20'>beta</text></svg>");
+            background-position: -1% -11%; 
         }
         
         ._progBtn {
