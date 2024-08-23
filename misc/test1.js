@@ -114,7 +114,7 @@ if (ls) {
             html: `
             <div class="_rmc_header" >Random Map Challenge Stats</div>
             <div id="_alert" style="color: red; display: none;">
-                Challenge doesn't start until you start playing your first game! <a style="color: #676bda; text-decoration: underline;"href="https://www.geoguessr.com/maps/${ls.currentMap.id}">Link</a>
+                Challenge doesn't start until you start playing your first game! <a style="color: #676bda; text-decoration: underline;"href="https://www.geoguessr.com/maps/${ls?.currentMap?.id?ls?.currentMap?.id: null}">Link</a>
             </div>
             <div id="_greenAlert" style="color: green; display: none; font-size: 1.2em; margin: 1em 0em;">
                 Challenge has ended! Your score is ${ls.maps.length}<div class="_aniMark" style="display:inline-block">!</div>
