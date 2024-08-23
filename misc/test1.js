@@ -581,9 +581,9 @@ function handleEndOfGame(json){
                 ls.maps.push(ls.currentMap);
             }
 
-            ls.currentMap = null;
-
             localStorage["RandomMapChallenge"] = JSON.stringify(ls);
+
+            ls.currentMap = null;
 
             _greenAlert.style.display = "";
             
@@ -624,8 +624,6 @@ function handleEndOfGame(json){
 
                 window.Sweetalert2.showLoading();
                 
-                ls.currentMap = null; 
-
                 if (ls._finishedGame && ls.maps.length === 0 && (ls.searchByPlayerId !== "" || ls.searchByTerms !== "")){
                     await searchByTermOrId(ls);
                 }
