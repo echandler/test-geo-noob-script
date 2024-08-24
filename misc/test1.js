@@ -594,8 +594,9 @@ function handleEndOfGame(json){
                 return;
             }  
 
-            if(ls.currentMap){
+            if (ls.currentMap && ls?._token !== json.token){
                 ls.currentMap.token = json.token;
+                ls._token = json.token;
                 ls.maps.push(ls.currentMap);
             }
 
