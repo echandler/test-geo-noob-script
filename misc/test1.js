@@ -191,7 +191,7 @@ function mainMenuBtnClickHandler(){
 
     let p = new window.Sweetalert2({
         didOpen: function(e){ 
-            handlerPopup(p);
+            handlePopup(p);
         },
         html: `
             <div class="_rmc_header">Random Map Challenge</div>
@@ -245,7 +245,7 @@ function mainMenuBtnClickHandler(){
     });
 }
 
-function handlerPopup(p){
+function handlePopup(p){
     const startChallengBtn = document.getElementById('_startChallengeBtn');
     const playAgainstSomeone = document.getElementById('_playAgainstSomeoneElse');
     const minMapSize = document.getElementById('_minMapSize');
@@ -487,6 +487,9 @@ function listenForApiFetch(json){
             window.open(`https://www.geoguessr.com/maps/${ls.currentMap.id}`,"_self");
         }
         
+        if (!ls._finishedGame || (ls._finishedGame.idx +1 >= ls._finishedGame.obj.maps.length)){
+            cacheNextGame();
+        }
     }         
     
     if (ls && json.state === 'finished'){
@@ -513,6 +516,20 @@ function listenForApiFetch(json){
                 }, 500);
             });
         }, 10)
+    }
+}
+
+async function cacheNextGame(){
+    if (ls._cachedMap) return;
+
+    for (let n = 0; n < 20; n++) {
+        const nextMap = await nextRandomMap(ls.minMapSize * 1000, ls.maxMapSize * 1000);
+        if (nextMap === null){
+            continue;
+        }
+
+        ls._cachedMap = {n: nextMap.name, id: nextMap.id};
+        break;
     }
 }
 
@@ -605,9 +622,11 @@ function handleEndOfGame(json){
             
             async function btnClickHandler (){
                 if (ls._finishedGame){
+
                     ls._finishedGame.idx += 1;
+
                     if (!(ls._finishedGame.idx >= ls._finishedGame.obj.maps.length)){
-                        btn.disabled = true;
+                        startNextGameBtn.disabled = true;
                         _btn.disabled = true;
 
                         ls.currentMap = ls._finishedGame.obj.maps[ls._finishedGame.idx];
@@ -617,6 +636,20 @@ function handleEndOfGame(json){
                         window.open(`https://www.geoguessr.com/maps/${ls.currentMap.id}` ,"_self");
                         return;
                     }
+                }
+
+                if (ls._cachedMap){
+                    startNextGameBtn.disabled = true;
+                    _btn.disabled = true;
+
+                    ls.currentMap = ls._cachedMap;
+
+                    ls._cachedMap = null;
+
+                    localStorage["RandomMapChallenge"] = JSON.stringify(ls);
+
+                    window.open(`https://www.geoguessr.com/maps/${ls.currentMap.id}`, "_self");
+                    return;
                 }
 
                 startNextGameBtn.disabled = true;
