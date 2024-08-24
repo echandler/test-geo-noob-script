@@ -368,6 +368,12 @@ function handlePopup(p){
 }
 
 async function fetchRandomMap(min, max){  
+    // https://www.geoguessr.com/api/v3/social/maps/browse/popular/random?count=1&minCoords=20
+    // https://www.geoguessr.com/api/v3/social/maps/browse/random?count=1&minCoords=20
+    // not sure what the query parameters are. ?count=1 works, but ?minCoords=20 doesn't work.
+    // getting repeats fairly often with popular maps.
+    // not getting any satellite maps or unity maps.
+    
     const randomMap = await fetch("https://www.geoguessr.com/maps/random").then(res => res.text());
     const __NEXT_DATA__ = randomMap.match(/<script id="__NEXT_DATA__" type="application.json">(.*?)<\/script>/);
 
@@ -376,7 +382,9 @@ async function fetchRandomMap(min, max){
     
     const json = JSON.parse(__NEXT_DATA__[1]);
     if (!json?.props?.pageProps?.map) return null;
-    console.log(json)
+
+    //console.log("Random __NEXT_DATA__",json?.props?.pageProps?.map?.name,json?.props?.pageProps?.map?.maxErrorDistance, json);
+
     return json?.props?.pageProps?.map;
 }
 
@@ -448,13 +456,13 @@ document.body.addEventListener('keyup', (e)=>{
 });
 
 function listenForApiFetch(json){
-    console.log(json);
+    //console.log(json);
     if (!localStorage["RandomMapChallenge"]) return;
 
     if (ls && ls.currentMap && json.map && ls.currentMap.id != json.map){
         debugger;
         delete localStorage["RandomMapChallenge"];
-        alert("Random Map Challenge has ended.");
+        alert("Random Map Challenge has ended!!!!!!.");
         return;
     } 
 
@@ -512,7 +520,6 @@ function listenForApiFetch(json){
             guessBtn.addEventListener("click", ()=>{
                 setTimeout(async ()=>{
                     const info = await fetchGameInfo(json.token);
-                    console.log("rsfsdfsd", info);
                     handleEndOfGame(info);
                 }, 500);
             });
@@ -525,6 +532,9 @@ async function cacheNextGame(){
 
     for (let n = 0; n < 20; n++) {
         const nextMap = await nextRandomMap(ls.minMapSize * 1000, ls.maxMapSize * 1000);
+
+        if (ls._cachedMap) return;// A random map may have been found already.
+
         if (nextMap === null){
             continue;
         }
@@ -682,8 +692,11 @@ function handleEndOfGame(json){
                 if (ls.currentMap === null){
                     alert(`Searched 20 maps and couldn't find one, press the button to try again.`);
                     window.Sweetalert2.hideLoading();
-                    btn.disabled = false;
+                    startNextGameBtn.disabled = false;
                     _btn.disabled = false;
+                    document.querySelectorAll('.swal2-confirm').forEach((el)=>{
+                        if (el.innerText === "Close") el.style.display = '';
+                    });
                     return;
                 }
                  
