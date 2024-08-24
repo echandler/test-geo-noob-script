@@ -452,6 +452,7 @@ function listenForApiFetch(json){
     if (!localStorage["RandomMapChallenge"]) return;
 
     if (ls && ls.currentMap && json.map && ls.currentMap.id != json.map){
+        debugger;
         delete localStorage["RandomMapChallenge"];
         alert("Random Map Challenge has ended.");
         return;
