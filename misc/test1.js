@@ -236,7 +236,7 @@ function mainMenuBtnClickHandler(){
                     Play against someone else. 
                 </div>
                 <div style="margin-top: 1em;" >
-                    <button id="_startChallengeBtn" class="swal2-confirm swal2-styled _styledBtn">Start Challenge</button>
+                    <button id="_startChallengeBtn" class="swal2-confirm swal2-styled _disabled _styledBtn">Start Challenge</button>
                 </div>
             <div>
         `,
@@ -333,6 +333,11 @@ function handlePopup(p){
                 alert("Couldn't find any maps for that search!");
                 window.Sweetalert2.hideLoading();
                 startChallengBtn.disabled = false;
+
+                getSwalCloseBtn((el)=>{
+                    if (el.innerText === "Close") el.style.display = '';
+                });
+
                 return;
             }
         }
@@ -355,9 +360,14 @@ function handlePopup(p){
         }
         
         if (!obj.currentMap){
-            alert(`Searched 20 maps and couldn't find one, press the button to try again.`);
+            alert(`Searched 20 maps and couldn't find one. Press the button and try again.`);
             window.Sweetalert2.hideLoading();
             startChallengBtn.disabled = false;
+
+            getSwalCloseBtn((el)=>{
+                if (el.innerText === "Close") el.style.display = '';
+            });
+
             return;
         }
         
@@ -694,9 +704,11 @@ function handleEndOfGame(json){
                     window.Sweetalert2.hideLoading();
                     startNextGameBtn.disabled = false;
                     _btn.disabled = false;
-                    document.querySelectorAll('.swal2-confirm').forEach((el)=>{
+
+                    getSwalCloseBtn((el)=>{
                         if (el.innerText === "Close") el.style.display = '';
                     });
+
                     return;
                 }
                  
@@ -964,6 +976,14 @@ window.playFinishedGame = function (finishedGame){
         alert("Starting a new Random Map Challenge!\n\nThis page will reload and the first map in the challenge will be available.\n\nChallenge will start when you start playing a game, Good Luck!");
 
         window.open(`https://www.geoguessr.com/maps/${obj.currentMap.id}`,"_self");
+}
+
+function getSwalCloseBtn(fn){
+    document.querySelectorAll('.swal2-confirm').forEach((el) => {
+        if (el.innerText === "Close") {
+            fn(el);
+        }
+    });
 }
 
 document.head.insertAdjacentHTML('beforeend', `
