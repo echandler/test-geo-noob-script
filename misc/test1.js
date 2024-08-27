@@ -117,7 +117,7 @@ if (ls) {
                 Challenge doesn't start until you start playing your first game! <a style="color: #676bda; text-decoration: underline;"href="https://www.geoguessr.com/maps/${ls?.currentMap?.id?ls?.currentMap?.id: null}">Link</a>
             </div>
             <div id="_greenAlert" style="color: green; display: none; font-size: 1.2em; margin: 1em 0em;">
-                Challenge has ended! Your score is ${ls.maps.length}<div class="_aniMark" style="display:inline-block">!</div>
+                Challenge has ended! Your score is <span style="font-weight:bold;">${ls.maps.length}</span><div class="_aniMark" style="display:inline-block">!</div>
             </div>
             <div id="_container" style="margin-top: 1em;">
                 <div id="_infoContainer">
@@ -585,7 +585,7 @@ function handleEndOfGame(json){
             if (json.player.totalScore.amount < ls.minMapScore){
                 const score = parseInt(json.player.totalScore.amount).toLocaleString();
                 _alert.style.display = "";
-                document.getElementById('_alertExplanation').innerText = `Your score is ${score}; the number to beat is ${ls.minMapScore.toLocaleString()}!`;
+                document.getElementById('_alertExplanation').innerHTML = `Your score is <span style="font-weight:bold;">${score}</span>; the number to beat is <span style="font-weight:bold;">${ls.minMapScore.toLocaleString()}</span>!`;
                 startNextGameBtn.innerText = "Retry Map";
                 startNextGameBtn.addEventListener('click', ()=>{
                     window.open(`https://www.geoguessr.com/maps/${ls.currentMap.id}/play` ,"_self");
@@ -808,43 +808,48 @@ setInterval(()=>{
         },
         html: `
             <div class="_rmc_header"  >Random Map Challenge Final Score!</div>
-            <div id="_alert" style="background-color: #00800030; padding:1em; color: green; font-size: 1.2em; margin: 1em 0em;">
-                Challenge has ended! Your score is ${_ls.maps.length}<div class="_aniMark" style="display:inline-block">!</div>
+            <div id="_alert" class="_finalScore" >
+                Challenge has ended! Your score is <span style="font-weight:bold">${_ls.maps.length}</span><div class="_aniMark" style="display:inline-block">!</div>
             </div>
-            <div id="_infoContainer">
-                <div>
-                    Finished maps: <span id="_finishedMaps">${_ls.maps.length}</span>
+            <details>
+                <summary class="_prevChalGame _hover" style='margin-bottom: 0.5em; cursor: pointer;'>
+                    Game Info.
+                </summary>
+                <div id="_infoContainer">
+                    <div>
+                        Finished maps: <span id="_finishedMaps">${_ls.maps.length}</span>
+                    </div>
+                    <div>
+                        Challenge started at: <span id="_timeStart">${_ls.challengeEndTime}</span>
+                    </div>
+                    <div>
+                        Challenge will end at: <span id="_timeEnd">${_ls.challengeEndTime}</span>
+                    </div>
+                    <div>
+                        Challenge time (minutes): <span id="_challengeTime">${_ls.challengeTime / 1000 / 60}</span> 
+                    </div>
+                    <div>
+                        Max map time (minutes): <span id="_mapTime">${_ls.mapPlayTime > 0? _ls.mapPlayTime / 60 : "---"}</span> 
+                    </div>
+                    <div>
+                        Min map size (km): <span id="_minMapSize">${_ls.minMapSize.toLocaleString()}</span>
+                    </div>
+                    <div>
+                        Max map size (km): <span id="_maxMapSize">${_ls.maxMapSize.toLocaleString()}</span>
+                    </div>
+                    <div>
+                        Min map score: <span id="_mapScore">${_ls.minMapScore.toLocaleString()}</span>
+                    </div>
+                    <div>
+                        Skips: <span id="_mapScore">${_ls.skipsUsed} / ${_ls.numOfSkips}</span>
+                    </div>
                 </div>
-                <div>
-                    Challenge started at: <span id="_timeStart">${_ls.challengeEndTime}</span>
+                <div style="margin-top: 1em;">
+                    <input type="checkbox" disabled id="_fMoving" ${_ls.fMoving? "checked": ""}><label for="_fMoving">No Moving?</label>
+                    <input type="checkbox" disabled id="_fRotating"${_ls.fRotating? "checked": ""}><label for="_fMoving">No Rotating?</label>
+                    <input type="checkbox" disabled id="_fZooming"${_ls.fZooming? "checked": ""}><label for="_fMoving">No Zooming?</label>
                 </div>
-                <div>
-                    Challenge will end at: <span id="_timeEnd">${_ls.challengeEndTime}</span>
-                </div>
-                <div>
-                    Challenge time (minutes): <span id="_challengeTime">${_ls.challengeTime / 1000 / 60}</span> 
-                </div>
-                <div>
-                    Max map time (minutes): <span id="_mapTime">${_ls.mapPlayTime > 0? _ls.mapPlayTime / 60 : "---"}</span> 
-                </div>
-                <div>
-                    Min map size (km): <span id="_minMapSize">${_ls.minMapSize.toLocaleString()}</span>
-                </div>
-                <div>
-                    Max map size (km): <span id="_maxMapSize">${_ls.maxMapSize.toLocaleString()}</span>
-                </div>
-                <div>
-                    Min map score: <span id="_mapScore">${_ls.minMapScore.toLocaleString()}</span>
-                </div>
-                <div>
-                    Skips: <span id="_mapScore">${_ls.skipsUsed} / ${_ls.numOfSkips}</span>
-                </div>
-            </div>
-            <div style="margin-top: 1em;">
-                <input type="checkbox" disabled id="_fMoving" ${_ls.fMoving? "checked": ""}><label for="_fMoving">No Moving?</label>
-                <input type="checkbox" disabled id="_fRotating"${_ls.fRotating? "checked": ""}><label for="_fMoving">No Rotating?</label>
-                <input type="checkbox" disabled id="_fZooming"${_ls.fZooming? "checked": ""}><label for="_fMoving">No Zooming?</label>
-            </div>
+            </details>
         `,
         allowOutsideClick: false, 
         confirmButtonText: "Close",
@@ -1120,6 +1125,20 @@ document.head.insertAdjacentHTML('beforeend', `
         ._prevGameTa:hover{
             opacity: 1; 
         }
+        
+        ._finalScore {
+            background-color: #6BDA6730;
+            padding:1em;
+            color: green;
+            font-size: 1.2em;
+            margin: 1em 0em;
+            background-image: url(https://www.svgrepo.com/show/452120/trophy.svg);
+            background-size: 100% 90%;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+       
+             
     </style>
     
     <style>
