@@ -204,16 +204,16 @@ function mainMenuBtnClickHandler(){
                     Max game time (minutes) <input id="_mapPlayTime" type="number" value="" title="" onfocus="this.select()">
                 </div>
                 <div>
-                    Min map size (km) <input id="_minMapSize" type="number" value="1" onfocus="this.select()">
+                    Min map size (km) <input id="_minMapSize" type="number" value="10000" onfocus="this.select()">
                 </div>
                 <div>
                     Max map size (km) <input id="_maxMapSize" type="number" value="19000" title="Community World is 18534.781 km" onfocus="this.select()">
                 </div>
                 <div>
-                    Min map score <input id="_minMapScore" type="number" max="25000" value="15000" onfocus="this.select()">
+                    Min map score <input id="_minMapScore" type="number" max="25000" value="10000" onfocus="this.select()">
                 </div>
                 <div>
-                    Skips <input id="_skips" type="number" max="25000" value="1"  onfocus="this.select()">
+                    Skips <input id="_skips" type="number" max="25000" value="5"  onfocus="this.select()">
                 </div>
                 <div style="margin: 1em 0em;">
                     <input type="checkbox" id="_fMoving"><label for="_fMoving">No Moving?</label>
@@ -716,22 +716,23 @@ function handleEndOfGame(json){
         
                 window.open(`https://www.geoguessr.com/maps/${ls.currentMap.id}` ,"_self");
            };
-
+           
         },
         html: `
             <div class="_rmc_header">Random Map Challenge</div>
 
             <div id="_alert" style="color: red; display: none; line-height: 1.5em;">
                 Need to replay map to continue!
-                <div id="_alertExplanation">
-                </div>                
+                <div id="_alertExplanation"> </div>                
             </div>
             
-            <div id="_greenAlert" style="color: green; display: none;">
+            <div id="_greenAlert" style="color: green; line-height: 1.5em; display: none;">
                 <div id="_greenMainMsg">
                     Everything looks good! On to the next game!
                 </div>
-                <div id="_greenExplanation">
+                <div id="_greenExplanation"> 
+                   <div> Score:  <span style="font-weight:bold;">${parseInt(json.player.totalScore.amount).toLocaleString()}</span> </div>
+                   <div> Time: <span style="font-weight:bold;">${formatTime(json.player.totalTime)}</span> </div>
                 </div>                
             </div>
 
@@ -742,6 +743,13 @@ function handleEndOfGame(json){
         allowOutsideClick: false, 
         confirmButtonText: "Close",
     }) ;
+
+    function formatTime(time){
+        //let time = json.player.totalTime;
+        let min = Math.floor(time / 60);
+        let sec = (time - (min * 60));
+        return `${min? `${min} minute${min > 1?'s':''}`: ""}` + ` ${sec + ` second${sec > 1? "s":""}`}`;
+    }
 }
         
 setInterval(()=>{
