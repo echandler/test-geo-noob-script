@@ -863,7 +863,34 @@ setInterval(()=>{
         confirmButtonText: "Close",
         })
     }, 1000);
+    
+    if (window._unity_fetch_){
 
+        window._unity_fetch_ = (function () {
+            let _fetch = window._unity_fetch_;
+            return async function (...args) {
+                if (!/geoguessr.com.(challenge|game)/i.test(location.href)) {
+                    return _fetch.apply(window, args);
+                }
+
+                if (/geoguessr.com.api.v3.(challenge|game)/i.test(args[0])) {
+
+
+                    let v3APIRes = await _fetch.apply(window, args);
+
+                    let resJSON = await v3APIRes.clone().json();
+
+                    listenForApiFetch(resJSON);
+
+                    return new Promise((res) => {
+                        res(v3APIRes);
+                    });
+                }
+
+                return _fetch.apply(window, args);
+            };
+        })();
+    } else {
         window.fetch = (function () {
             let _fetch = window.fetch;
             return async function (...args) {
@@ -888,6 +915,7 @@ setInterval(()=>{
                 return _fetch.apply(window, args);
             };
         })();
+    }
 
 function viewPreviousGames(){
     let prevGames = localStorage[`RandomMapChallenge_saveInfo`];
