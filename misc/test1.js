@@ -22,7 +22,7 @@
 
             const eorBtn = document.querySelector('[data-qa="close-round-result"');
 
-            if (!eorBtn || _eorBtn === eorBtn || eorBtn.innerText === "NEXT") return;
+            if (!eorBtn || _eorBtn === eorBtn || eorBtn.textContent.toLowerCase() === "next") return;
 
             _eorBtn = eorBtn;
             isHandlingEOR = true;
@@ -515,8 +515,6 @@ document.body.addEventListener('keyup', (e)=>{
 });
 
 function listenForApiFetch(json){
-    //console.log(json);
-    console.log('JOSN', json)
     if (!localStorage["RandomMapChallenge"]) return;
 
     if (ls && ls.currentMap && json.map && ls.currentMap.id != json.map){
