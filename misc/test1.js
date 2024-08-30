@@ -1,5 +1,6 @@
 // ==UserScript==
 // @name          Random Map Challenge
+// @description   Random Map Challenge 
 // @version       0.1
 // @match         https://www.geoguessr.com/*
 // @run-at        document-start
@@ -8,8 +9,56 @@
 // @grant         none
 // @downloadURL
 // @updateURL
-// @require      https://cdn.jsdelivr.net/npm/sweetalert2@11
 // ==/UserScript==
+    
+    let curEorJSON = null; 
+    
+    let isHandlingEOR = false;
+    let _eorBtn = null;
+    let observer = new MutationObserver(mutationRecords => {
+        // Trying to detect the end of the round.
+        setTimeout(async () => {
+            if (handleEndOfGameIsHandling || isHandlingEOR) return;
+
+            const eorBtn = document.querySelector('[data-qa="close-round-result"');
+
+            if (!eorBtn || _eorBtn === eorBtn || eorBtn.innerText === "NEXT") return;
+
+            _eorBtn = eorBtn;
+            isHandlingEOR = true;
+
+            setTimeout(()=>{
+                isHandlingEOR = false;
+            }, 2000);
+
+            const id = location.pathname.replace(/\/.*\/(.*)/, "$1");
+
+            if (curEorJSON && (curEorJSON.state !== 'finished' || curEorJSON.token === id)) return;
+            
+            let info = await fetchGameInfo(id);
+            
+            info._mutationObserved = true;
+
+            curEorJSON = info;
+
+            handleEndOfGame(info);
+        }, 100);
+    });
+
+    const __interval = setInterval(()=>{
+        // Act of desperation.
+        const __next = document.getElementById("__next");
+        if (!__next) return;
+        clearInterval(__interval);
+
+        observer.observe(__next, {
+            childList: true,
+            subtree: true, // and lower descendants too
+        });
+    });
+
+patch_fetch();
+loadSweetAlert();
 
 const menuButton = document.createElement('button');
 menuButton.id = "RMC_menu_button";
@@ -467,6 +516,7 @@ document.body.addEventListener('keyup', (e)=>{
 
 function listenForApiFetch(json){
     //console.log(json);
+    console.log('JOSN', json)
     if (!localStorage["RandomMapChallenge"]) return;
 
     if (ls && ls.currentMap && json.map && ls.currentMap.id != json.map){
@@ -567,6 +617,8 @@ function handleEndOfGame(json){
 
     if (handleEndOfGameIsHandling) return;
     
+    curEorJSON = json;
+
     let p = new window.Sweetalert2({
         willClose: function(){
             handleEndOfGameIsHandling = false;
@@ -585,7 +637,7 @@ function handleEndOfGame(json){
             if (json.player.totalScore.amount < ls.minMapScore){
                 const score = parseInt(json.player.totalScore.amount).toLocaleString();
                 _alert.style.display = "";
-                document.getElementById('_alertExplanation').innerHTML = `Your score is <span style="font-weight:bold;">${score}</span>; the number to beat is <span style="font-weight:bold;">${ls.minMapScore.toLocaleString()}</span>!`;
+                document.getElementById('_alertExplanation').innerHTML = `Your score is <span style="font-weight:bold; ${json._mutationObserved? `text-decoration: underline;`: ''}">${score}</span>; the number to beat is <span style="font-weight:bold;">${ls.minMapScore.toLocaleString()}</span>!`;
                 startNextGameBtn.innerText = "Retry Map";
                 startNextGameBtn.addEventListener('click', ()=>{
                     window.open(`https://www.geoguessr.com/maps/${ls.currentMap.id}/play` ,"_self");
@@ -864,6 +916,8 @@ setInterval(()=>{
         })
     }, 1000);
     
+function patch_fetch(){
+
     if (window._unity_fetch_){
 
         window._unity_fetch_ = (function () {
@@ -916,6 +970,7 @@ setInterval(()=>{
             };
         })();
     }
+}
 
 function viewPreviousGames(){
     let prevGames = localStorage[`RandomMapChallenge_saveInfo`];
@@ -1187,3 +1242,13 @@ document.head.insertAdjacentHTML('beforeend', `
     </style>
     
     `);
+
+
+    function loadSweetAlert(){
+
+        var sw = document.createElement( 'script' );
+        sw.id = "_sweetAlert"
+        sw.setAttribute( 'src', `https://cdn.jsdelivr.net/npm/sweetalert2@11` );
+        document.body.appendChild( sw );
+
+    }
