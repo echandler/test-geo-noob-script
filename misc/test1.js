@@ -1082,6 +1082,19 @@ function getSwalCloseBtn(fn){
     });
 }
 
+setTimeout(()=>{
+    document.head.insertAdjacentHTML('beforeend', `
+        <style id="_swalOverride">
+
+            /* Fix the SweetAlert backdrop from being black. */
+
+            body.swal2-height-auto  {
+                height: 100% !important;  
+            }         
+    </style>
+    `);
+}, 2000);
+
 document.head.insertAdjacentHTML('beforeend', `
     <style>
         .swal2-popup {
@@ -1228,8 +1241,10 @@ document.head.insertAdjacentHTML('beforeend', `
             background-repeat: no-repeat;
             background-position: center;
         }
-       
-             
+
+        .body.swal2-height-auto  {
+            height: 100% !important;  
+        }         
     </style>
     
     <style>
@@ -1245,10 +1260,8 @@ document.head.insertAdjacentHTML('beforeend', `
 
 
     function loadSweetAlert(){
-
-        var sw = document.createElement( 'script' );
+        const sw = document.createElement( 'script' );
         sw.id = "_sweetAlert"
         sw.setAttribute( 'src', `https://cdn.jsdelivr.net/npm/sweetalert2@11` );
         document.body.appendChild( sw );
-
     }
