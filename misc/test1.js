@@ -246,23 +246,31 @@ function mainMenuBtnClickHandler(){
             <div class="_rmc_header">Random Map Challenge</div>
             
             <div class="_challengeSpecs">
-                <div>
-                    Challenge time (minutes) <input id="_challengeTime" type="number" value="60" onfocus="this.select()">
-                </div>
-                <div>
-                    Max game time (minutes) <input id="_mapPlayTime" type="number" value="" title="" onfocus="this.select()">
-                </div>
-                <div>
-                    Min map size (km) <input id="_minMapSize" type="number" value="10000" onfocus="this.select()">
-                </div>
-                <div>
-                    Max map size (km) <input id="_maxMapSize" type="number" value="19000" title="Community World is 18534.781 km" onfocus="this.select()">
-                </div>
-                <div>
-                    Min map score <input id="_minMapScore" type="number" max="25000" value="10000" onfocus="this.select()">
-                </div>
-                <div>
-                    Skips <input id="_skips" type="number" max="25000" value="5"  onfocus="this.select()">
+                <div class="_inputs" style="display: grid; grid-template-columns: max-content min-content; column-gap: 1em; width: fit-content; margin: 0px auto;">
+                    <div>
+                        Challenge time (minutes) 
+                    </div>
+                        <input id="_challengeTime" type="number" value="60" onfocus="this.select()">
+                    <div>
+                        Max game time (minutes)
+                    </div>
+                        <input id="_mapPlayTime" type="number" value="" title="" onfocus="this.select()">
+                    <div>
+                        Min map size (km)
+                    </div>
+                        <input id="_minMapSize" type="number" value="10000" onfocus="this.select()">
+                    <div>
+                        Max map size (km)
+                    </div>
+                        <input id="_maxMapSize" type="number" value="19000" title="Community World is 18534.781 km" onfocus="this.select()">
+                    <div>
+                        Min map score
+                    </div>
+                        <input id="_minMapScore" type="number" max="25000" value="10000" onfocus="this.select()">
+                    <div>
+                        Skips
+                    </div>
+                        <input id="_skips" type="number" max="25000" value="5"  onfocus="this.select()">
                 </div>
                 <div style="margin: 1em 0em;">
                     <input type="checkbox" id="_fMoving"><label for="_fMoving">No Moving?</label>
@@ -273,10 +281,10 @@ function mainMenuBtnClickHandler(){
                     <input type="checkbox" id="_autoNextMap"><label for="_autoNextMap">Auto next map?</label>
                 </div>
                 <div>
-                    Map search <input id="_searchByTerms" type="text" placeholder="Enter search terms here.">
+                    Map search <input id="_searchByTerms" style="margin-left: 1em;" type="text" placeholder="Enter search terms here.">
                 </div>
                 <div>
-                    Maps made by player <input id="_searchByPlayerId" type="text" placeholder="Enter player id# here.">
+                    Maps made by player <input id="_searchByPlayerId" style="margin-left: 1em;" type="text" placeholder="Enter player id# here.">
                 </div>
                 <div id="_viewGames" class="_hover" style="margin-top: 1em;">
                     View previous finished games. 
@@ -1051,7 +1059,8 @@ window.playFinishedGame = function (finishedGame){
             maxMapSize: finishedGame.maxMapSize, 
             fMoving: finishedGame.fMoving,
             fRotating: finishedGame.fRotating, 
-            fZooming: finishedGame.fZooming, 
+            fZooming: finishedGame.fZooming,
+            autoNextMap: finishedGame.autoNextMap, 
             _finishedGame: {idx:0, obj: finishedGame},
             currentMap: finishedGame.maps[0],
             numOfSkips: finishedGame.numOfSkips,
@@ -1259,7 +1268,7 @@ document.head.insertAdjacentHTML('beforeend', `
 
     function loadSweetAlert(){
         const sw = document.createElement( 'script' );
-        sw.id = "_sweetAlert"
+        sw.id = "_sweetAlert";
         sw.setAttribute( 'src', `https://cdn.jsdelivr.net/npm/sweetalert2@11` );
         document.body.appendChild( sw );
     }
