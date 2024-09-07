@@ -786,11 +786,12 @@ function handleEndOfGame(json){
                 <div id="_alertExplanation"> </div>                
             </div>
             
-            <div id="_greenAlert" style="color: green; line-height: 1.5em; display: none;">
+            <div id="_greenAlert" style="color: green; line-height: 1.5em; display: none; overflow:hidden;">
                 <div id="_greenMainMsg">
-                    Everything looks good! On to the next game!
+                    Everything looks good!
                 </div>
-                <div id="_greenExplanation"> 
+                <div id="_greenExplanation" style=""> 
+                   <div class="_greenCheck _aniMark"></div>
                    <div> Score:  <span style="font-weight:bold;">${parseInt(json.player.totalScore.amount).toLocaleString()}</span> </div>
                    <div> Time: <span style="font-weight:bold;">${formatTime(json.player.totalTime)}</span> </div>
                 </div>                
@@ -1118,6 +1119,15 @@ document.head.insertAdjacentHTML('beforeend', `
         
         .swal2-container {
             pointer-events: none; 
+        }
+        
+        ._greenCheck{
+            display: block;
+            background-image: url("https://www.svgrepo.com/show/434030/check-mark.svg");
+            background-repeat: no-repeat;
+            background-size: 23%;
+            background-position: 50% 50%;
+            height: 5em;
         }
 
         ._challengePrevSpecs {
