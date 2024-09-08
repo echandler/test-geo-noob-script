@@ -17,12 +17,14 @@
     let _eorBtn = null;
     let observer = new MutationObserver(mutationRecords => {
         // Trying to detect the end of the round.
+        // This is a backup of the monkey patched fetch hack, which is faster and doesn't require an extra fetch request.
         setTimeout(async () => {
             if (handleEndOfGameIsHandling || isHandlingEOR) return;
 
             const eorBtn = document.querySelector('[data-qa="close-round-result"');
 
-            if (!eorBtn || _eorBtn === eorBtn || eorBtn.textContent.toLowerCase() === "next") return;
+           // if (!eorBtn || _eorBtn === eorBtn || eorBtn.textContent.toLowerCase() === "next") return;
+            if (!eorBtn || _eorBtn === eorBtn) return;
 
             _eorBtn = eorBtn;
             isHandlingEOR = true;
@@ -34,16 +36,25 @@
             const id = location.pathname.replace(/\/.*\/(.*)/, "$1");
 
             //if (curEorJSON && (curEorJSON.state !== 'finished' || curEorJSON.token === id)) return;
-            if (curEorJSON && (curEorJSON.token === id)) return;
+            //if (curEorJSON && (curEorJSON.token === id)) return;
 
             let info = await fetchGameInfo(id);
             
+            if (handleEndOfGameIsHandling) return; // Check second time after fetch.
+
             info._mutationObserved = true;
 
-            curEorJSON = info;
+            //curEorJSON = info;
+            
+            if (eorBtn.textContent.toLowerCase() !== "next"){
+                // "Next" is between rounds not end of game.
+                handleEndOfGame(info);
+            }
 
-            handleEndOfGame(info);
-        }, 500);
+            if(info.player.totalScore.amount >= ls.minMapScore){
+                handleEndOfGame(info);
+            }
+        }, 100);
     });
 
     const __interval = setInterval(()=>{
@@ -451,8 +462,6 @@ async function fetchRandomMap(min, max){
     const json = JSON.parse(__NEXT_DATA__[1]);
     if (!json?.props?.pageProps?.map) return null;
 
-    //console.log("Random __NEXT_DATA__",json?.props?.pageProps?.map?.name,json?.props?.pageProps?.map?.maxErrorDistance, json);
-
     return json?.props?.pageProps?.map;
 }
 
@@ -626,7 +635,9 @@ function handleEndOfGame(json){
 
     if (handleEndOfGameIsHandling) return;
     
-    curEorJSON = json;
+    //curEorJSON = json;
+
+    handleEndOfGameIsHandling = true;
 
     let p = new window.Sweetalert2({
         willClose: function(){
@@ -637,7 +648,6 @@ function handleEndOfGame(json){
             btn.style.display = "";
         },
         didOpen: function(e){ 
-            handleEndOfGameIsHandling = true;
             const _alert = document.getElementById('_alert');
             const _greenAlert = document.getElementById('_greenAlert');
             const startNextGameBtn = document.getElementById('_startNextGameBtn');
@@ -766,7 +776,7 @@ function handleEndOfGame(json){
                 } 
 
                 if (ls.currentMap === null){
-                    alert(`Searched 20 maps and couldn't find one, press the button to try again.\n\nMay need to refresh page and verfiy you are a human?n`);
+                    alert(`Searched 20 maps and couldn't find one, press the button to try again.\n\nMay need to refresh page and verfiy you are a human?`);
                     window.Sweetalert2.hideLoading();
                     startNextGameBtn.disabled = false;
                     _btn.disabled = false;
