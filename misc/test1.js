@@ -686,7 +686,6 @@ function handleEndOfGame(json){
 
             ls.maps.push(ls.currentMap);
             
-            debugger;
             localStorage["RandomMapChallenge"] = JSON.stringify(ls);
 
             ls.currentMap = null;
@@ -865,7 +864,6 @@ setInterval(()=>{
         ls1.splice(0, ls1.length % 100);
     }
     
-    debugger;
     let token = location.pathname.match(/\/.*\/(.*)/)[1]; 
     if (!ls._token || ls?._token !== token){
         _ls.currentMap.token = token;
