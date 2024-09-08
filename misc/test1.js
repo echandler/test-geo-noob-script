@@ -829,7 +829,7 @@ function handleEndOfGame(json){
     }
 }
         
-setInterval(()=>{
+let sp = setInterval(()=>{
     // Main loop
     let _ls = localStorage["RandomMapChallenge"];
     if (!_ls) return;
@@ -887,6 +887,7 @@ setInterval(()=>{
     
     let p = new window.Sweetalert2({
         didOpen: function(e){
+            document.getElementById("swal2-html-container").style.overflow = "visible";
 
             let startedTime = new Date(_ls.challengeStartedTime);
             startedTime = `${startedTime.getHours()}: ${startedTime.getMinutes()}: ${startedTime.getSeconds()}`;
@@ -900,7 +901,16 @@ setInterval(()=>{
         html: `
             <div class="_rmc_header"  >Random Map Challenge Final Score!</div>
             <div id="_alert" class="_finalScore" >
-                Challenge has ended! Your score is <span style="font-weight:bold">${_ls.maps.length}</span><div class="_aniMark" style="display:inline-block">!</div>
+              <!--  
+                    Challenge has ended! Your score is <span style="font-weight:bold">${_ls.maps.length}</span><div class="_aniMark" style="display:inline-block">!</div>
+              -->
+                 <span style="font-weight: bold;">Good Job</span><div class="_aniMark" style="display:inline-block">!</div>
+                <div style="height: 5em; margin-top: 1em;line-height: 1;">
+                    <img style="    height: 5em; opacity: 0.5; position: absolute; width: 100%; left: 0px; z-index: -1;" src="https://www.svgrepo.com/show/452120/trophy.svg">
+                    <div class="___score _aniMark" style="position: relative; left: calc(5em * -0.0325);">
+                        <span style="font-weight:bold; font-size: 5em;">0</span>
+                    </div>
+                </div>
             </div>
             <details>
                 <summary class="_prevChalGame _hover" style='margin-bottom: 0.5em; cursor: pointer;'>
@@ -945,6 +955,7 @@ setInterval(()=>{
         allowOutsideClick: false, 
         confirmButtonText: "Close",
         })
+        sdfsdffsd();
     }, 1000);
     
 function patch_fetch(){
@@ -1282,15 +1293,17 @@ document.head.insertAdjacentHTML('beforeend', `
         }
         
         ._finalScore {
-            background-color: #6BDA6730;
             padding:1em;
-            color: green;
+            color: #00a127;
             font-size: 1.2em;
             margin: 1em 0em;
+         /* 
+            background-color: #6BDA6730;
             background-image: url(https://www.svgrepo.com/show/452120/trophy.svg);
             background-size: 100% 90%;
             background-repeat: no-repeat;
             background-position: center;
+            */
         }
 
         .body.swal2-height-auto  {
