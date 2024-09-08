@@ -33,8 +33,9 @@
 
             const id = location.pathname.replace(/\/.*\/(.*)/, "$1");
 
-            if (curEorJSON && (curEorJSON.state !== 'finished' || curEorJSON.token === id)) return;
-            
+            //if (curEorJSON && (curEorJSON.state !== 'finished' || curEorJSON.token === id)) return;
+            if (curEorJSON && (curEorJSON.token === id)) return;
+
             let info = await fetchGameInfo(id);
             
             info._mutationObserved = true;
@@ -42,7 +43,7 @@
             curEorJSON = info;
 
             handleEndOfGame(info);
-        }, 100);
+        }, 500);
     });
 
     const __interval = setInterval(()=>{
@@ -417,7 +418,7 @@ function handlePopup(p){
         }
         
         if (!obj.currentMap){
-            alert(`Searched 20 maps and couldn't find one. Press the button and try again.`);
+            alert(`Searched 20 maps and couldn't find one. Press the button and try again.\n\nMay need to refresh page and verfiy you are a human?`);
             window.Sweetalert2.hideLoading();
             startChallengBtn.disabled = false;
 
@@ -526,9 +527,11 @@ function listenForApiFetch(json){
     if (!localStorage["RandomMapChallenge"]) return;
 
     if (ls && ls.currentMap && json.map && ls.currentMap.id != json.map){
-        debugger;
-        delete localStorage["RandomMapChallenge"];
-        alert("Random Map Challenge has ended!!!!!!.");
+        setTimeout(()=>{
+            delete localStorage["RandomMapChallenge"];
+            console.log("Random Map Challenge has ended!!!!!!.", ls.currentMap, json.map)
+            alert("Random Map Challenge has ended!!!!!!.");
+        }, 1000);
         return;
     } 
 
@@ -567,10 +570,10 @@ function listenForApiFetch(json){
         }
     }         
     
-    if (ls && json.state === 'finished'){
+    if (ls && (json.state === 'finished' || (json.player.totalScore.amount >= ls.minMapScore))){
         handleEndOfGame(json);
     }
-
+    
     if (ls && json.round === 5){
         const i = setInterval(()=>{
             const guessBtn = document.querySelector(`[data-qa="perform-guess"]`);
@@ -597,9 +600,9 @@ async function cacheNextGame(){
     if (ls._cachedMap) return;
 
     for (let n = 0; n < 20; n++) {
-        const nextMap = await nextRandomMap(ls.minMapSize * 1000, ls.maxMapSize * 1000);
-
         if (ls._cachedMap) return;// A random map may have been found already.
+
+        const nextMap = await nextRandomMap(ls.minMapSize * 1000, ls.maxMapSize * 1000);
 
         if (nextMap === null){
             continue;
@@ -645,7 +648,6 @@ function handleEndOfGame(json){
                 _alert.style.display = "";
                 document.getElementById('_alertExplanation').innerHTML = `Your score is <span style="font-weight:bold; ${json._mutationObserved? `text-decoration: underline;`: ''}">${score}</span>; the number to beat is <span style="font-weight:bold;">${ls.minMapScore.toLocaleString()}</span>!`;
                 startNextGameBtn.innerText = "Retry Map";
-                startNextGameBtn.innerText = "Retry Map";
                 startNextGameBtn.style.backgroundColor = "#b92828";
                 startNextGameBtn.addEventListener('click', ()=>{
                     window.open(`https://www.geoguessr.com/maps/${ls.currentMap.id}/play` ,"_self");
@@ -675,11 +677,16 @@ function handleEndOfGame(json){
             }  
 
             if (ls.currentMap && ls?._token !== json.token){
-                ls.currentMap.token = json.token;
                 ls._token = json.token;
-                ls.maps.push(ls.currentMap);
+            }
+            
+            if (ls.currentMap && json.state === 'finished'){
+                ls.currentMap.token = json.token;
             }
 
+            ls.maps.push(ls.currentMap);
+            
+            debugger;
             localStorage["RandomMapChallenge"] = JSON.stringify(ls);
 
             ls.currentMap = null;
@@ -760,7 +767,7 @@ function handleEndOfGame(json){
                 } 
 
                 if (ls.currentMap === null){
-                    alert(`Searched 20 maps and couldn't find one, press the button to try again.`);
+                    alert(`Searched 20 maps and couldn't find one, press the button to try again.\n\nMay need to refresh page and verfiy you are a human?n`);
                     window.Sweetalert2.hideLoading();
                     startNextGameBtn.disabled = false;
                     _btn.disabled = false;
@@ -858,7 +865,14 @@ setInterval(()=>{
         ls1.splice(0, ls1.length % 100);
     }
     
-    _ls.currentMap.token = location.pathname.match(/\/.*\/(.*)/)[1]; 
+    debugger;
+    let token = location.pathname.match(/\/.*\/(.*)/)[1]; 
+    if (!ls._token || ls?._token !== token){
+        _ls.currentMap.token = token;
+    } else {
+        _ls.currentMap = null;
+    }
+
     ls1.push(_ls);
 
     localStorage[`RandomMapChallenge_saveInfo`] = JSON.stringify(ls1);
@@ -1013,6 +1027,11 @@ function viewPreviousGames(){
                             }
 
                             game.maps.forEach(map =>{
+                                if (!map?.token){
+                                    // Send to map instead of game results because game might not have been finished.
+                                    str += `<div><a href="https://www.geoguessr.com/maps/${map.id}" style="color: #9ca1a3;" class="_prevChalMap _hover" title="Challenge ended in middle of this game.">${map.n}</a></div>`;
+                                    return;
+                                }
                                 str += `<div><a href="https://www.geoguessr.com/results/${map.token}"class="_prevChalMap _hover">${map.n}</a></div>`;
                             });
 
