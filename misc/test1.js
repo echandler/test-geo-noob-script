@@ -862,8 +862,8 @@ let sp = setInterval(()=>{
 
     if (Date.now() < _ls.challengeEndTime) return;
 
-    //delete localStorage["RandomMapChallenge"];
-    clearInterval(sp)
+    delete localStorage["RandomMapChallenge"];
+
     let ls1 = localStorage[`RandomMapChallenge_saveInfo`] ? JSON.parse(localStorage[`RandomMapChallenge_saveInfo`]) : [];
 
     // Delete potentially large maps list from search results.
