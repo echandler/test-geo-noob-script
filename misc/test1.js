@@ -862,8 +862,8 @@ let sp = setInterval(()=>{
 
     if (Date.now() < _ls.challengeEndTime) return;
 
-    delete localStorage["RandomMapChallenge"];
-
+    //delete localStorage["RandomMapChallenge"];
+    clearInterval(sp)
     let ls1 = localStorage[`RandomMapChallenge_saveInfo`] ? JSON.parse(localStorage[`RandomMapChallenge_saveInfo`]) : [];
 
     // Delete potentially large maps list from search results.
@@ -899,6 +899,9 @@ let sp = setInterval(()=>{
 
         },
         html: `
+            <div style=" position: absolute; left: 0%; top: 0px; width: 100%; height: 100%; overflow: hidden;z-index: -5; ">
+                <div class="_rotatingStripes" style=""></div>
+            </div>
             <div class="_rmc_header"  >Random Map Challenge Final Score!</div>
             <div id="_alert" class="_finalScore" >
               <!--  
@@ -907,8 +910,8 @@ let sp = setInterval(()=>{
                  <span style="font-weight: bold;">Good Job</span><div class="_aniMark" style="display:inline-block">!</div>
                 <div style="height: 5em; margin-top: 1em;line-height: 1;">
                     <img style="    height: 5em; opacity: 0.5; position: absolute; width: 100%; left: 0px; z-index: -1;" src="https://www.svgrepo.com/show/452120/trophy.svg">
-                    <div class="___score _aniMark" style="position: relative; left: calc(5em * -0.0325);">
-                        <span style="font-weight:bold; font-size: 5em;">0</span>
+                    <div class="___score _aniMark" style="position: relative;">
+                        <span style="font-weight:bold; font-size: 5em;">${_ls.maps.length}</span>
                     </div>
                 </div>
             </div>
@@ -1309,6 +1312,22 @@ document.head.insertAdjacentHTML('beforeend', `
         .body.swal2-height-auto  {
             height: 100% !important;  
         }         
+        
+        ._rotatingStripes {
+            height: 200%;
+            width: 200%;
+            animation:spin 70s linear infinite;
+            background-image: url( 'https://beamtic.com/Examples/radial-stripes.svg');
+            background-repeat: no-repeat;
+            background-position: 50%;
+            background-size: 60%;
+            z-index: -3;
+            translate: -25% -25%;
+            z-index: -1;
+            opacity: 0.1 ;
+        }
+
+        @keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } } 
     </style>
     
     <style>
