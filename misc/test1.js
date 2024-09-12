@@ -656,7 +656,9 @@ function handleEndOfGame(json){
             if (json.player.totalScore.amount < ls.minMapScore){
                 const score = parseInt(json.player.totalScore.amount).toLocaleString();
                 _alert.style.display = "";
-                document.getElementById('_alertExplanation').innerHTML = `Your score is <span style="font-weight:bold; ${json._mutationObserved? `text-decoration: underline;`: ''}">${score}</span>; the number to beat is <span style="font-weight:bold;">${ls.minMapScore.toLocaleString()}</span>!`;
+                const _alertExplanation = document.getElementById('_alertExplanation');
+                _alertExplanation.innerHTML = `Your score is <span style="font-weight:bold; ${json._mutationObserved? `text-decoration: underline;`: ''}">${score}</span>; the number to beat is <span style="font-weight:bold;">${ls.minMapScore.toLocaleString()}</span>!`;
+                _alertExplanation.style.color = "#b92828";
                 startNextGameBtn.innerText = "Retry Map";
                 startNextGameBtn.style.backgroundColor = "#b92828";
                 startNextGameBtn.addEventListener('click', ()=>{
@@ -798,7 +800,7 @@ function handleEndOfGame(json){
             <div class="_rmc_header">Random Map Challenge</div>
 
             <div id="_alert" style="color: red; display: none; line-height: 1.5em;">
-                Need to replay map to continue!
+                <img style="width: 30%;margin-bottom: 0.6em;" src="https://www.svgrepo.com/show/436410/exclamation.svg">
                 <div id="_alertExplanation"> </div>                
             </div>
             
@@ -1145,16 +1147,17 @@ setTimeout(()=>{
     </style>
     `);
 }, 2000);
-
+//font-family: "Neo Sans", var(--default-font);
+//
 document.head.insertAdjacentHTML('beforeend', `
     <style>
         .swal2-popup {
-            font-family: "Neo Sans", var(--default-font);
+            font-family: "hp", "Neo Sans", var(--default-font);
             pointer-events: all; 
         }
          
         .swal2-popup button {
-            font-family: "Neo Sans", var(--default-font);
+            font-family: "hp", "Neo Sans", var(--default-font);
             font-weight: 700;
         }
         
@@ -1330,16 +1333,30 @@ document.head.insertAdjacentHTML('beforeend', `
         @keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } } 
     </style>
     
-    <style>
-        @font-face {
-        font-family: "Neo Sans";
-        src:
-        local("Neo Sans"),
-        url('https://echandler.github.io/test-geo-noob-script/misc/Neo%20Sans%20Std%20Regular.otf') format("opentype");
-        }
-    </style>
+     <style>
+         @font-face {
+         font-family: "Neo Sans";
+         src:
+         local("Neo Sans"),
+         url('https://echandler.github.io/test-geo-noob-script/misc/Neo%20Sans%20Std%20Regular.otf') format("opentype");
+         }
+     </style>
     
     `);
+    // <style>
+        //  @font-face {
+        //  font-family: "hp";
+        //  src:
+        //  local("hp"),
+        //  url('https://support.hp.com/wcc-assets/fonts/FormaDJRUI.woff') format("woff");
+        //  }
+    //     @font-face {
+    //     font-family: "hp";
+    //     src:
+    //     local("hp"),
+    //     url('https://www8.hp.com/etc.clientlibs/HPIT-AEM-GLOBALNAV/clientlibs-globalnav/clientlibs-fonts/clientlib-hf-fontface-core/resources/fonts/HpSimplifiedLight.woff') format("woff");
+    //     }
+    // </style>
 
 
     function loadSweetAlert(){
