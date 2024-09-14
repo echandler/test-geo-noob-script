@@ -1144,6 +1144,23 @@ setTimeout(()=>{
             body.swal2-height-auto  {
                 height: 100% !important;  
             }         
+            
+            .swal2-show {
+                opacity: 0;
+                animation: world-cup-signed-in-start-page_popIn__xoXsd .6s cubic-bezier(0.34,1.56,0.64,1) .2s forwards;
+            }
+            
+            @keyframes world-cup-signed-in-start-page_popIn__xoXsd {
+                0% {
+                    opacity: 0;
+                    transform: scale(.5)
+                }
+
+                to {
+                    opacity: 1;
+                    transform: scale(1)
+                }
+            }
     </style>
     `);
 }, 2000);
