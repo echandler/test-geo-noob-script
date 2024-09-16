@@ -258,7 +258,7 @@ function mainMenuBtnClickHandler(){
             <div class="_rmc_header">Random Map Challenge</div>
             
             <div class="_challengeSpecs">
-                <div class="_inputs" style="display: grid; grid-template-columns: max-content min-content; column-gap: 1em; width: fit-content; margin: 0px auto;">
+                <div class="_inputs" style="display: grid; grid-template-columns: max-content min-content; column-gap: 1em; align-items: center; width: fit-content; margin: 0px auto;">
                     <div>
                         Challenge time (minutes) 
                     </div>
@@ -1136,7 +1136,7 @@ function getSwalCloseBtn(fn){
 }
 
 setTimeout(()=>{
-    document.head.insertAdjacentHTML('beforeend', `
+    document.body.insertAdjacentHTML('beforeend', `
         <style id="_swalOverride">
 
             /* Fix the SweetAlert backdrop from being black. */
@@ -1163,7 +1163,7 @@ setTimeout(()=>{
             }
     </style>
     `);
-}, 2000);
+}, 0);
 //font-family: "Neo Sans", var(--default-font);
 //
 document.head.insertAdjacentHTML('beforeend', `
