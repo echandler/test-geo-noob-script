@@ -171,6 +171,22 @@ if (ls) {
                     window.open(`https://www.geoguessr.com/maps/${ls.currentMap.id}`,"_self");
                     return;
                 });
+
+                const pauseBtn = document.getElementById('_pauseBtn');
+                pauseBtn.addEventListener('click', ()=>{
+                    if (!ls.isPaused){
+                        pauseBtn.innerText = "Unpause";
+                        ls.isPaused = ls.challengeEndTime - Date.now();
+                    } else {
+                        pauseBtn.innerText = "Pause";
+                        ls.challengeEndTime = Date.now() + ls.isPaused;
+                        ls.isPaused = null;
+                    }
+                    
+                    localStorage["RandomMapChallenge"] = JSON.stringify(ls);
+                    
+                    return;
+                });
             },
             html: `
             <div class="_rmc_header" >Random Map Challenge Stats</div>
@@ -231,10 +247,13 @@ if (ls) {
                     <input type="checkbox" disabled id="_autoNextMap" ${ls.autoNextMap ? "checked" : ""}><label for="_autoNextMap">Auto next map?</label>
                 </div>
                 <div style="margin-top: 1em;" >
-                    <button id="_skipMapBtn" class="swal2-confirm swal2-styled _disabled _styledBtn" ${(!ls.challengeEndTime || (ls.skipsUsed < ls.numOfSkips)) ? "": "disabled"}>Skip map</button>
+                    <button id="_skipMapBtn" class="swal2-confirm swal2-styled _disabled _styledBtn" ${(!ls.challengeEndTime || (ls.skipsUsed < ls.numOfSkips)) ? "": "disabled"} >Skip map</button>
                 </div>
                 <div style="margin-top: 1em;" >
-                    <button id="_endGameBtn" class="swal2-confirm swal2-styled _styledBtn" >End game.</button>
+                    <button id="_pauseBtn" class="swal2-confirm swal2-styled _disabled _styledBtn" ${(!ls.challengeEndTime || !ls.challengeStartedTime) ? "disabled": ""} >${(ls.isPaused) ? "Unpause": "Pause"}</button>
+                </div>
+                <div style="margin-top: 1em;" >
+                    <button id="_endGameBtn" class="swal2-confirm swal2-styled _styledBtn" >End game</button>
                 </div>
             </div>
         `,
@@ -258,7 +277,7 @@ function mainMenuBtnClickHandler(){
             <div class="_rmc_header">Random Map Challenge</div>
             
             <div class="_challengeSpecs">
-                <div class="_inputs" style="display: grid; grid-template-columns: max-content min-content; column-gap: 1em; align-items: center; width: fit-content; margin: 0px auto;">
+                <div class="_inputs" style="display: grid; grid-template-columns: max-content min-content; column-gap: 1em; align-items: center; text-align:left; width: fit-content; margin: 0px auto;">
                     <div>
                         Challenge time (minutes) 
                     </div>
@@ -292,11 +311,11 @@ function mainMenuBtnClickHandler(){
                 <div id="_miscStuff" style="margin: 1em 0em;">
                     <input type="checkbox" id="_autoNextMap"><label for="_autoNextMap">Auto next map?</label>
                 </div>
-                <div>
-                    Map search <input id="_searchByTerms" style="margin-left: 1em;" type="text" placeholder="Enter search terms here.">
-                </div>
-                <div>
-                    Maps made by player <input id="_searchByPlayerId" style="margin-left: 1em;" type="text" placeholder="Enter player id# here.">
+                <div class="_stuff" style="display: grid; grid-template-columns: max-content min-content; column-gap: 1em; align-items: center; text-align:left; width: fit-content; margin: 0px auto;">
+                <div> Map search</div> <input id="_searchByTerms" style="" type="text" placeholder="Enter search terms here.">
+                
+                <div> Maps made by player </div> <input id="_searchByPlayerId" style="" type="text" placeholder="Enter player id# here.">
+               
                 </div>
                 <div id="_viewGames" class="_hover" style="margin-top: 1em;">
                     View previous finished games. 
@@ -835,6 +854,8 @@ let sp = setInterval(()=>{
     // Main loop
     let _ls = localStorage["RandomMapChallenge"];
     if (!_ls) return;
+    
+    if (ls && ls.isPaused) return;
 
     if (ls && ls.challengeEndTime){
         const hours = document.getElementById('_hours');
@@ -1146,10 +1167,22 @@ setTimeout(()=>{
             }         
             
             .swal2-show {
+                --color: white;
                 opacity: 0;
                 animation: world-cup-signed-in-start-page_popIn__xoXsd .6s cubic-bezier(0.34,1.56,0.64,1) .2s forwards;
+           /*     
+                backdrop-filter: blur(20px) saturate(400%) brightness(0.9);
+                color: var(--color);
+                background: transparent; 
+            */
             }
             
+            /*
+                .swal2-show input{
+                    color: var(--color);
+                }
+            */
+
             @keyframes world-cup-signed-in-start-page_popIn__xoXsd {
                 0% {
                     opacity: 0;
