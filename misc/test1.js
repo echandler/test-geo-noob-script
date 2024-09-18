@@ -593,7 +593,7 @@ function listenForApiFetch(json){
             window.open(`https://www.geoguessr.com/maps/${ls.currentMap.id}`,"_self");
         }
         
-        if (!ls._finishedGame || (ls._finishedGame.idx +1 >= ls._finishedGame.obj.maps.length)){
+        if (!ls?.mapsList?.length && (!ls._finishedGame || (ls._finishedGame.idx +1 >= ls._finishedGame.obj.maps.length))){
             cacheNextGame();
         }
     }         
