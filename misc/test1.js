@@ -303,20 +303,23 @@ function mainMenuBtnClickHandler(){
                     </div>
                         <input id="_skips" type="number" max="25000" value="5"  onfocus="this.select()">
                 </div>
+
                 <div style="margin: 1em 0em;">
                     <input type="checkbox" id="_fMoving"><label for="_fMoving">No Moving?</label>
                     <input type="checkbox" id="_fRotating"><label for="_fRotating">No Rotating?</label>
                     <input type="checkbox" id="_fZooming"><label for="_fZooming">No Zooming?</label>
                 </div>
+
                 <div id="_miscStuff" style="margin: 1em 0em;">
                     <input type="checkbox" id="_autoNextMap"><label for="_autoNextMap">Auto next map?</label>
                 </div>
+
                 <div class="_stuff" style="display: grid; grid-template-columns: max-content min-content; column-gap: 1em; align-items: center; text-align:left; width: fit-content; margin: 0px auto;">
-                <div> Map search</div> <input id="_searchByTerms" style="" type="text" placeholder="Enter search terms here.">
-                
-                <div> Maps made by player </div> <input id="_searchByPlayerId" style="" type="text" placeholder="Enter player id# here.">
-               
+                    <div> Map search</div> <input id="_searchByTerms" style="" type="text" placeholder="Enter search terms here.">
+                    <div> Maps made by player </div> <input id="_searchByPlayerId" style="" type="text" placeholder="Enter player id# here.">
+                    <div> List of maps </div> <input id="_listOfCustomMaps" style="" type="text" placeholder="Enter a list of maps here.">
                 </div>
+
                 <div id="_viewGames" class="_hover" style="margin-top: 1em;">
                     View previous finished games. 
                 </div>
@@ -344,6 +347,7 @@ function handlePopup(p){
     const skips = document.getElementById('_skips');
     const searchByTerms = document.getElementById("_searchByTerms");
     const searchByPlayerId = document.getElementById('_searchByPlayerId');
+    const listOfCustomMapIds = document.getElementById('_listOfCustomMaps');
     
     document.getElementById('_viewGames').addEventListener('click', viewPreviousGames);
     
@@ -405,6 +409,7 @@ function handlePopup(p){
             autoNextMap: document.getElementById('_autoNextMap').checked,
             numOfSkips: parseInt(skips.value),
             searchByPlayerId: searchByPlayerId.value,
+            listOfCustomMapIds: listOfCustomMapIds.value,
             searchByTerms: searchByTerms.value,
             skipsUsed: 0,  
             mapsList: [],
@@ -429,7 +434,11 @@ function handlePopup(p){
                 return;
             }
         }
-
+        
+        if (obj.listOfCustomMapIds){
+            formatListOfCustomMaps(obj.listOfCustomMapIds, obj);
+        }
+debugger;
         if (obj.mapsList.length !== 0){
             obj.currentMap = obj.mapsList[Math.floor(Math.random() * obj.mapsList.length)];
         }
@@ -503,6 +512,17 @@ async function fetchGameInfo(id){
     return gameInfo;
 }
 
+function formatListOfCustomMaps(strListOfMapIds, obj){
+   let arrayOfMapIds = strListOfMapIds.split(",");
+   let arrayOfMapObjs = arrayOfMapIds.map(id =>{
+        return {
+            id: id.replace(/"|'/g, ''),
+            name: "",
+        };
+   });
+
+   obj.mapsList = arrayOfMapObjs;
+}
 
 async function searchByTermOrId(obj){
     if (obj.searchByPlayerId !== ""){
