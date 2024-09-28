@@ -317,7 +317,13 @@ function mainMenuBtnClickHandler(){
                 <div class="_stuff" style="display: grid; grid-template-columns: max-content min-content; column-gap: 1em; align-items: center; text-align:left; width: fit-content; margin: 0px auto;">
                     <div> Map search</div> <input id="_searchByTerms" style="" type="text" placeholder="Enter search terms here.">
                     <div> Maps made by player </div> <input id="_searchByPlayerId" style="" type="text" placeholder="Enter player id# here.">
-                    <div> List of maps </div> <input id="_listOfCustomMaps" style="" type="text" placeholder="Enter a list of maps here.">
+                    <div id="_listOfMapsLink" class="_hover"> List of maps 
+                        <div class="_listOfMapsLink_popupMsg">
+                      
+                            GeoGuessr's random map generator returns a lot of lame maps, it is highly recommended that you use your own custom list of comma seperated map id's or choose one from the link above!
+                         
+                        </div>
+                    </div> <input id="_listOfCustomMaps" style="" type="text" placeholder="Enter a list of maps here.">
                 </div>
 
                 <div id="_viewGames" class="_hover" style="margin-top: 1em;">
@@ -348,7 +354,8 @@ function handlePopup(p){
     const searchByTerms = document.getElementById("_searchByTerms");
     const searchByPlayerId = document.getElementById('_searchByPlayerId');
     const listOfCustomMapIds = document.getElementById('_listOfCustomMaps');
-    
+    const listOfMapIdsLink =  document.getElementById('_listOfMapsLink');
+
     document.getElementById('_viewGames').addEventListener('click', viewPreviousGames);
     
     playAgainstSomeone.addEventListener('click', ()=>{
@@ -381,6 +388,10 @@ function handlePopup(p){
             confirmButtonText: "Close",
         });
 
+    });
+    
+    listOfMapIdsLink.addEventListener('click', (e)=>{
+        window.open(`https://echandler.github.io/test-geo-noob-script/misc/randomMapIds.html`,"");
     });
 
     startChallengBtn.addEventListener('click',async ()=>{
@@ -440,7 +451,21 @@ function handlePopup(p){
         }
 debugger;
         if (obj.mapsList.length !== 0){
-            obj.currentMap = obj.mapsList[Math.floor(Math.random() * obj.mapsList.length)];
+            let filteredMaps = [];
+
+            for (let n = 0; n < 200; n++){
+                // Build list of maps that haven't been played recently.
+                filteredMaps = filterNumOfTimesPlayed(n, obj.mapsList);
+                if (filteredMaps.length !== 0){
+                    break;
+                }
+            }
+
+            let randomMap = filteredMaps[Math.floor(Math.random() * filteredMaps.length)];
+
+            randomMap._numOfTimesPlayed += 1;
+
+            obj.currentMap = randomMap;
         }
 
         if (obj.mapsList.length === 0){
@@ -514,14 +539,22 @@ async function fetchGameInfo(id){
 
 function formatListOfCustomMaps(strListOfMapIds, obj){
    let arrayOfMapIds = strListOfMapIds.split(",");
+   
    let arrayOfMapObjs = arrayOfMapIds.map(id =>{
         return {
             id: id.replace(/"|'/g, ''),
             name: "",
+            _numOfTimesPlayed: 0,
         };
    });
 
    obj.mapsList = arrayOfMapObjs;
+}
+
+function filterNumOfTimesPlayed(num, arrayOfMapIds){
+   return arrayOfMapIds.filter(map =>{
+        return map._numOfTimesPlayed == num;
+   });
 }
 
 async function searchByTermOrId(obj){
@@ -540,6 +573,8 @@ async function searchByTermOrId(obj){
             obj.mapsList = obj.mapsList.concat(maps);
         }
     } 
+    
+    obj.mapsList.forEach(map=> { map._numOfTimesPlayed = 0 });
 } 
 
 async function checkGameInfo(id, minTime, minScore, forbidMoving = false, forbidZooming = false, forbidRotating = false){
@@ -739,6 +774,7 @@ function handleEndOfGame(json){
             
             localStorage["RandomMapChallenge"] = JSON.stringify(ls);
 
+            const _currentMap = ls.currentMap;
             ls.currentMap = null;
 
             _greenAlert.style.display = "";
@@ -801,7 +837,24 @@ function handleEndOfGame(json){
                 }
 
                 if (ls.mapsList.length !== 0){
-                    ls.currentMap = ls.mapsList[Math.floor(Math.random() * ls.mapsList.length)];
+                    let filteredMaps = [];
+
+                    for (let n = 0; n < 500; n++){
+                        // Build list of maps that haven't been played recently.
+                        filteredMaps = filterNumOfTimesPlayed(n, ls.mapsList);
+                        if (filteredMaps.length !== 0){
+                            break;
+                        }
+                    }
+ 
+                    if (ls.mapsList.length > 1){
+                        // Make sure it wasn't previous map played.
+                        filteredMaps = filteredMaps.filter(map => map.id !== _currentMap.id);
+                    }
+
+                    ls.currentMap = filteredMaps[Math.floor(Math.random() * filteredMaps.length)];
+
+                    ls.currentMap._numOfTimesPlayed += 1;
                 }
 
                 if (ls.mapsList.length === 0){
@@ -1401,6 +1454,31 @@ document.head.insertAdjacentHTML('beforeend', `
         }
 
         @keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } } 
+        
+        #_listOfMapsLink {
+            font-weight: bold;
+            color: #5eb741;
+        }
+
+        #_listOfMapsLink:hover > div {
+            color: #b92828;
+            display: block !important;
+        }
+
+        ._listOfMapsLink_popupMsg {
+            position: absolute;
+            height: fit-content;
+            /* top: 0px; */
+            background: white;
+            outline: 1px solid #b92828;
+            padding: 1em;
+            display: none;
+            margin-top: 1em;
+            width: 50%;
+            line-height: 1.5em;
+            font-size: 0.8em;
+            border-radius: 10px;
+        }
     </style>
     
      <style>
