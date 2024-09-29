@@ -315,15 +315,22 @@ function mainMenuBtnClickHandler(){
                 </div>
 
                 <div class="_stuff" style="display: grid; grid-template-columns: max-content min-content; column-gap: 1em; align-items: center; text-align:left; width: fit-content; margin: 0px auto;">
-                    <div> Map search</div> <input id="_searchByTerms" style="" type="text" placeholder="Enter search terms here.">
-                    <div> Maps made by player </div> <input id="_searchByPlayerId" style="" type="text" placeholder="Enter player id# here.">
-                    <div id="_listOfMapsLink" class="_hover"> List of maps 
-                        <div class="_listOfMapsLink_popupMsg">
-                      
-                            GeoGuessr's random map generator returns a lot of lame maps, it is highly recommended that you use your own custom list of comma seperated map id's or choose one from the link above!
-                         
+                    <div id="_mapSearch"> 
+                        Map search
+                        <div class="__popupMsg">
+                            Searching for a word such as "diverse" will return a list of maps containing the word "diverse", much better than GeoGuessr's random map generator.
                         </div>
-                    </div> <input id="_listOfCustomMaps" style="" type="text" placeholder="Enter a list of maps here.">
+                    </div> 
+                    <input id="_searchByTerms" style="" type="text" placeholder="Enter search terms here.">
+                    <div> Maps made by player </div> 
+                    <input id="_searchByPlayerId" style="" type="text" placeholder="Enter player id# here.">
+                    <div id="_listOfMapsLink" class="_hover"> 
+                        List of maps 
+                        <div class="__popupMsg">
+                            GeoGuessr's random map generator returns a lot of lame maps, it is highly recommended that you use your own custom list of comma seperated map id's or choose one from the link above!
+                        </div>
+                    </div> 
+                    <input id="_listOfCustomMaps" style="" type="text" placeholder="Enter a list of maps here.">
                 </div>
 
                 <div id="_viewGames" class="_hover" style="margin-top: 1em;">
@@ -574,7 +581,10 @@ async function searchByTermOrId(obj){
         }
     } 
     
-    obj.mapsList.forEach(map=> { map._numOfTimesPlayed = 0 });
+    obj.mapsList.forEach(map=> { 
+        map._numOfTimesPlayed = 0;
+        map.n = map.name;
+     });
 } 
 
 async function checkGameInfo(id, minTime, minScore, forbidMoving = false, forbidZooming = false, forbidRotating = false){
@@ -1054,7 +1064,6 @@ let sp = setInterval(()=>{
         allowOutsideClick: false, 
         confirmButtonText: "Close",
         })
-        sdfsdffsd();
     }, 1000);
     
 function patch_fetch(){
@@ -1455,17 +1464,17 @@ document.head.insertAdjacentHTML('beforeend', `
 
         @keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } } 
         
-        #_listOfMapsLink {
+        #_listOfMapsLink, #_mapSearch{
             font-weight: bold;
             color: #5eb741;
         }
 
-        #_listOfMapsLink:hover > div {
+        #_listOfMapsLink:hover > .__popupMsg, #_mapSearch:hover > .__popupMsg{
             color: #b92828;
             display: block !important;
         }
 
-        ._listOfMapsLink_popupMsg {
+        .__popupMsg {
             position: absolute;
             height: fit-content;
             /* top: 0px; */
