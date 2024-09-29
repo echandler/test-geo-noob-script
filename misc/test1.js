@@ -1488,6 +1488,12 @@ document.head.insertAdjacentHTML('beforeend', `
             font-size: 0.8em;
             border-radius: 10px;
         }
+        
+        #_searchByTerms::placeholder, #_listOfCustomMaps::placeholder {
+            color: #5eb741;
+            opacity: 1; /* Firefox */
+        } 
+       
     </style>
     
      <style>
