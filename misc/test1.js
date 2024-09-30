@@ -159,18 +159,23 @@ if (ls) {
                 const skipMapBtn = document.getElementById('_skipMapBtn');
                 skipMapBtn.addEventListener('click', ()=>{
                     skipMapBtn.disabled = true;
-
+                    if (confirm("Click 'Ok' if you want to use a skip? Click 'Cancel' if map is broken, doesn't fit your game plan, ect.")){
+                        ls.skipsUsed += 1;
+                    }
+                    jumpToWikiXplore();
+                });
+                
+                function jumpToWikiXplore(){
                     ls.currentMap = {
                         id: "66a46adc321fb0b8f5eeb270",
                         n: "Exact locations [WikiXplore]" 
-                    }
+                    };
                     
-                    ls.skipsUsed += 1;
                     localStorage["RandomMapChallenge"] = JSON.stringify(ls);
                     
                     window.open(`https://www.geoguessr.com/maps/${ls.currentMap.id}`,"_self");
                     return;
-                });
+                };
 
                 const pauseBtn = document.getElementById('_pauseBtn');
                 pauseBtn.addEventListener('click', ()=>{
