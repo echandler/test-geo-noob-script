@@ -1,4 +1,4 @@
-/ ==UserScript==
+// ==UserScript==
 // @name          Random Map Challenge
 // @description   Random Map Challenge 
 // @version       0.1
