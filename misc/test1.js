@@ -1,4 +1,4 @@
-// ==UserScript==
+/ ==UserScript==
 // @name          Random Map Challenge
 // @description   Random Map Challenge 
 // @version       0.1
@@ -12,7 +12,9 @@
 // ==/UserScript==
     
     let curEorJSON = null; 
-    
+
+    const defaultMaps = "6029991c5048850001d572a9,61816f7a5912780001b67092,6690658d3d507f8e401dbb32,6084944217a48e00012ea121,65c0df20363a6fc9f51657b0,6677d4471536a2df6b9846d1,6441a874895797077a027d5e,62f667473b7c34a9e9d44549,66915dfd404d6390c331ed02,62c401670a427aba1e3f79b6,66c77c6b24008c6727599fed,66c24075290ceb1901230ef5,6681071d7116c23d8c0011d7,66cdf29e06082dc5af2bb3f7,66d899009b21529963082f20,658447aecf12db5dbe627858,64c690837300eb4ceb4e69d9,62945e1a391564acaee57c3d,66ca4fa6095a4f41baf7b414,65a95ae79f00f2ccdb91d2e8,662fd576670b0cb42fc9a000,60496c604aa8c3000187082f,61bcf6b06d95ab000186b94b,66f061310b443a16eca522db,65cbae773813012df05d623f,65234123e0567b10c2543e66,668c72519c4d9744029f2243,622a13d50ee24e0001de25d9,66f061310b443a16eca522db,66270998be739b205bb2f1e5,6676492d944223b0e6ded634,63541f3669223f6c25f61f96,62aa2ffef45be669a0cc9e89,645fa86dbc1a923693bcc381,66b8d35f8931540bc3b6fb88,65f58c961657435a2a828dc8,63541f3669223f6c25f61f96,631df4b39427b26d568dc488,63304ccb30749c30b9a83a89,6070f3e98ae57c0001b18dbb,64162adfd46f82c177976b12,60304bd7098571000133784d,636faf98203246c00bbd8a7e,636faf98203246c00bbd8a7e,6318b89d582546245c55a96c,6318c09a13168ddbc4157853,63035cd66b380e63172efa8d,609448e812905400018a76e1,61325442eadbec00018b6385,629138039f28f66570f68d0e,62dd30d95b5fa539b12e84f6,607aab7325a52a0001e271c5,6054a87bb2a413000194dafc,61bc82f26d1aed000177f9e7,667dab025a1e617dd25198c4,65f882b9b66c5517ad3f0cea,65c49d5b573d429803e00575,6496fbc01a06b3888f6f9114,6609c8e34b1ee0493b4efe26,6496fbc01a06b3888f6f9114,64eb1f467062c0907a1097b6,63ddbefd9b6fc8d9ea0d1ce9,644a6393b63dd126dc47392b,603c2d3cd19ba40001ec5860,634266c98f0f00a7e457f4e9,6009b57e0fe74c0001edd646,58b0a9b2f45b68aa6436aac2,636b2478534d763e695bd2bc,6170e44f9f365e0001b3f433,621e98dc8228a30001a228fd,6127f8764dcea10001c8bfa1,6303294f6b380e63172ef0ec,66528075742cee9b1fded493,5ebd51c6de3c4c5aec1c3bb7,5eee076e62df1243a0cf38fd,6021d4b55607e700011b2065,636b0a491c56a9bc11a1c9e1,606f76d8a26eca0001bf0f86,5fb6f5a192d5620001e1d374,5ffb291f1ec970000114c6ec,66312f45f53f47463378d76a,6604a030ff7ef86636142ff6,66be75c2cd71e8258739153e,666733e83a19ce2ccd346d12,5f30df6cef21b000019da6f9,6266017e7e047a2bef7b3de0,5f14b18e41f84798102b3b81,63006ce02c21ff6a7029bbf5,574dd9c877abe9cba8d27747,5cf5685ab741f81464ba63d4,605a5868efdc350001bcc45d,605d4d6394ce8600016b7ba8,618ab71bac92f6000170d02b,661e91332c6f38f2b34a8b7c,661e91332c6f38f2b34a8b7c,661fe80a7c5feac0fb84dc9d,66c8dc058376528e05b49bc0,6180335e1b07e300011e2d7b,64a2519fa24fe38c8804b3b8,6057908eb67eb80001a32495,5e7ed178cd30753eb4beae48,5719e00cbfac4281a4f85d2d,5a2439d439372529f01197d1,66a7294b784f155ddbcb050e,62d7730ab23e02592161b943,6048f236fbd27b00019257f2,66927d02404d6390c3339a24,66c6bdb7773a22e231802dda,5a29d64139372579687799b3,652ee66d4f139fc2dccec6ed,6587d10e6e6f08b2da40e185,5919eb9252e6ca6cac1992c8,62d89711b118768fddc67d3b,60e36b1740bac50001d79641,6583cc50c83871cdb1311ccb,65cfc6305357ce14ed980603,63a8ef61fa09549be219e379,65bdf71aab0e57053216d2ea,66c0fc8e515ebf2ff7a754ad,617410c0ad49250001afdfe8,66ee2de49613657c200844a8,667eefb4202c6fba706688ff,626a9cf2a77fbfb27f4155c2,633c5f432b4b415f2b86bdbc,63f131bc7f7dec3d5f9fc2e2,6127e264284e3100011dd608,6371873ae517528567dfcb75,6380a574c71bd2443872f90f,637d672fe410b09115a0ad5c,62e8795830325f6815a8a347,60b9809134dce100010c5feb,615b806fe2d91f0001f7aca5,66a717ea4d69c0a3a2ca0afa,5ecd9050e2b67a34646fe7ea,5ff23b055de5560001f40f12,6081da577c5dec00015e29a6,6060f63712c7b700012b0608,6041445d0297940001bb3c67,63505cd93e6614ba63d2d06b,634c242da066a780efe1ae01,62aa604ca8692c7ef27418c8,62811662711417dae0ce59f9,62d17b569335196c3972a73e,61065f72dd0ee100010a14a1,611042955e6d8d00011ac2d9,63af3b87e01e5822a3ab3aaf,634c242da066a780efe1ae01,62d17b569335196c3972a73e,621bae379ee1a1000129f579,62aa604ca8692c7ef27418c8,62811662711417dae0ce59f9,63af3b87e01e5822a3ab3aaf,61b72312dce769000130e997,62391fafbe687aa87fdcf631,64d02ecb8d2b82e1f8660421,63f1e4427f7dec3d5f9ff755,650866cbd3667d095b84a430,5efdcc8fbcbd7940c4d06ebd,5d8529351d19ab1da042c4b6,5d7ec783df1dd6456c2c04da,5dcdb64444d2a413708bf03a,585164ee0eac724b6cd3b5ad,587eec140eac728794219b6f,5c035c96b5b94b0df0294d22,5edeb4f990e08883902c4ad8,5f35af70bb43ba000132bfbf,5f6cb2c5dbf8e900012d25e8,62bf04c2cd67f02e3ae2f4c6,60be64f70709db00011e030f,647b787e912f0924282a47e1,6477dbdb0c5e47767168e59c,64bfde19f228b13a66e4ffc5,664fe9ddcf0033f23836f562,5be60f5bfdd598641cb778ac,59644dc09a4f706a2c9cc769,619c394daf75bd00017e13e2,5e988593eb473f3bd8eabdb6,60502e965f66f500015845ad,6046d69ea796d40001724005,60b6444a9fc4230001a230ad,628684631a66eea9ea025d57,61ae58afaf98410001cf12ea,613b56d76d19c400017f4ef7,5e9d1cfdd502e1387417ebea,5f4931cc0088410001ca21cd,600369ff31b2eb0001269c7e,60054f9731b2eb000127c34b,604197652f5455000122ced7,62fbbc70a93a03ec5925997f,613ba155210d2e00019aa444,614a53f7f308970001c606ff,647a58523e4f048682498023,60aedf3960d1f000019f2ad2,60ec7758edfbcc0001d75122,61dfa4a936a8b60001fecf2d,5979dc90f8017993f0eea166,5edfd15590e08883902c88e5,5fea89e75de5560001f0ddbf,60651167720a6300017ffbec,62d339292f4fdd8413a2b2bc,60ff96085d6e040001bf95f7,635aad0d2b05738d22cd4fd9,622f76dd10c44100010b3b1b,6243d6e19f2907aa27df220c,60495ad84d15500001b58164,61c07dd6548e300001f1693e,5e48721b8fd6cf2f4c9c347a,5eed4e2cc40eff35508c6e1f,5f05b3211d50903ed032698d,5f1732bfd6ca438f2401ab1c,5fee1ced892bf00001aadb99,6420b65e792d13379ef5946c,6229d8b0008f0400015e2a50,629e533dff582447c001a393,6207ace7d1c2be000162e98d,62393d02476885f223a8e6d5,5f31ee5a62c16a0001d0b7d7,6051675e7c11e2000111c551,60563029ebef540001848930,60106edac4a6d500010ea290,60106edac4a6d500010ea290,634df614c32f815098b8c8e2,62d4d5a6640e5a876fd31c96,617a5903b3fe9d00015fa39f,619a62b36cf4a600017b42ff,609424539796420001f7d93f,63d1639931007b86543d1092,638e1da6791c11c930ddc638,63e1573558300fd915d02c76,64f51c077c3224c6995532a4,61da0fee11f4f70001170017,637f9cc7a01a4b1ad074df69,6034108874c30f0001898a31,579e5cd9873337667455ea50,5cec8dbf81148c711c2a0914,5edd7fac88a0411870432a1a,60622544f93f570001132fab,62a30e695a1af5da35101eae,5c5aba6998004e1e0c4816a7,5c96a2d262aa6e9bfc40fae5,60623594578a37000152812a,608390faeb35e60001f9bb71,607f176591e5dd0001bec66f,603f95fd5dae140001e5f42f,603e86ae5dae140001e5581e,628e459d6062f9ddfc668c48,627fd25072725629d8018ae0,60ccca021ab8d3000126ba4a,61b57335dce76900013061ac,64ff251f2b78cef34b37cbf5,5f94d18e64681500012a1f8d,6262f254a37c8bc48cd83d6b,60a3e81e90564e00010c8e25,623a3fafb901c5dc8b83b9f6,5fd7fff307f9fe0001facfab,609b303912082a00017655e3,6249c8c6875cb7e468764b05,627942c3f92a6e2f8b58796f";
+
     let isHandlingEOR = false;
     let _eorBtn = null;
     let observer = new MutationObserver(mutationRecords => {
@@ -276,7 +278,7 @@ function mainMenuBtnClickHandler(){
 
     let p = new window.Sweetalert2({
         didOpen: function(e){ 
-            handlePopup(p);
+            handleMainPopup(p);
         },
         html: `
             <div class="_rmc_header">Random Map Challenge</div>
@@ -335,7 +337,7 @@ function mainMenuBtnClickHandler(){
                             GeoGuessr's random map generator returns a lot of lame maps, it is highly recommended that you use your own custom list of comma seperated map id's or choose one from the link above!
                         </div>
                     </div> 
-                    <input id="_listOfCustomMaps" style="" type="text" placeholder="Enter a list of maps here.">
+                    <input id="_listOfCustomMaps" style="" type="text" value="${defaultMaps}" placeholder="Enter a list of maps here.">
                 </div>
 
                 <div id="_viewGames" class="_hover" style="margin-top: 1em;">
@@ -354,7 +356,7 @@ function mainMenuBtnClickHandler(){
     });
 }
 
-function handlePopup(p){
+function handleMainPopup(p){
     const startChallengBtn = document.getElementById('_startChallengeBtn');
     const playAgainstSomeone = document.getElementById('_playAgainstSomeoneElse');
     const minMapSize = document.getElementById('_minMapSize');
@@ -461,7 +463,9 @@ function handlePopup(p){
         if (obj.listOfCustomMapIds){
             formatListOfCustomMaps(obj.listOfCustomMapIds, obj);
         }
+
 debugger;
+
         if (obj.mapsList.length !== 0){
             let filteredMaps = [];
 
@@ -495,6 +499,7 @@ debugger;
         
         if (!obj.currentMap){
             alert(`Searched 20 maps and couldn't find one. Press the button and try again.\n\nMay need to refresh page and verfiy you are a human?`);
+
             window.Sweetalert2.hideLoading();
             startChallengBtn.disabled = false;
 
@@ -534,7 +539,11 @@ async function nextRandomMap(min, max){
     let mapInfo = await fetchRandomMap(min, max);
     if (mapInfo === null) return null;
 
-    const coordCount = parseInt(mapInfo.coordinateCount.replace(/\+/, ''));
+    let coordCount = parseInt(mapInfo.coordinateCount.replace(/\+/, ''));
+
+    if (mapInfo.coordinateCount.toLowerCase().indexOf("k") !== -1){
+        coordCount *= 1000;
+    }
 
     if (coordCount < 50) return null;
     
@@ -586,11 +595,41 @@ async function searchByTermOrId(obj){
         }
     } 
     
-    obj.mapsList.forEach(map=> { 
+    obj.mapsList.forEach( map=> { 
         map._numOfTimesPlayed = 0;
         map.n = map.name;
      });
 } 
+ 
+window.sdfe = async function(){
+    let ret = [];
+    let min = 10000 * 1000;
+    let max = 19000 * 1000;
+
+    for (let n = 0; n < ls.mapsList.length ; n++){
+        let map = ls.mapsList[n];
+
+    //ls.mapsList.forEach( async(map) =>{
+        let mapInfo = await fetch(`https://www.geoguessr.com/api/maps/${map.id}`).then(res => res.json());
+
+        if (mapInfo === null) continue; 
+
+        let coordCount = parseInt(mapInfo.coordinateCount.replace(/\+/, ''));
+        
+        if (mapInfo.coordinateCount.toLowerCase().indexOf("k") !== -1){
+            coordCount *= 1000;
+        }
+
+        if (coordCount < 50) continue;
+        
+        if (min && mapInfo.maxErrorDistance < min) continue;
+        if (max && mapInfo.maxErrorDistance > max) continue;
+
+        ret.push(mapInfo);
+    };
+    
+    return ret;
+}
 
 async function checkGameInfo(id, minTime, minScore, forbidMoving = false, forbidZooming = false, forbidRotating = false){
     const gameInfo = await fetchGameInfo(id);
