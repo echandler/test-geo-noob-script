@@ -330,16 +330,27 @@ function mainMenuBtnClickHandler(){
                             Searching for a word such as "diverse" will return a list of maps containing the word "diverse", much better than GeoGuessr's random map generator.
                         </div>
                     </div> 
-                    <input id="_searchByTerms" style="" type="text" placeholder="Enter search terms here.">
+                    <span class="_stuffInputContainer">
+                        <input id="_searchByTerms" style="" type="text" placeholder="Enter search terms here.">
+                        <span class="_stuffInputX" forId="_searchByTerms" > &#10006; </span>
+                    </span>
+
                     <div> Maps made by player </div> 
-                    <input id="_searchByPlayerId" style="" type="text" placeholder="Enter player id# here.">
+                    <span class="_stuffInputContainer">
+                        <input id="_searchByPlayerId" style="" type="text" placeholder="Enter player id# here.">
+                        <span class="_stuffInputX" forId="_searchByPlayerId" > &#10006; </span>
+                    </span>
+
                     <div id="_listOfMapsLink" class="_hover"> 
                         List of maps 
                         <div class="__popupMsg">
                             GeoGuessr's random map generator returns a lot of lame maps, it is highly recommended that you use your own custom list of comma seperated map id's or choose one from the link above!
                         </div>
                     </div> 
-                    <input id="_listOfCustomMaps" style="" type="text" value="${defaultMaps}" placeholder="Enter a list of maps here.">
+                    <span class="_stuffInputContainer">
+                        <input id="_listOfCustomMaps" style="" type="text" value="${defaultMaps}" placeholder="Enter a list of maps here.">
+                        <span class="_stuffInputX" forId="_listOfCustomMaps" > &#10006; </span>
+                    </span>
                 </div>
 
                 <div id="_viewGames" class="_hover" style="margin-top: 1em;">
@@ -467,8 +478,6 @@ function handleMainPopup(p){
             formatListOfCustomMaps(obj.listOfCustomMapIds, obj);
         }
 
-debugger;
-
         if (obj.mapsList.length !== 0){
             let filteredMaps = [];
 
@@ -516,6 +525,14 @@ debugger;
         localStorage["RandomMapChallenge"] = JSON.stringify(obj);
         
         window.open(`https://www.geoguessr.com/maps/${obj.currentMap.id}`,"_self");
+    });
+    
+    document.querySelectorAll("._stuffInputX").forEach((el)=>{
+        el.addEventListener('click', ()=>{
+            let forId = el.getAttribute('forId');
+            document.getElementById(forId).value = '';
+        });
+        
     });
 }
 
@@ -1537,7 +1554,23 @@ document.head.insertAdjacentHTML('beforeend', `
             color: #5eb741;
             opacity: 1; /* Firefox */
         } 
-         
+        
+        ._stuffInputContainer:hover ._stuffInputX {
+           display: inline; 
+        }   
+        
+        ._stuffInputContainer:hover input{
+            padding-right: 2.5em;
+        }
+
+        ._stuffInputX {
+            color: #5eb741;
+            position: absolute;
+            translate: -27px 3px;
+            padding: 5px;
+            display: none;
+            cursor: pointer;
+        }
     </style>
     
      <style>
