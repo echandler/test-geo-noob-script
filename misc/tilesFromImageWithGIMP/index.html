@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>Make tiles from image with GIMP</title>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body style="margin: 5em;">
+        <h1>Make map tiles from your image with GIMP!</h1>
+        <p>
+            Hopefully not to hard to understand instructions:
+        </p> 
+        <ul>
+            <li>Create your image in GIMP and save the .xcf file.(Square images work best for map tiles; might want to merge all layers for this .xcf file)</li>
+            <li>Create a empty folder somewhere to save the tiles.</li>
+            <li>Open the Python-fu console in GIMP where we will paste the code. Open <span style="font-weight: bold;">Filters -> Python-Fu -> Console</span>.</li>
+            <li>This is the tricky part! Copy the Python code below, but make sure you get the spaces correct.</li>
+            <li>Paste the Python code into the console and press enter, probably multiple times, until you get a ">>>" prompt.</li>
+            <li>Hopefully that worked! Now copy the makeTiles example below and replace the parameters with your information.</li>
+            <li>Hopefully that worked also! Now tweak the makeTiles example code below until your are satisfied with the results.</li>
+        </ul>
+        <p>
+            Notes:
+        </p>
+        <ul>
+            <li>You may want to start by creating only one zoom level to see if it works for you.</li>
+            <li>Zoom levels beyond 4 could take a very long time to process.</li>
+            <li>The compression level goes from 0-9, this code is set to 9 (highest compression level).</li>
+            <li>The images are saved as .png to keep transparency.</li>
+            <li>This was a weekend project to create custom map tiles for google maps, it may not suite your needs!</li>
+            <li>Map tiles at zoom 0 is just one small tile showing the whole image, zoom 1 doubles the size of the image and breaks it up into 4 (2 rows * 2 columns) tiles, zoom 2 doubles that image size and breaks it up into 16 (4 rows * 4 columns) tiles, ect.</li>
+            <li>The folder structure is: zoom/x/y.png. Example: 4(zoom)/2(x row)/4.png(tile file number is y).</li>
+        </ul>
+        </br>
+        <h1>Python code</h1>
+        <p>
+            Copy this Python code into the Python-Fu console EXACTLY!
+        </p>
+<pre style="background-color: beige;">
+def makeTiles(xcf, savePath, tileSize, minZoom, maxZoom):
+    import os
+    pdb.gimp_message("****** Making the tiles! ******")
+    for zoom in range(minZoom, maxZoom + 1):
+        numOfTiles = 1;
+        for n in range(zoom):
+            numOfTiles *= 2
+        image = pdb.gimp_xcf_load(200, xcf, xcf)
+        pdb.gimp_message("Working on zoom level: " + str(zoom) + "; tiles at this zoom level: " + str(numOfTiles * numOfTiles))
+        pdb.gimp_image_scale(image, tileSize * numOfTiles, tileSize * numOfTiles) #scale image
+        tempPath = savePath + "/" + str(zoom)
+        try:
+            os.mkdir(tempPath)
+            print("Directory created successfully! zoom: " + str(zoom))
+        except OSError:
+            print("Directory error when creating (does directory alread exist?): " + tempPath)        
+        for _x in range(numOfTiles):
+            try:
+                os.mkdir(tempPath + "/" + str(_x))
+                print("Directory created successfully! zoom: " +str(zoom) +", x: " +str(_x))
+            except OSError:
+                print("Directory error when creating (does directory alread exist?): " + tempPath + "/" + str(_x))        
+            for _y in range(numOfTiles):
+                pdb.gimp_selection_none(image)
+                pdb.gimp_image_select_rectangle(image, 0, tileSize * _x, tileSize * _y, tileSize, tileSize)
+                pdb.gimp_edit_copy(pdb.gimp_image_get_active_layer(image))
+                newImage = pdb.gimp_edit_paste_as_new_image()
+                pdb.file_png_save(newImage, newImage.layers[0], tempPath +"/" + str(_x) + "/" + str(_y) + ".png", str(_y) + ".png", FALSE, 9, FALSE, FALSE, FALSE, FALSE, FALSE)
+                pdb.gimp_image_delete(newImage)
+    pdb.gimp_message("****** Done making the tiles! ******")
+</pre>
+
+        </br>
+        <h1>Example code to run the task</h1>
+        <p>
+            In this example, we call the "makeTiles" function and pass multiple parameters. It works like this: <span style="font-weight: bold;">makeFile( <i>(path to .xcf)</i> , <i>(path to save folder)</i> , <i>(tile size in pixels)</i> , <i>(start zoom level)</i> , <i>(final zoom level)</i> )</span>.
+        </p>
+        <p>
+            If you only want to create one zoom level, say for testing, make the start zoom number and the final zoom number the same. So, 2 for start zoom and 2 for final zoom will create tiles at the 2 zoom level only, no other levels will be made.
+        </p>
+        <p>
+            Note: Don't add a "/" to the end of the save folder path!
+        </p>
+<pre style="background-color: beige;">
+makeTiles("/home/someone/Desktop/yourImage.xcf", "/home/someone/Desktop/savePath/tiles", 256, 0 , 5)
+</pre>
+        <p>
+            Here we call "makeTiles" with a tile size of 256 pixels and it will create tiles from zoom level 0 to zoom level 5. This would create over 1000 tiles.
+        </p>
+        <p>
+            The .xcf file is located at "/home/someone/Desktop/yourImage.xcf" and the folder were the tiles are saved is located at "/home/someone/Desktop/savePath/tiles" (with out a trailing "/").
+        </p>
+        </br>
+        </br>
+        </br>
+    </body>
+</html>
