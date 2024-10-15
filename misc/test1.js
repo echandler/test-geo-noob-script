@@ -252,7 +252,7 @@ if (ls) {
                 </div>
                 <div id="_miscStuff" style="margin: 1em 0em;">
                     <input type="checkbox" disabled id="_autoNextMap" ${ls.autoNextMap ? "checked" : ""}><label for="_autoNextMap">Auto next map?</label>
-                    <input type="checkbox" disabled id="_playAlong" ${ls.autoNextMap ? "checked" : ""}><label for="_playAlong">Play Along?</label>
+                    <input type="checkbox" disabled id="_playAlong" ${ls.playAlong ? "checked" : ""}><label for="_playAlong">Play Along?</label>
                 </div>
                 <div style="margin-top: 1em;" >
                     <button id="_skipMapBtn" class="swal2-confirm swal2-styled _disabled _styledBtn" ${(!ls.challengeEndTime || (ls.skipsUsed < ls.numOfSkips)) ? "": "disabled"} >Skip map</button>
