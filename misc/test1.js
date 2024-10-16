@@ -142,8 +142,10 @@ if (ls) {
                 });
 
                 const clearCacheBtn = document.getElementById("_clearCache");
-                clearCacheBtn.addEventListener("click", ()=>{
-                    location.reload(true);
+                clearCacheBtn.addEventListener("click", async ()=>{
+                    await handleHardReload(window.location.href + "?unity=" + (Date.now()).toString());
+
+//                    location.reload(true);
                 });
 
                 const skipMapBtn = document.getElementById("_skipMapBtn");
@@ -281,6 +283,22 @@ if (ls) {
         });
     }
 }
+
+async function handleHardReload(url) {
+    await fetch(url, {
+        headers: {
+            Pragma: 'no-cache',
+            Expires: '-1',
+            'Cache-Control': 'no-cache',
+        },
+    });
+    window.location.href = url;
+    // This is to ensure reload with url's having '#'
+    window.open(url, "_self");
+
+//    window.location.reload();
+}
+
 
 function mainMenuBtnClickHandler(){
 
@@ -550,7 +568,8 @@ function handleMainPopup(p){
 //Thanks, unpaid slave dev laborer.
 //`);
 
-        window.open(`https://www.geoguessr.com/maps/${obj.currentMap.id}?unity=${Date.now()}`,"_self");
+        await handleHardReload(`https://www.geoguessr.com/maps/${obj.currentMap.id}?unity=${Date.now()}`)
+        //window.open(`https://www.geoguessr.com/maps/${obj.currentMap.id}?unity=${Date.now()}`,"_self");
     });
     
     document.querySelectorAll("._stuffInputX").forEach((el)=>{
@@ -1646,3 +1665,5 @@ document.head.insertAdjacentHTML('beforeend', `
             array[randomIndex], array[currentIndex]];
         }
     }
+
+// end script 
