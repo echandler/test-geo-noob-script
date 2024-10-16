@@ -142,10 +142,8 @@ if (ls) {
                 });
 
                 const clearCacheBtn = document.getElementById("_clearCache");
-                clearCacheBtn.addEventListener("click", async ()=>{
-                    await handleHardReload(window.location.href + "?unity=" + (Date.now()).toString());
-
-//                    location.reload(true);
+                clearCacheBtn.addEventListener("click", ()=>{
+                    handleHardReload(window.location.href);
                 });
 
                 const skipMapBtn = document.getElementById("_skipMapBtn");
@@ -285,13 +283,20 @@ if (ls) {
 }
 
 async function handleHardReload(url) {
+    //https://stackoverflow.com/questions/2099201/javascript-hard-refresh-of-current-page
+    // There is an issue with the script not loading soon enough, it's not getting the fetch
+    // requests. I found that by doing a hard reload it would work most of the time.
+    // This is just to 
     await fetch(url, {
         headers: {
             Pragma: 'no-cache',
             Expires: '-1',
             'Cache-Control': 'no-cache',
         },
-    });
+    })
+    
+    url += `?unity=${Date.now()}`;;
+
     window.location.href = url;
     // This is to ensure reload with url's having '#'
     window.open(url, "_self");
@@ -553,22 +558,22 @@ function handleMainPopup(p){
         
         localStorage["RandomMapChallenge"] = JSON.stringify(obj);
         
-//        alert(`
-//
-//                    KNOWN ISSUE!!!
-//
-//If the timer or play along doesn't work, try going back to the game setting page, pressing the back button, and DO A HARD REFRESH by holding the ctrl key while refreshing the page; Mac users may need to use a different key.
-//
-//On some computers, the GeoGuessr website may load a hair before the Unity script loads, doing a hard refresh before starting a game can fix the bug on most computers.
-//
-//This game mode might not work on your computer if the problem isn't fixed by doing a hard refresh. 
-//
-//I think the problem has something to do with how large and bloated the Unity script is.
-//
-//Thanks, unpaid slave dev laborer.
-//`);
+        alert(`
 
-        await handleHardReload(`https://www.geoguessr.com/maps/${obj.currentMap.id}?unity=${Date.now()}`)
+                    KNOWN ISSUE!!!
+
+If the timer or play along doesn't work, try going back to the game setting page, pressing the back button, and DO A HARD REFRESH by holding the ctrl key while refreshing the page; Mac users may need to use a different key.
+
+On some computers, the GeoGuessr website may load a hair before the Unity script loads, doing a hard refresh before starting a game can fix the bug on most computers.
+
+This game mode might not work on your computer if the problem isn't fixed by doing a hard refresh. 
+
+I think the problem has something to do with how large and bloated the Unity script is.
+
+Thanks, unpaid slave dev laborer.
+`);
+
+        await handleHardReload(`https://www.geoguessr.com/maps/${obj.currentMap.id}`)
         //window.open(`https://www.geoguessr.com/maps/${obj.currentMap.id}?unity=${Date.now()}`,"_self");
     });
     
