@@ -524,6 +524,21 @@ function handleMainPopup(p){
         
         localStorage["RandomMapChallenge"] = JSON.stringify(obj);
         
+        alert(`
+
+                    KNOWN ISSUE!!!
+
+If the timer or play along doesn't work, try going back to the game setting page, pressing the back button, and DO A HARD REFRESH by holding the ctrl key while refreshing the page; Mac users may need to use a different key.
+
+On some computers, the GeoGuessr website may load a hair before the Unity script loads, doing a hard refresh before starting a game can fix the bug on most computers.
+
+This game mode might not work on your computer if the problem isn't fixed by doing a hard refresh. 
+
+I think the problem has something to do with how large and bloated the Unity script is.
+
+Thanks, unpaid slave dev laborer.
+`);
+
         window.open(`https://www.geoguessr.com/maps/${obj.currentMap.id}`,"_self");
     });
     
@@ -1149,7 +1164,7 @@ function patch_fetch(){
                 if (!/geoguessr.com.(challenge|game)/i.test(location.href)) {
                     if (/random.count/.test(args[0])) return null;
 
-                    if (ls.playAlong && /games/.test(args[0])){
+                    if (ls?.playAlong && /games/.test(args[0])){
                         let json = JSON.parse(args[1].body);
                         json.type = "playalong";
                         args[1].body = JSON.stringify(json);
@@ -1621,3 +1636,5 @@ document.head.insertAdjacentHTML('beforeend', `
             array[randomIndex], array[currentIndex]];
         }
     }
+
+// end script 
