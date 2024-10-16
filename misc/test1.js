@@ -131,8 +131,8 @@ if (ls) {
         let p = new window.Sweetalert2({
             didOpen: function (e) {
                 // Make sure the player can end the game.
-                const endGameBtn = document.getElementById('_endGameBtn');
-                endGameBtn.addEventListener('click', ()=>{
+                const endGameBtn = document.getElementById("_endGameBtn");
+                endGameBtn.addEventListener("click", ()=>{
                     if(!confirm("Do you want to end this Random Map Challenge??")){
                         return;
                     }
@@ -142,29 +142,34 @@ if (ls) {
                 });
 
                 if (!ls.challengeStartedTime) {
-                    document.getElementById('_alert').style.display = "";
+                    document.getElementById("_alert").style.display = "";
                     return;
                 }
 
                 let startedTime = new Date(ls.challengeStartedTime);
                 startedTime = `${startedTime.getHours()}: ${startedTime.getMinutes()}: ${startedTime.getSeconds()}`;
-                document.getElementById('_timeStart').innerText = startedTime;
+                document.getElementById("_timeStart").innerText = startedTime;
 
                 let endTime = new Date(ls.challengeEndTime);
                 endTime = `${endTime.getHours()}: ${endTime.getMinutes()}: ${endTime.getSeconds()}`;
-                document.getElementById('_timeEnd').innerText = endTime;
+                document.getElementById("_timeEnd").innerText = endTime;
 
                 if (Date.now() > ls.challengeEndTime) {
-                    document.getElementById('_greenAlert').style.display = "";
+                    document.getElementById("_greenAlert").style.display = "";
                 }
                 
-                const skipMapBtn = document.getElementById('_skipMapBtn');
-                skipMapBtn.addEventListener('click', ()=>{
+                const skipMapBtn = document.getElementById("_skipMapBtn");
+                skipMapBtn.addEventListener("click", ()=>{
                     skipMapBtn.disabled = true;
                     if (confirm("Click 'Ok' if you want to use a skip? Click 'Cancel' if map is broken, doesn't fit your game plan, ect.")){
                         ls.skipsUsed += 1;
                     }
                     jumpToWikiXplore();
+                });
+
+                const clearCacheBtn = document.getElementById("_clearCache");
+                clearCacheBtn.addEventListener("click", ()=>{
+                    location.reload(true);
                 });
                 
                 function jumpToWikiXplore(){
@@ -179,8 +184,8 @@ if (ls) {
                     return;
                 };
 
-                const pauseBtn = document.getElementById('_pauseBtn');
-                pauseBtn.addEventListener('click', ()=>{
+                const pauseBtn = document.getElementById("_pauseBtn");
+                pauseBtn.addEventListener("click", ()=>{
                     if (!ls.isPaused){
                         pauseBtn.innerText = "Unpause";
                         ls.isPaused = ls.challengeEndTime - Date.now();
@@ -257,9 +262,15 @@ if (ls) {
                 <div style="margin-top: 1em;" >
                     <button id="_skipMapBtn" class="swal2-confirm swal2-styled _disabled _styledBtn" ${(!ls.challengeEndTime || (ls.skipsUsed < ls.numOfSkips)) ? "": "disabled"} >Skip map</button>
                 </div>
+
+                <div style="margin-top: 1em;" >
+                    <button id="_clearCache" class="swal2-confirm swal2-styled _disabled _styledBtn" title="Could fix some common issues.">Clear cache</button>
+                </div>
+
                 <div style="margin-top: 1em;" >
                     <button id="_pauseBtn" class="swal2-confirm swal2-styled _disabled _styledBtn" ${(!ls.challengeEndTime || !ls.challengeStartedTime) ? "disabled": ""} >${(ls.isPaused) ? "Unpause": "Pause"}</button>
                 </div>
+
                 <div style="margin-top: 1em;" >
                     <button id="_endGameBtn" class="swal2-confirm swal2-styled _styledBtn" >End game</button>
                 </div>
@@ -801,7 +812,6 @@ function handleEndOfGame(json){
     //curEorJSON = json;
 
     handleEndOfGameIsHandling = true;
-debugger;
     let p = new window.Sweetalert2({
         willClose: function(){
         //    setTimeout(()=>{
