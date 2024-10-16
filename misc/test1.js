@@ -141,6 +141,20 @@ if (ls) {
                     return;
                 });
 
+                const clearCacheBtn = document.getElementById("_clearCache");
+                clearCacheBtn.addEventListener("click", ()=>{
+                    location.reload(true);
+                });
+
+                const skipMapBtn = document.getElementById("_skipMapBtn");
+                skipMapBtn.addEventListener("click", ()=>{
+                    skipMapBtn.disabled = true;
+                    if (confirm("Click 'Ok' if you want to use a skip? Click 'Cancel' if map is broken, doesn't fit your game plan, ect.")){
+                        ls.skipsUsed += 1;
+                    }
+                    jumpToWikiXplore();
+                });
+
                 if (!ls.challengeStartedTime) {
                     document.getElementById("_alert").style.display = "";
                     return;
@@ -157,20 +171,6 @@ if (ls) {
                 if (Date.now() > ls.challengeEndTime) {
                     document.getElementById("_greenAlert").style.display = "";
                 }
-                
-                const skipMapBtn = document.getElementById("_skipMapBtn");
-                skipMapBtn.addEventListener("click", ()=>{
-                    skipMapBtn.disabled = true;
-                    if (confirm("Click 'Ok' if you want to use a skip? Click 'Cancel' if map is broken, doesn't fit your game plan, ect.")){
-                        ls.skipsUsed += 1;
-                    }
-                    jumpToWikiXplore();
-                });
-
-                const clearCacheBtn = document.getElementById("_clearCache");
-                clearCacheBtn.addEventListener("click", ()=>{
-                    location.reload(true);
-                });
                 
                 function jumpToWikiXplore(){
                     ls.currentMap = {
@@ -535,20 +535,20 @@ function handleMainPopup(p){
         
         localStorage["RandomMapChallenge"] = JSON.stringify(obj);
         
-        alert(`
-
-                    KNOWN ISSUE!!!
-
-If the timer or play along doesn't work, try going back to the game setting page, pressing the back button, and DO A HARD REFRESH by holding the ctrl key while refreshing the page; Mac users may need to use a different key.
-
-On some computers, the GeoGuessr website may load a hair before the Unity script loads, doing a hard refresh before starting a game can fix the bug on most computers.
-
-This game mode might not work on your computer if the problem isn't fixed by doing a hard refresh. 
-
-I think the problem has something to do with how large and bloated the Unity script is.
-
-Thanks, unpaid slave dev laborer.
-`);
+//        alert(`
+//
+//                    KNOWN ISSUE!!!
+//
+//If the timer or play along doesn't work, try going back to the game setting page, pressing the back button, and DO A HARD REFRESH by holding the ctrl key while refreshing the page; Mac users may need to use a different key.
+//
+//On some computers, the GeoGuessr website may load a hair before the Unity script loads, doing a hard refresh before starting a game can fix the bug on most computers.
+//
+//This game mode might not work on your computer if the problem isn't fixed by doing a hard refresh. 
+//
+//I think the problem has something to do with how large and bloated the Unity script is.
+//
+//Thanks, unpaid slave dev laborer.
+//`);
 
         window.open(`https://www.geoguessr.com/maps/${obj.currentMap.id}`,"_self");
     });
