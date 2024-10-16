@@ -180,7 +180,7 @@ if (ls) {
                     
                     localStorage["RandomMapChallenge"] = JSON.stringify(ls);
                     
-                    window.open(`https://www.geoguessr.com/maps/${ls.currentMap.id}`,"_self");
+                    window.open(`https://www.geoguessr.com/maps/${ls.currentMap.id}#Unity`,"_self");
                     return;
                 };
 
@@ -550,7 +550,7 @@ function handleMainPopup(p){
 //Thanks, unpaid slave dev laborer.
 //`);
 
-        window.open(`https://www.geoguessr.com/maps/${obj.currentMap.id}`,"_self");
+        window.open(`https://www.geoguessr.com/maps/${obj.currentMap.id}#Unity`,"_self");
     });
     
     document.querySelectorAll("._stuffInputX").forEach((el)=>{
@@ -729,23 +729,23 @@ function listenForApiFetch(json){
         if (json.type === "challenge"){
             alert(`Sorry, this mode doesn't support challenges yet! Game will be restarted!`);
             
-            window.open(`https://www.geoguessr.com/maps/${ls.currentMap.id}`,"_self");
+            window.open(`https://www.geoguessr.com/maps/${ls.currentMap.id}#Unity`,"_self");
         }
 
         if (ls.fMoving && json.forbidMoving === false){
             alert('Random Map Challenge requires no moving games! Game will be restarted!');
             
-            window.open(`https://www.geoguessr.com/maps/${ls.currentMap.id}`,"_self");
+            window.open(`https://www.geoguessr.com/maps/${ls.currentMap.id}#Unity`,"_self");
         }
         if (ls.fRotating && json.forbidRotating === false){
             alert('Random Map Challenge requires no rotating games! Game will be restarted!');
             
-            window.open(`https://www.geoguessr.com/maps/${ls.currentMap.id}`,"_self");
+            window.open(`https://www.geoguessr.com/maps/${ls.currentMap.id}#Unity`,"_self");
         }
         if (ls.fZooming && json.forbidZooming === false){
             alert('Random Map Challenge requires no moving games! Game will be restarted!');
             
-            window.open(`https://www.geoguessr.com/maps/${ls.currentMap.id}`,"_self");
+            window.open(`https://www.geoguessr.com/maps/${ls.currentMap.id}#Unity`,"_self");
         }
         
         if (!ls?.mapsList?.length && (!ls._finishedGame || (ls._finishedGame.idx +1 >= ls._finishedGame.obj.maps.length))){
@@ -840,7 +840,7 @@ function handleEndOfGame(json){
                 startNextGameBtn.innerText = "Retry Map";
                 startNextGameBtn.style.backgroundColor = "#b92828";
                 startNextGameBtn.addEventListener('click', ()=>{
-                    window.open(`https://www.geoguessr.com/maps/${ls.currentMap.id}/play` ,"_self");
+                    window.open(`https://www.geoguessr.com/maps/${ls.currentMap.id}/play#Unity` ,"_self");
                 }); 
                 return;
             }  
@@ -861,7 +861,7 @@ function handleEndOfGame(json){
                  ${minTime} is the time to beat!`;
                 startNextGameBtn.innerText = "Retry Map";
                 startNextGameBtn.addEventListener('click', ()=>{
-                    window.open(`https://www.geoguessr.com/maps/${ls.currentMap.id}/play` ,"_self");
+                    window.open(`https://www.geoguessr.com/maps/${ls.currentMap.id}/play#Unity` ,"_self");
                 }); 
                 return;
             }  
@@ -912,7 +912,7 @@ function handleEndOfGame(json){
 
                         localStorage["RandomMapChallenge"] = JSON.stringify(ls);
 
-                        window.open(`https://www.geoguessr.com/maps/${ls.currentMap.id}` ,"_self");
+                        window.open(`https://www.geoguessr.com/maps/${ls.currentMap.id}#Unity` ,"_self");
                         return;
                     }
                 }
@@ -927,7 +927,7 @@ function handleEndOfGame(json){
 
                     localStorage["RandomMapChallenge"] = JSON.stringify(ls);
 
-                    window.open(`https://www.geoguessr.com/maps/${ls.currentMap.id}`, "_self");
+                    window.open(`https://www.geoguessr.com/maps/${ls.currentMap.id}#Unity`, "_self");
                     return;
                 }
 
@@ -988,7 +988,7 @@ function handleEndOfGame(json){
                  
                 localStorage["RandomMapChallenge"] = JSON.stringify(ls);
         
-                window.open(`https://www.geoguessr.com/maps/${ls.currentMap.id}` ,"_self");
+                window.open(`https://www.geoguessr.com/maps/${ls.currentMap.id}#Unity` ,"_self");
            };
            
         },
@@ -1305,7 +1305,7 @@ window.playFinishedGame = function (finishedGame){
         
         alert("Starting a new Random Map Challenge!\n\nThis page will reload and the first map in the challenge will be available.\n\nChallenge will start when you start playing a game, Good Luck!");
 
-        window.open(`https://www.geoguessr.com/maps/${obj.currentMap.id}`,"_self");
+        window.open(`https://www.geoguessr.com/maps/${obj.currentMap.id}#Unity`,"_self");
 }
 
 function getSwalCloseBtn(fn){
