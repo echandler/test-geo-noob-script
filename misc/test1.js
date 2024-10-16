@@ -295,7 +295,9 @@ async function handleHardReload(url) {
         },
     })
     
-    url += `?unity=${Date.now()}`;;
+    url += `?unity=${Date.now()}&age=30&age=30&age&age=30&age=30&age=30&age=30&age=30&age=30&age=30&age=30&age=30&age=30&age=30&age=30&age=30&age=30&age=30&age=30&age=30&age=30`;
+
+    localStorage['unity_immediate_load'] = true; // causes unity script to not wait for domcontentloaded.
 
     window.location.href = url;
     // This is to ensure reload with url's having '#'
