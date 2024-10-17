@@ -141,11 +141,6 @@ if (ls) {
                     return;
                 });
 
-                const clearCacheBtn = document.getElementById("_clearCache");
-                clearCacheBtn.addEventListener("click", ()=>{
-                    handleHardReload(window.location.href);
-                });
-
                 const skipMapBtn = document.getElementById("_skipMapBtn");
                 skipMapBtn.addEventListener("click", ()=>{
                     skipMapBtn.disabled = true;
@@ -261,10 +256,6 @@ if (ls) {
                 </div>
                 <div style="margin-top: 1em;" >
                     <button id="_skipMapBtn" class="swal2-confirm swal2-styled _disabled _styledBtn" ${(!ls.challengeEndTime || (ls.skipsUsed < ls.numOfSkips)) ? "": "disabled"} >Skip map</button>
-                </div>
-
-                <div style="margin-top: 1em;" >
-                    <button id="_clearCache" class="swal2-confirm swal2-styled _disabled _styledBtn" title="Could fix some common issues.">Clear cache</button>
                 </div>
 
                 <div style="margin-top: 1em;" >
