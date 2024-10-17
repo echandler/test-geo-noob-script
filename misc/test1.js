@@ -286,7 +286,7 @@ async function handleHardReload(url) {
         },
     })
     let date = Date.now();    
-    url += `?unity=${date}&age=${date}&aage=${date}&bage&${date}ge=30&dage=${date}&eage=${date}&xage=${date}&gage=${date}&fage=${date}&gage=${date}&hage=${date}&Iage=${date}&jage=${date}&kage=${date}&Lage=${date}&mage=${date}&Nage=${date}&mage=${date}&oage=${date}&page=${date}&qage=${date}`;
+    //url += `?unity=${date}&age=${date}&aage=${date}&bage&${date}ge=30&dage=${date}&eage=${date}&xage=${date}&gage=${date}&fage=${date}&gage=${date}&hage=${date}&Iage=${date}&jage=${date}&kage=${date}&Lage=${date}&mage=${date}&Nage=${date}&mage=${date}&oage=${date}&page=${date}&qage=${date}`;
 
     localStorage['unity_immediate_load'] = true; // causes unity script to not wait for domcontentloaded.
 
