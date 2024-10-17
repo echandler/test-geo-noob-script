@@ -560,13 +560,15 @@ function handleMainPopup(p){
         
         localStorage["RandomMapChallenge"] = JSON.stringify(obj);
         
-        alert(`
+alert(`
+KNOWN ISSUE!!!
 
-                    KNOWN ISSUE!!!
+If the timer or play along doesn't work, try going back to the game setting page, pressing the back button, and DO A HARD REFRESH by:
+a) holding the ctrl key while refreshing the page.
+b) pressing ctrl+shift+r.
+*Mac users may need to use different keys.
 
-If the timer or play along doesn't work, try going back to the game setting page, pressing the back button, and DO A HARD REFRESH by holding the ctrl key while refreshing the page; Mac users may need to use a different key.
-
-On some computers, the GeoGuessr website may load a hair before the Unity script loads, doing a hard refresh before starting a game can fix the bug on most computers.
+On some computers, the GeoGuessr website may load a hair faster than the Unity script, doing a hard refresh before starting a game can fix the bug on many computers.
 
 This game mode might not work on your computer if the problem isn't fixed by doing a hard refresh. 
 
@@ -574,7 +576,6 @@ I think the problem has something to do with how large and bloated the Unity scr
 
 Thanks, unpaid slave dev laborer.
 `);
-
         await handleHardReload(`https://www.geoguessr.com/maps/${obj.currentMap.id}`)
         //window.open(`https://www.geoguessr.com/maps/${obj.currentMap.id}?unity=${Date.now()}`,"_self");
     });
