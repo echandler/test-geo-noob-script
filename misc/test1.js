@@ -355,8 +355,8 @@ function mainMenuBtnClickHandler(){
                 </div>
 
                 <div class="_stuff" style="display: grid; grid-template-columns: max-content min-content; column-gap: 1em; align-items: center; text-align:left; width: fit-content; margin: 0px auto;">
-                    <div id="_mapSearch"> 
-                        Map search
+                    <div id="_mapSearchBody"> 
+                        <span id="_mapSearch">Map search</span>
                         <div class="__popupMsg">
                             Searching for a word such as "diverse" will return a list of maps containing the word "diverse", much better than GeoGuessr's random map generator.
                         </div>
@@ -372,8 +372,8 @@ function mainMenuBtnClickHandler(){
                         <span class="_stuffInputX" forId="_searchByPlayerId" > &#10006; </span>
                     </span>
 
-                    <div id="_listOfMapsLink" class="_hover"> 
-                        List of maps 
+                    <div id="_listOfMapsLinkBody"> 
+                        <span id="_listOfMapsLink" class="_hover">List of maps</span>
                         <div class="__popupMsg">
                             GeoGuessr's random map generator returns a lot of lame maps, it is highly recommended that you use your own custom list of comma seperated map id's or choose one from the link above!
                         </div>
@@ -384,10 +384,10 @@ function mainMenuBtnClickHandler(){
                     </span>
                 </div>
 
-                <div id="_viewGames" class="_hover" style="margin-top: 1em;">
+                <div id="_viewGames" class="_hover" style="margin: 1em auto; width: fit-content;">
                     View previous finished games. 
                 </div>
-                <div id="_playAgainstSomeoneElse" class="_hover" style="margin-top: 1em;">
+                <div id="_playAgainstSomeoneElse" class="_hover" style="margin: 1em auto; width: fit-content;">
                     Play against someone else. 
                 </div>
                 <div style="margin-top: 1em;" >
@@ -1577,7 +1577,7 @@ document.head.insertAdjacentHTML('beforeend', `
             color: #5eb741;
         }
 
-        #_listOfMapsLink:hover > .__popupMsg, #_mapSearch:hover > .__popupMsg{
+        #_listOfMapsLink:hover + .__popupMsg, #_mapSearch:hover + .__popupMsg{
             color: #b92828;
             display: block !important;
         }
@@ -1594,6 +1594,7 @@ document.head.insertAdjacentHTML('beforeend', `
             width: 50%;
             line-height: 1.5em;
             font-size: 0.8em;
+            font-weight: bold;
             border-radius: 10px;
         }
         
