@@ -17,6 +17,17 @@
 // ==/UserScript==
 
 
+    // Added by EC
+if (!window._unity_fetch_){
+    window._unity_fetch_ = window.fetch;
+
+    window.fetch = (function(){
+        return async function (...args){
+            return window._unity_fetch_.apply(window, args); 
+        };
+    })();
+}
+
 console.log('hi from __zz')
     // Added by EC
 checkForRanomMapChallenge(); 
@@ -11594,6 +11605,3 @@ function getOverlayView(map){
             }
         }
     };
-
-
-
